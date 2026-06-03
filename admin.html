@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWAAds — Admin Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,800;1,9..144,400&family=Geist+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Light, airy admin palette — high contrast, easy to scan */
+  --bg:          #f4f2ee;
+  --surface:     #ffffff;
+  --surface2:    #f8f7f4;
+  --border:      #e2ddd5;
+  --border2:     #ccc8be;
+  --text:        #1a1714;
+  --text2:       #433d34;
+  --text3:       #706860;
+  --accent:      #c8440a;
+  --accent-dim:  #fdf1eb;
+  --green:       #1a7a3a;
+  --green-dim:   #eaf5ee;
+  --gold:        #8a6500;
+  --gold-dim:    #fdf6e0;
+  --blue:        #1056a0;
+  --blue-dim:    #e8f0fb;
+  --red-dim:     #fdeaea;
+  --purple-dim:  #f3eeff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PASSWORD GATE ── */
+#gate{
+  position:fixed;inset:0;background:var(--bg);z-index:9999;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;
+  background:linear-gradient(135deg,#f4f2ee 0%,#ede9e1 100%);
+}
+.gate-inner{
+  width:360px;padding:40px;
+  border:1px solid var(--border2);border-radius:16px;
+  background:var(--surface);
+  box-shadow:0 4px 32px rgba(0,0,0,0.10);
+  animation:fadeIn 0.4s ease;
+}
+.gate-logo{font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
+.gate-logo em{color:var(--accent);font-style:normal}
+.gate-sub{font-size:13px;color:var(--text3);margin-bottom:28px}
+.gate-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px}
+.gate-input{
+  width:100%;padding:11px 14px;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);
+  outline:none;transition:border-color 0.15s;margin-bottom:12px;
+  letter-spacing:2px;
+}
+.gate-input:focus{border-color:var(--accent)}
+.gate-btn{
+  width:100%;padding:12px;background:var(--accent);color:#fff;
+  border:none;border-radius:8px;font-family:'Fraunces',serif;
+  font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;
+}
+.gate-btn:hover{background:#a83608}
+.gate-error{font-size:12px;color:#e05050;margin-top:8px;display:none}
+
+/* ── APP SHELL ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* ── TOP BAR ── */
+.topbar{
+  height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;border-bottom:1px solid var(--border);
+  background:var(--surface);position:sticky;top:0;z-index:100;
+  box-shadow:0 1px 4px rgba(0,0,0,0.05);
+}
+.tb-logo{font-family:'Fraunces',serif;font-size:18px;font-weight:800;color:var(--text)}
+.tb-logo em{color:var(--accent);font-style:normal}
+.tb-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-left:12px;padding-left:12px;border-left:1px solid var(--border2)}
+.tb-right{display:flex;align-items:center;gap:16px}
+.tb-link{font-size:12px;color:var(--text3);text-decoration:none;transition:color 0.15s}
+.tb-link:hover{color:var(--text)}
+.tb-time{font-family:'Geist Mono',monospace;font-size:11px;color:var(--text3)}
+.tb-logout{font-size:11px;color:var(--text3);cursor:pointer;border:1px solid var(--border2);padding:4px 10px;border-radius:5px;transition:all 0.15s;background:none}
+.tb-logout:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── MAIN LAYOUT ── */
+.app-body{display:flex;flex:1;min-height:0}
+.sidebar{
+  width:220px;flex-shrink:0;border-right:1px solid var(--border);
+  background:var(--surface);padding:24px 0;
+  display:flex;flex-direction:column;gap:2px;
+  position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;
+}
+.nav-section{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);padding:0 20px;margin:16px 0 6px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 20px;font-size:13px;font-weight:400;color:var(--text2);
+  cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;
+}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);font-weight:600}
+.nav-item .ni-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--accent);color:#fff}
+
+/* ── CONTENT AREA ── */
+.content{flex:1;padding:32px;overflow-y:auto;min-height:calc(100vh - 56px)}
+.view{display:none;animation:fadeIn 0.25s ease}
+.view.active{display:block}
+
+/* ── SHARED COMPONENTS ── */
+.page-head{margin-bottom:28px}
+.page-title{font-family:'Fraunces',serif;font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text3)}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:18px 20px;
+  transition:border-color 0.2s;
+}
+.kpi:hover{border-color:var(--border2)}
+.kpi-val{font-family:'Fraunces',serif;font-size:28px;font-weight:800;color:var(--text);display:block;line-height:1;margin-bottom:5px}
+.kpi-val.green{color:var(--green)}
+.kpi-val.gold{color:var(--gold)}
+.kpi-val.accent{color:var(--accent)}
+.kpi-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px}
+.kpi-delta{font-size:10px;margin-top:4px}
+.kpi-delta.up{color:var(--green)}
+.kpi-delta.dn{color:#e05050}
+
+/* Status pills */
+.pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;
+  text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;
+}
+.pill.pending{background:var(--gold-dim);color:#7a5800;font-weight:700}
+.pill.confirmed{background:var(--blue-dim);color:#0d4a8f;font-weight:700}
+.pill.live{background:var(--green-dim);color:#166030;font-weight:700}
+.pill.creative_review{background:var(--purple-dim);color:#5b21b6;font-weight:700}
+.pill.cancelled{background:var(--red-dim);color:#b91c1c;font-weight:700}
+
+/* Card */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;margin-bottom:16px;
+}
+.card-head{
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-family:'Fraunces',serif;font-size:15px;font-weight:700}
+.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:12px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,0.02);color:var(--text)}
+.tbl td strong{color:var(--text);font-weight:600}
+.mono{font-family:'Geist Mono',monospace;font-size:11px;color:var(--text2)}
+
+/* Action buttons */
+.btn{
+  font-size:11px;font-weight:600;padding:5px 12px;border-radius:5px;
+  border:1px solid var(--border2);color:var(--text2);background:none;
+  cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;
+}
+.btn:hover{border-color:var(--text2);color:var(--text)}
+.btn.green{border-color:rgba(46,204,113,0.3);color:var(--green);background:var(--green-dim)}
+.btn.green:hover{background:rgba(46,204,113,0.2)}
+.btn.accent{border-color:rgba(200,68,10,0.3);color:var(--accent);background:var(--accent-dim)}
+.btn.accent:hover{background:rgba(200,68,10,0.25)}
+.btn.sm{font-size:10px;padding:3px 9px}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Campaign detail panel */
+.detail-panel{
+  position:fixed;top:56px;right:0;bottom:0;width:480px;
+  background:var(--surface2);border-left:1px solid var(--border2);
+  z-index:200;transform:translateX(100%);transition:transform 0.28s cubic-bezier(0.32,0,0.18,1);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.detail-panel.open{transform:translateX(0)}
+.dp-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.dp-close{background:none;border:1px solid var(--border2);border-radius:50%;width:28px;height:28px;color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0}
+.dp-close:hover{border-color:var(--accent);color:var(--accent)}
+.dp-body{flex:1;overflow-y:auto;padding:20px 24px}
+.dp-section{margin-bottom:20px}
+.dp-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.dp-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px}
+.dp-row .l{color:var(--text3)}
+.dp-row .v{color:var(--text);font-weight:500}
+.dp-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+
+/* Inventory table extras */
+.rate-cell{display:flex;align-items:center;gap:6px}
+.rate-input{
+  width:72px;padding:4px 8px;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:5px;
+  font-family:'Geist Mono',monospace;font-size:12px;color:var(--text);
+  outline:none;transition:border-color 0.15s;
+}
+.rate-input:focus{border-color:var(--accent)}
+.rate-input.edited{border-color:var(--gold);color:var(--gold)}
+.save-rate{font-size:10px;padding:3px 8px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(224,160,32,0.3);border-radius:4px;cursor:pointer;font-weight:600;display:none}
+.health-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.health-dot.good{background:var(--green)}
+.health-dot.warn{background:#c48a00}
+.health-dot.bad{background:#c82020}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.filter-chip{
+  font-size:11px;font-weight:500;padding:5px 13px;border-radius:16px;
+  border:1px solid var(--border2);color:var(--text2);background:none;
+  cursor:pointer;transition:all 0.15s;
+}
+.filter-chip:hover{border-color:var(--text2)}
+.filter-chip.on{background:var(--accent-dim);border-color:rgba(200,68,10,0.4);color:var(--accent)}
+.search-input{
+  padding:6px 12px;background:var(--surface2);border:1px solid var(--border2);
+  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);
+  outline:none;width:220px;transition:border-color 0.15s;
+}
+.search-input:focus{border-color:var(--accent)}
+.search-input::placeholder{color:var(--text3)}
+
+/* Notice bar */
+.notice{
+  padding:10px 16px;border-radius:8px;font-size:12px;line-height:1.5;
+  margin-bottom:16px;display:flex;align-items:flex-start;gap:8px;
+}
+.notice.info{background:var(--blue-dim);border-left:3px solid var(--blue);color:var(--text2)}
+.notice.warn{background:var(--gold-dim);border-left:3px solid var(--gold);color:var(--text2)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-track{background:var(--surface2)}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .detail-panel{width:100%}
+}
+
+/* ── PRICING MANAGER ── */
+.mo-tab {
+  font-size:12px; font-weight:600; padding:7px 16px;
+  border-radius:20px; border:1px solid var(--border2);
+  background:none; color:var(--text2); cursor:pointer;
+  transition:all 0.15s; font-family:'DM Sans',sans-serif;
+}
+.mo-tab:hover { border-color:var(--text2); color:var(--text); }
+.mo-tab.on { background:var(--accent-dim); border-color:rgba(200,68,10,0.3); color:var(--accent); }
+.price-input {
+  width:78px; padding:4px 8px;
+  background:var(--surface2); border:1.5px solid var(--border2);
+  border-radius:5px; font-family:'Geist Mono',monospace;
+  font-size:12px; color:var(--text); outline:none;
+  transition:border-color 0.15s;
+}
+.price-input:focus { border-color:var(--accent); }
+.price-input.confirmed { border-color:#2ecc71; background:rgba(46,204,113,0.06); }
+.price-input.estimated { border-color:var(--gold); color:var(--gold); }
+.price-calc {
+  font-family:'Geist Mono',monospace; font-size:12px;
+  color:var(--text2); padding:4px 8px;
+  background:var(--surface2); border-radius:5px;
+  border:1px solid var(--border); display:inline-block;
+  min-width:78px; text-align:right;
+}
+.price-calc.auto { color:var(--text3); font-style:italic; }
+.status-dot-confirmed { color:#2ecc71; font-weight:700; font-size:12px; }
+.status-dot-estimated { color:var(--gold); font-weight:700; font-size:12px; }
+.source-badge {
+  font-size:9px; font-weight:700; padding:2px 7px;
+  border-radius:8px; text-transform:uppercase; letter-spacing:0.5px;
+}
+.source-confirmed { background:rgba(46,204,113,0.12); color:#1a7a3a; }
+.source-estimated { background:var(--gold-dim); color:var(--gold); }
+.source-manual    { background:var(--blue-dim); color:var(--blue); }
+
+</style>
+</head>
+<body>
+
+<!-- ── PASSWORD GATE ── -->
+<div id="gate">
+  <div class="gate-inner">
+    <div class="gate-logo">NWA<em>Ads</em></div>
+    <div class="gate-sub">Admin console — restricted access</div>
+    <div class="gate-label">Passphrase</div>
+    <input class="gate-input" id="gate-pw" type="password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="gate-btn" onclick="checkPw()">Enter console →</button>
+    <div class="gate-error" id="gate-error">Incorrect passphrase. Try again.</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app" style="display:none">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <div class="tb-logo">NWA<em>Ads</em></div>
+      <span class="tb-label">Admin Console</span>
+    </div>
+    <div class="tb-right">
+      <span class="tb-time" id="tb-clock"></span>
+      <a class="tb-link" href="nwa-boards-with-map.html" target="_blank">↗ Booking tool</a>
+      <button class="tb-logout" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+
+    <!-- Sidebar nav -->
+    <nav class="sidebar">
+      <div class="nav-section">Operations</div>
+      <div class="nav-item active" onclick="showView('campaigns')" id="nav-campaigns">
+        <span class="ni-icon">📋</span> Campaign queue
+        <span class="nav-badge" id="pending-badge">2</span>
+      </div>
+      <div class="nav-item" onclick="showView('inventory')" id="nav-inventory">
+        <span class="ni-icon">🗺</span> Inventory & rates
+      </div>
+      <div class="nav-section">Analytics</div>
+      <div class="nav-item" onclick="showView('pipeline')" id="nav-pipeline">
+        <span class="ni-icon">💰</span> Revenue pipeline
+      </div>
+      <div class="nav-item" onclick="showView('health')" id="nav-health">
+        <span class="ni-icon">🔎</span> Inventory health
+      </div>
+      <div class="nav-item" onclick="showView('pricing')" id="nav-pricing">
+        <span class="ni-icon">💲</span> Pricing manager
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="content">
+
+      <!-- ════ CAMPAIGN QUEUE ════ -->
+      <div class="view active" id="view-campaigns">
+        <div class="page-head">
+          <div class="page-title">Campaign queue</div>
+          <div class="page-sub">All booking requests — review, confirm availability, and advance status</div>
+        </div>
+
+        <div class="kpi-row" id="kpi-campaigns"></div>
+
+        <div class="filter-bar">
+          <div class="filter-chip on" onclick="filterCampaigns(this,'all')">All</div>
+          <div class="filter-chip" onclick="filterCampaigns(this,'pending')">⏳ Pending</div>
+          <div class="filter-chip" onclick="filterCampaigns(this,'creative_review')">🎨 Creative review</div>
+          <div class="filter-chip" onclick="filterCampaigns(this,'confirmed')">✓ Confirmed</div>
+          <div class="filter-chip" onclick="filterCampaigns(this,'live')">🟢 Live</div>
+          <input class="search-input" placeholder="Search campaigns…" oninput="searchCampaigns(this.value)">
+        </div>
+
+        <div class="card">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Advertiser</th>
+                <th>Goal</th>
+                <th>Screens</th>
+                <th>Value</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="campaign-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ INVENTORY & RATES ════ -->
+      <div class="view" id="view-inventory">
+        <div class="page-head">
+          <div class="page-title">Inventory & rates</div>
+          <div class="page-sub">Review and edit CPMs, rates, and impression levels for all 82 screens</div>
+        </div>
+
+        <div class="notice warn">
+          <span>⚠</span>
+          <div><strong>Rate review reminder:</strong> XNA Airport rates updated from 2025 XNA Media Kit (7 zones, $346–$1,097/wk). Billboard and Gas Station CPMs from Adomni export May 12 2026. Gas Station has two tiers: $7.97 (indie) / $20.29 (network). Next full review due Aug 2026.</div>
+        </div>
+
+        <div class="kpi-row" id="kpi-inventory"></div>
+
+        <div class="filter-bar">
+          <div class="filter-chip on" onclick="filterInv(this,'all')">All formats</div>
+          <div class="filter-chip" onclick="filterInv(this,'digital')">🛣 Billboard</div>
+          <div class="filter-chip" onclick="filterInv(this,'gasstation')">⛽ Gas Station</div>
+          <div class="filter-chip" onclick="filterInv(this,'cinema')">🎬 Cinema</div>
+          <div class="filter-chip" onclick="filterInv(this,'airport')">✈ Airport</div>
+          <input class="search-input" placeholder="Search inventory…" oninput="searchInv(this.value)">
+        </div>
+
+        <div class="notice info">
+          <span>ℹ</span>
+          <div>Edit CPM fields inline and click <strong>Save</strong> to flag a rate as updated. Changes are stored in session — export to your booking tool when ready.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">All screens</div>
+              <div class="card-sub" id="inv-count-label">82 screens</div>
+            </div>
+            <button class="btn accent" onclick="exportRates()">↓ Export updated rates</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Screen</th>
+                  <th>Format</th>
+                  <th>Area</th>
+                  <th>Faces</th>
+                  <th>CPM</th>
+                  <th>Wkly impr</th>
+                  <th>Daily rate</th>
+                  <th>Wkly rate</th>
+                  <th>Mo rate</th>
+                  <th>Video</th>
+                  <th>Last updated</th>
+                </tr>
+              </thead>
+              <tbody id="inv-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ REVENUE PIPELINE ════ -->
+      <div class="view" id="view-pipeline">
+        <div class="page-head">
+          <div class="page-title">Revenue pipeline</div>
+          <div class="page-sub">Value of campaigns by stage — pending, confirmed, live</div>
+        </div>
+        <div class="kpi-row" id="kpi-pipeline"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-head"><div class="card-title">By goal type</div></div>
+            <div style="padding:16px 20px" id="pipeline-by-goal"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">By status</div></div>
+            <div style="padding:16px 20px" id="pipeline-by-status"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-head"><div class="card-title">30-day booking activity</div></div>
+          <div style="padding:20px" id="pipeline-chart"></div>
+        </div>
+      </div>
+
+      <!-- ════ INVENTORY HEALTH ════ -->
+      <div class="view" id="view-health">
+        <div class="page-head">
+          <div class="page-title">Inventory health</div>
+          <div class="page-sub">Flags for stale rates, broken images, and missing specs</div>
+        </div>
+        <div class="kpi-row" id="kpi-health"></div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Health checks</div></div>
+          <table class="tbl">
+            <thead><tr><th></th><th>Screen</th><th>Issue</th><th>Detail</th><th>Action</th></tr></thead>
+            <tbody id="health-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ════ PRICING MANAGER ════ -->
+      <div class="view" id="view-pricing">
+        <div class="page-head">
+          <div class="page-title">Pricing manager</div>
+          <div class="page-sub">Set confirmed rates per media owner — enter daily, weekly, or monthly and the site calculates all other increments automatically</div>
+        </div>
+
+        <div class="notice info" style="margin-bottom:20px">
+          <span>ℹ</span>
+          <div><strong>How it works:</strong> Enter the rate you've confirmed with each media owner for any duration. The tool extrapolates all other durations using standard multipliers. Green = confirmed by media owner. Amber = estimated. Click <strong>Apply to site</strong> to push updated rates to the booking tool.</div>
+        </div>
+
+        <!-- Media owner tabs -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap" id="mo-tabs">
+          <button class="mo-tab on" onclick="setPricingOwner(this,'all')">All screens</button>
+          <button class="mo-tab" onclick="setPricingOwner(this,'digital')">🛣 Billboards</button>
+          <button class="mo-tab" onclick="setPricingOwner(this,'gasstation')">⛽ Gas Station</button>
+          <button class="mo-tab" onclick="setPricingOwner(this,'airport')">✈ XNA Airport</button>
+          <button class="mo-tab" onclick="setPricingOwner(this,'cinema')">🎬 Cinema</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title" id="pricing-card-title">All screens — rate configuration</div>
+              <div class="card-sub">Enter any one rate and hit Tab — all other durations auto-calculate</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="exportPricingCSV()">↓ Export CSV</button>
+              <button class="btn accent" id="btn-apply-pricing" onclick="applyPricingToSite()">✓ Apply to site</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl" id="pricing-table">
+              <thead>
+                <tr>
+                  <th style="min-width:32px"></th>
+                  <th style="min-width:200px">Screen</th>
+                  <th style="min-width:100px">Format</th>
+                  <th style="min-width:90px">Daily rate</th>
+                  <th style="min-width:90px">Weekly rate</th>
+                  <th style="min-width:90px">Monthly rate</th>
+                  <th style="min-width:90px">4-week total</th>
+                  <th style="min-width:90px">13-week total</th>
+                  <th style="min-width:90px">CPM (calc)</th>
+                  <th style="min-width:80px">Source</th>
+                  <th style="min-width:80px">Status</th>
+                </tr>
+              </thead>
+              <tbody id="pricing-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bulk rate update tool -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-head"><div class="card-title">Bulk rate update by format</div></div>
+          <div style="padding:16px 20px">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Format</div>
+                <select id="bulk-type" class="search-input" style="width:100%">
+                  <option value="digital">🛣 Billboard</option>
+                  <option value="gasstation">⛽ Gas Station</option>
+                  <option value="airport">✈ Airport</option>
+                  <option value="cinema">🎬 Cinema</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Set daily rate ($)</div>
+                <input type="number" id="bulk-daily" class="search-input" style="width:100%" placeholder="e.g. 45">
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Or set weekly rate ($)</div>
+                <input type="number" id="bulk-weekly" class="search-input" style="width:100%" placeholder="e.g. 295">
+              </div>
+              <div style="display:flex;align-items:flex-end">
+                <button class="btn green" style="width:100%;padding:8px" onclick="applyBulkRate()">Apply to all screens of this type</button>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-top:10px">This overrides individual rates for all screens of the selected format. Use when a media owner confirms a flat rate across their network.</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Campaign detail panel -->
+<div class="detail-panel" id="detail-panel">
+  <div class="dp-head">
+    <div>
+      <div style="font-family:'Fraunces',serif;font-size:17px;font-weight:700" id="dp-title">Campaign</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px" id="dp-id"></div>
+    </div>
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="dp-body" id="dp-body"></div>
+  <div class="dp-footer" id="dp-footer"></div>
+</div>
+
+<script>
+/* ══════════════ DATA ══════════════ */
+const INV_DATA = [{"id": "loc_237536", "name": "Rogers Towne Center 12", "area": "Rogers, AR", "type": "cinema", "venue_type": "Cinema (Lobby)", "cpm": 7.61, "faces": 1, "wkly_impr": 4500, "daily_rate": 5, "wkly_rate": 34, "mo_rate": 147, "icon": "🎬", "video": "Y", "audio": "Y", "spec_res": "1080×1920 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/186dc4fd4f43_Bnp6SDrE7729qS7QSn-ZjseqjZLaCwZ7Htca9_original.jpeg"}, {"id": "loc_237591", "name": "Razorback 12", "area": "Fayetteville, AR", "type": "cinema", "venue_type": "Cinema (Lobby)", "cpm": 7.61, "faces": 1, "wkly_impr": 4500, "daily_rate": 5, "wkly_rate": 34, "mo_rate": 147, "icon": "🎬", "video": "Y", "audio": "Y", "spec_res": "1080×1920 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/186dc4fd4f43_Bnp6SDrE7729qS7QSn-ZjseqjZLaCwZ7Htca9_original.jpeg"}, {"id": "loc_442131", "name": "Pinnacle Hills 12", "area": "Rogers, AR", "type": "cinema", "venue_type": "Cinema (Lobby)", "cpm": 7.61, "faces": 1, "wkly_impr": 4500, "daily_rate": 5, "wkly_rate": 34, "mo_rate": 147, "icon": "🎬", "video": "Y", "audio": "Y", "spec_res": "1080×1920 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/186dc4fd4f43_Bnp6SDrE7729qS7QSn-ZjseqjZLaCwZ7Htca9_original.jpeg"}, {"id": "loc_595406", "name": "5500 W Sunset N/S at 1120 Mathias", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/a41TCl1CKtvWr6rXxQjMtN2rTfPgwr_WlUMlSDGcoyzDTsJODp_original.png"}, {"id": "loc_595407", "name": "Hwy 71 B S E/S (No)", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "840×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/f7qTVDbAY50ozuDattJC51Vu3awUuZAFfUdqKjRTq6CFG7FShX_original.png"}, {"id": "loc_595408", "name": "Walton Blvd E/S (No)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/5f4e8c7291dc8nKC1_6xk_cTeM2aH4RMbqgZW2Kz2xSs8qW9q3_original.png"}, {"id": "loc_595410", "name": "I-49 E/S (No)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/5f4e8cfd14b9c2q_ghwzaF76eHz1knMTX1nqwAg3Ran792kd92_original.png"}, {"id": "loc_595412", "name": "I-49 W/S .5 MI N/O Don Tyson Pkwy SF", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/141iY5xSRJf-E9Y3M5EltmW9ehycNT73BcoyUcv4Eyc7vPkN2v_original.jpg"}, {"id": "loc_595414", "name": "Hwy 71/I-49 E/S .1 MI N/O N. Walton BLVD NF", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/fiDwbG2ir3ph8oBIgdwJvVUaEg3kkjn8OBBZmEjEOXGjbwGzUT_original.jpg"}, {"id": "loc_595415", "name": "I-49 W/S (No)", "area": "Lowell, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/H0MGHL_HYofKCvuQNeA3dTuTDn_bEYfAlvlCB3lCUhUMdw7-Ig_original.jpg"}, {"id": "loc_595417", "name": "Hwy 71B 300 South of W Lakeview Dr. (No)", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/Ec9Ca7QCE7wFvFqeDI3yTAyi9y3ez4hXveFpgAl0NmE2iB9Z26_original.png"}, {"id": "loc_595420", "name": "I-49 W/S (So)", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/y-hobld9XnyyhFnM-I9g4H3ybsLsfY3b4l7mfzvSB3R8tv5nho_original.jpg"}, {"id": "loc_595422", "name": "I-49 E/S 100' N/O Don Tyson Parkway N/F", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/3ZY1Ea7VIonqJrftGH1Mb0stPiAbQAAv2QMCFxBHoxVeLTzZLl_original.jpg"}, {"id": "loc_595424", "name": "1800 Hwy 412 S/S (We)", "area": "Siloam Springs, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/o9UjHHqsuSfuQYgw5mjacKAhIWL-SfW6g4zcB59w8zFYRPZGd9_original.png"}, {"id": "loc_595425", "name": "4282 W. Sunset N/S (We)", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/BzExa49tw_qNpEuBdpDLwfoi_knl46EXBEIg04SsQSPf-TQ6KR_original.png"}, {"id": "loc_595427", "name": "I-49 E/S (No)", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/88h3Zwm8QAej2jO0QTHj_7-2eLU-ki56g8vZT_8EoApmySbqNb_original.png"}, {"id": "loc_595429", "name": "I-49 W/S (So)", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/mZOJrmR1Dx-q6bSDuo26iZ7mRfvU-3Bu5a6OLEUa1MJhlcZeFj_original.png"}, {"id": "loc_595430", "name": "1015 SW Regional Airport Blvd S/S (Ea)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/CvqKj2hl1bRT6MWAKR2hFoZAnbsOdF7-2MCcFKk_QpSeG1q6cF_original.png"}, {"id": "loc_595432", "name": "I-49 W/S (No)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/Pnh6v5b4hhoG3RTnL0vR3h_4UiuClJ7VRd7_Yr3ruNAC3FxsTq_original.jpeg"}, {"id": "loc_595434", "name": "14th and S. Walton E/S (No)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/9n3esaVG41YTx489OPAiqszqNZGW-clVdb7x9g-ErPX1zXaUZI_original.png"}, {"id": "loc_595439", "name": "3500 US Hwy 412 S/S (Ea)", "area": "Siloam Springs, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/en-S5w1hX-4M6LFScoZHkOeuj0_7m2YNbp6_7cd6EWuTC_MCct_original.jpg"}, {"id": "loc_595440", "name": "6006 W. Sunset N/S (We)", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/otBtwwFLLxPxzGlT3l_X7g8hUGPERlMAHjqH6d0NVd_byaflJ__original.png"}, {"id": "loc_595441", "name": "I-49 W/S (No)", "area": "Rogers, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/lX-v_KkD3kqCUA6avfAI9MEqY8hKq_5oxKL7uLnXfBdKJAyiGG_original.png"}, {"id": "loc_595442", "name": "I-49 E/S (No)", "area": "Rogers, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/I7aT1FeuCoRmaHnnw1p4YGkK4yXjJa2TPZTQux7QaNrDEpkzyX_original.png"}, {"id": "loc_595444", "name": "401 SE Walton N/S (We)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/hpNo1lwrbt_lJaum6UQumKE-aLQymm79kxB0WqEFfjAsgr0Kto_original.png"}, {"id": "loc_595446", "name": "1080 SE 14th St S/S (We)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/o8gTZo7MbytG4c1hbXAhxIjNbRem9VXtAB2dvJXbWt2d5HxRFN_original.png"}, {"id": "loc_595448", "name": "3158 SE 14th St (We)", "area": "Rogers, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/xd9f7grXvCqcB7Packz5wa10jL8huMz1FxZrV7Vn0Raln9a_5-_original.png"}, {"id": "loc_595450", "name": "Hwy 62 S/S (Ea)", "area": "Farmington, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 7.25, "faces": 1, "wkly_impr": 35000, "daily_rate": 36, "wkly_rate": 254, "mo_rate": 1100, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/C1RcV-tBqBEL6MeHlRoofJ6hq6Uvb5MYwfqIkMLhDFi5v5Li2A_original.jpg"}, {"id": "loc_729901", "name": "7807 Clifty Highway, Huntsville, AR", "area": "Huntsville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 4, "wkly_impr": 7200, "daily_rate": 21, "wkly_rate": 146, "mo_rate": 632, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_731916", "name": "17047 Marshall Street, Garfield, AR", "area": "Garfield, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_734356", "name": "2001 North Center Street, Elkins, AR", "area": "Elkins, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_737426", "name": "2333 Martin Luther King Junior Boulevard, Fay", "area": "Fayetteville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_740950", "name": "3080 West Wedington Drive, Fayetteville, AR", "area": "Fayetteville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 12, "wkly_impr": 21600, "daily_rate": 63, "wkly_rate": 438, "mo_rate": 1897, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_741453", "name": "107 North Curtis Avenue, Pea Ridge, AR", "area": "Pea Ridge, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_741900", "name": "3831 N Crossover Rd, Fayetteville, AR", "area": "Fayetteville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 1, "wkly_impr": 1800, "daily_rate": 5, "wkly_rate": 37, "mo_rate": 160, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_744825", "name": "357 North College Avenue, Fayetteville, AR", "area": "Fayetteville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_1185597", "name": "AR-123704", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 9.42, "faces": 1, "wkly_impr": 35000, "daily_rate": 47, "wkly_rate": 330, "mo_rate": 1429, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/1896fd7a11dZBD9bBXYeP_YQdbaeWXthMeCWGQb2-k294Ngd-X_original.jpeg"}, {"id": "loc_1510957", "name": "1710 West Hudson Road, Rogers, AR", "area": "Rogers, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 10, "wkly_impr": 18000, "daily_rate": 52, "wkly_rate": 365, "mo_rate": 1580, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_1625696", "name": "LINK-AR.MMD016E.RR.DIG.1", "area": "Siloam Springs, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 9.42, "faces": 1, "wkly_impr": 35000, "daily_rate": 47, "wkly_rate": 330, "mo_rate": 1429, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/18e5d85f53c4YQS5Hzn3L_3AhsA-RfxfTkEzZKsWqbxhr86SNz_original.jpeg"}, {"id": "loc_1630409", "name": "AMC0460", "area": "Fayetteville, AR", "type": "cinema", "venue_type": "Cinema (In-Theater)", "cpm": 11.59, "faces": 1, "wkly_impr": 2500, "daily_rate": 4, "wkly_rate": 29, "mo_rate": 126, "icon": "🎬", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/18e867c066fzQakKP-9ZKk6PHZ_s6nZ96Fs29ReLm3Dqh85_Ha_original.jpeg"}, {"id": "loc_1646972", "name": "AMC0460", "area": "Fayetteville, AR", "type": "cinema", "venue_type": "Cinema (Lobby)", "cpm": 7.97, "faces": 1, "wkly_impr": 4500, "daily_rate": 5, "wkly_rate": 36, "mo_rate": 156, "icon": "🎬", "video": "Y", "audio": "N", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/18e86fb9e4fKON8kmy3X9nYRNrakjz66e68fLH1GD4yG5S9fQA_original.jpeg"}, {"id": "loc_1936145", "name": "Northwest Arkansas", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/190187ccf7eEg229cxKaMjwnayN5hh7RCx8pyffP-bYgTxxwSh_original.jpeg"}, {"id": "loc_2003347", "name": "898 West Monroe Avenue, Lowell, AR", "area": "Lowell, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 20, "wkly_impr": 36000, "daily_rate": 104, "wkly_rate": 730, "mo_rate": 3161, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2034796", "name": "Centerton AR 72712 Benton County (Ea)", "area": "Bentonville, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 10.14, "faces": 1, "wkly_impr": 35000, "daily_rate": 51, "wkly_rate": 355, "mo_rate": 1537, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1400×400 px", "spec_dur": "6s", "image_url": "https://content.adomni.com/191be6677db3c25A7FmOd7FPD-zq7MQc4QHnLn31OkhYs2hnOY_original.jpeg"}, {"id": "loc_2194194", "name": "1200 North Lincoln Street, Siloam Springs, AR", "area": "Siloam Springs, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2246404", "name": "Springdale AR", "area": "Springdale, AR", "type": "digital", "venue_type": "Digital Billboard", "cpm": 9.42, "faces": 1, "wkly_impr": 35000, "daily_rate": 47, "wkly_rate": 330, "mo_rate": 1429, "icon": "🛣", "video": "N", "audio": "N", "spec_res": "1200×400 px", "spec_dur": "8s", "image_url": "https://content.adomni.com/1951aadd7449-Zfp5bGrqWFDLF527wPLs-ejpcSLTDzgTEqOdb_original.jpeg"}, {"id": "loc_2547810", "name": "100 Southeast J Street, Bentonville, AR", "area": "Bentonville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 12, "wkly_impr": 21600, "daily_rate": 63, "wkly_rate": 438, "mo_rate": 1897, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2547940", "name": "2486 West Mount Comfort Road, Fayetteville, A", "area": "Fayetteville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 14, "wkly_impr": 25200, "daily_rate": 73, "wkly_rate": 511, "mo_rate": 2213, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2548161", "name": "1037 East Henri De Tonti Boulevard, Springdal", "area": "Tontitown, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 20, "wkly_impr": 36000, "daily_rate": 104, "wkly_rate": 730, "mo_rate": 3161, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2548319", "name": "3704 S THOMPSON ST, SPRINGDALE, AR", "area": "Springdale, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 20, "wkly_impr": 36000, "daily_rate": 104, "wkly_rate": 730, "mo_rate": 3161, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2548419", "name": "4751 W DON TYSON PKWY, SPRINGDALE, AR", "area": "Springdale, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 20, "wkly_impr": 36000, "daily_rate": 104, "wkly_rate": 730, "mo_rate": 3161, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2548426", "name": "3531 South Old Missouri Road, Springdale, AR", "area": "Springdale, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2548472", "name": "2 Riordan Road, Bella Vista, AR", "area": "Bella Vista, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2548672", "name": "1531 South 8th Street, Rogers, AR", "area": "Rogers, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2548793", "name": "2031 Stokenbury Road, Elkins, AR", "area": "Elkins, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 12, "wkly_impr": 21600, "daily_rate": 63, "wkly_rate": 438, "mo_rate": 1897, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2549467", "name": "1791 Forest Hills Boulevard, Bella Vista, AR", "area": "Bella Vista, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2549643", "name": "2100 East Robinson Avenue, Springdale, AR", "area": "Springdale, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 12, "wkly_impr": 21600, "daily_rate": 63, "wkly_rate": 438, "mo_rate": 1897, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2550058", "name": "3111 South Old Missouri Road, Springdale, AR", "area": "Springdale, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2550347", "name": "2401 West Olive Street, Rogers, AR", "area": "Rogers, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2550576", "name": "305 West Main Street, Farmington, AR", "area": "Farmington, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 12, "wkly_impr": 21600, "daily_rate": 63, "wkly_rate": 438, "mo_rate": 1897, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2551020", "name": "900 Southwest 14th Street, Bentonville, AR", "area": "Bentonville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2551831", "name": "102 South Gentry Boulevard, Gentry, AR", "area": "Gentry, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 8, "wkly_impr": 14400, "daily_rate": 42, "wkly_rate": 292, "mo_rate": 1264, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2552273", "name": "362 South Main Street, Cave Springs, AR", "area": "Cave Springs, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 12, "wkly_impr": 21600, "daily_rate": 63, "wkly_rate": 438, "mo_rate": 1897, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2553166", "name": "1800 West Hudson Road, Rogers, AR", "area": "Rogers, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2554122", "name": "1567 West Sunset Avenue, Springdale, AR", "area": "Springdale, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 14, "wkly_impr": 25200, "daily_rate": 73, "wkly_rate": 511, "mo_rate": 2213, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2554966", "name": "2801 Southeast J Street, Bentonville, AR", "area": "Bentonville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2554967", "name": "3075 West Pleasant Grove Road, Rogers, AR", "area": "Rogers, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2555345", "name": "1110 Garland Avenue, Fayetteville, AR", "area": "Fayetteville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2555455", "name": "2655 U.S. 412, Siloam Springs, AR", "area": "Siloam Springs, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 12, "wkly_impr": 21600, "daily_rate": 63, "wkly_rate": 438, "mo_rate": 1897, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2555697", "name": "2300 It'll Do Road, Pea Ridge, AR", "area": "Pea Ridge, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 10, "wkly_impr": 18000, "daily_rate": 52, "wkly_rate": 365, "mo_rate": 1580, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2556394", "name": "2720 West Wedington Drive, Fayetteville, AR", "area": "Fayetteville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2557224", "name": "514 N 2ND ST, ROGERS, AR", "area": "Rogers, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 20.29, "faces": 16, "wkly_impr": 28800, "daily_rate": 83, "wkly_rate": 584, "mo_rate": 2529, "icon": "⛽", "video": "Y", "audio": "Y", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/H9-n6UcqWWoC4NH8DPTOTtDt4YKYjao4ppIQYLGh5Pgp1QKHkH_original.png"}, {"id": "loc_2605445", "name": "HOMETOWN COUNTRY STORE SPRINGDALE AR 48034 An", "area": "Springdale, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 7.97, "faces": 1, "wkly_impr": 1800, "daily_rate": 2, "wkly_rate": 14, "mo_rate": 61, "icon": "⛽", "video": "Y", "audio": "N", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/19d1bf28b15QOfZO7RbFFXYWL8yFpEDd-46ppwaGOTD9jB8OpC_original.png"}, {"id": "loc_2606687", "name": "GUESS WHO BENTONVILLE AR 170744 Anthem 12 FP0", "area": "Bentonville, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 7.97, "faces": 1, "wkly_impr": 1800, "daily_rate": 2, "wkly_rate": 14, "mo_rate": 61, "icon": "⛽", "video": "Y", "audio": "N", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/19d1bf28b15QOfZO7RbFFXYWL8yFpEDd-46ppwaGOTD9jB8OpC_original.png"}, {"id": "loc_2609023", "name": "JIFFY KWICK ROGERS AR 13108 Anthem 12 FP004", "area": "Rogers, AR", "type": "gasstation", "venue_type": "Gas Station", "cpm": 7.97, "faces": 1, "wkly_impr": 1800, "daily_rate": 2, "wkly_rate": 14, "mo_rate": 61, "icon": "⛽", "video": "Y", "audio": "N", "spec_res": "1920×1080 px", "spec_dur": "15s", "image_url": "https://content.adomni.com/19d1bf28b15QOfZO7RbFFXYWL8yFpEDd-46ppwaGOTD9jB8OpC_original.png"}, {"id": "xna_billboard_1", "name": "XNA Digital Billboard — 1 Screen", "area": "Highfill, AR", "type": "airport", "venue_type": "Airport", "cpm": 8.25, "faces": 1, "wkly_impr": 70000, "daily_rate": 82, "wkly_rate": 577, "mo_rate": 2500, "icon": "✈", "video": "Y", "audio": "N", "spec_res": "Variable", "spec_dur": "10s", "image_url": ""}, {"id": "xna_billboard_2", "name": "XNA Digital Billboard — 2 Screens", "area": "Highfill, AR", "type": "airport", "venue_type": "Airport", "cpm": 7.84, "faces": 2, "wkly_impr": 140000, "daily_rate": 157, "wkly_rate": 1097, "mo_rate": 4750, "icon": "✈", "video": "Y", "audio": "N", "spec_res": "Variable", "spec_dur": "10s", "image_url": ""}, {"id": "xna_eposter", "name": "XNA E-Poster Network — Concourse A", "area": "Highfill, AR", "type": "airport", "venue_type": "Airport", "cpm": 8.26, "faces": 9, "wkly_impr": 60000, "daily_rate": 71, "wkly_rate": 495, "mo_rate": 2145, "icon": "✈", "video": "Y", "audio": "N", "spec_res": "Variable", "spec_dur": "10s", "image_url": ""}, {"id": "xna_lobby", "name": "XNA Lobby Network", "area": "Highfill, AR", "type": "airport", "venue_type": "Airport", "cpm": 9.01, "faces": 10, "wkly_impr": 55000, "daily_rate": 71, "wkly_rate": 495, "mo_rate": 2145, "icon": "✈", "video": "Y", "audio": "N", "spec_res": "Variable", "spec_dur": "10s", "image_url": ""}, {"id": "xna_concourse", "name": "XNA Concourse Network — Gates A & B", "area": "Highfill, AR", "type": "airport", "venue_type": "Airport", "cpm": 11.11, "faces": 6, "wkly_impr": 40000, "daily_rate": 64, "wkly_rate": 445, "mo_rate": 1925, "icon": "✈", "video": "Y", "audio": "N", "spec_res": "Variable", "spec_dur": "10s", "image_url": ""}, {"id": "xna_tsa", "name": "XNA TSA Checkpoint Wall", "area": "Highfill, AR", "type": "airport", "venue_type": "Airport", "cpm": 16.17, "faces": 1, "wkly_impr": 25000, "daily_rate": 58, "wkly_rate": 404, "mo_rate": 1750, "icon": "✈", "video": "Y", "audio": "N", "spec_res": "Variable", "spec_dur": "10s", "image_url": ""}, {"id": "xna_business", "name": "XNA Business Center Network", "area": "Highfill, AR", "type": "airport", "venue_type": "Airport", "cpm": 23.09, "faces": 1, "wkly_impr": 15000, "daily_rate": 49, "wkly_rate": 346, "mo_rate": 1500, "icon": "✈", "video": "Y", "audio": "N", "spec_res": "Variable", "spec_dur": "10s", "image_url": ""}];
+let campaigns = [{"id": "NWA-2026-0001", "status": "pending", "submitted": "2026-05-12 09:14", "name": "Tyson Foods Regional", "contact": "Brad Morrison", "email": "b.morrison@tysonfoods.com", "goal": "Reach Walmart & Sam’s Club buyers", "screens": ["I-49 & Pleasant Grove Rd", "XNA Lobby Network"], "duration": "4 weeks", "total": 4584, "creative": "pending", "notes": "Launching new deli line. Need boards up before Q2 buyer meeting."}, {"id": "NWA-2026-0002", "status": "confirmed", "submitted": "2026-05-11 14:32", "name": "PJ’s Coffee Rogers", "contact": "Jessica Hearn", "email": "jhearn@pjscoffee.com", "goal": "Drive foot traffic", "screens": ["Walton Blvd E/S (NB)", "Sam’s Club Fuel — Rogers"], "duration": "2 weeks", "total": 1492, "creative": "approved", "notes": "Grand opening May 20th."}, {"id": "NWA-2026-0003", "status": "creative_review", "submitted": "2026-05-11 10:08", "name": "Bentonville Craft Co.", "contact": "Mike Talley", "email": "mike@bxvcraftco.com", "goal": "Promote an event", "screens": ["Hwy 71 B S E/S (NB)"], "duration": "1 week", "total": 355, "creative": "uploaded", "notes": "Tap Room anniversary party June 1st."}, {"id": "NWA-2026-0004", "status": "live", "submitted": "2026-05-08 08:45", "name": "Arvest Bank NWA", "contact": "Dana Phillips", "email": "dphillips@arvest.com", "goal": "Drive foot traffic", "screens": ["I-49 W/S .5 MI N/O Don Tyson", "5500 W Sunset N/S at 1120 Mathias"], "duration": "4 weeks", "total": 2436, "creative": "approved", "notes": "Spring mortgage promotion."}, {"id": "NWA-2026-0005", "status": "pending", "submitted": "2026-05-12 11:55", "name": "Endeavor NWA Startup Demo", "contact": "Carlos Rivera", "email": "carlos@endeavornwa.com", "goal": "Promote an event", "screens": ["XNA E-Poster Network", "Pinnacle Hills 12"], "duration": "2 weeks", "total": 780, "creative": "pending", "notes": "Demo Day June 3rd. Need broad NWA reach."}, {"id": "NWA-2026-0006", "status": "live", "submitted": "2026-05-05 15:20", "name": "Mercy Health NWA", "contact": "Sarah Odom", "email": "s.odom@mercy.net", "goal": "Drive foot traffic", "screens": ["Rogers Towne Center 12", "Razorback 12"], "duration": "4 weeks", "total": 592, "creative": "approved", "notes": "Walk-in clinic awareness."}];
+
+let invFilter = 'all';
+let invSearch = '';
+let campFilter = 'all';
+let campSearch = '';
+let editedRates = {};
+
+/* ══════════════ AUTH ══════════════ */
+const PASSPHRASE = 'nwaads2026';
+
+function checkPw() {
+  const val = document.getElementById('gate-pw').value;
+  if (val === PASSPHRASE) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+  } else {
+    const err = document.getElementById('gate-error');
+    err.style.display = 'block';
+    document.getElementById('gate-pw').value = '';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+function logout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('gate-pw').value = '';
+}
+
+/* ══════════════ INIT ══════════════ */
+function init() {
+  startClock();
+  renderCampaigns();
+  renderInventory();
+  renderPipeline();
+  renderHealth();
+  initPricing();
+}
+
+function startClock() {
+  const tick = () => {
+    const now = new Date();
+    document.getElementById('tb-clock').textContent =
+      now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+  };
+  tick(); setInterval(tick, 10000);
+}
+
+/* ══════════════ NAV ══════════════ */
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  closeDetail();
+}
+
+/* ══════════════ CAMPAIGN QUEUE ══════════════ */
+function renderCampaigns() {
+  const pending = campaigns.filter(c => c.status === 'pending').length;
+  document.getElementById('pending-badge').textContent = pending;
+  document.getElementById('pending-badge').style.display = pending ? 'inline' : 'none';
+
+  const total = campaigns.reduce((a,c) => a + c.total, 0);
+  const live = campaigns.filter(c => c.status === 'live');
+  const liveVal = live.reduce((a,c) => a + c.total, 0);
+
+  document.getElementById('kpi-campaigns').innerHTML = [
+    {val: campaigns.length,                   lbl: 'Total requests',     cls: ''},
+    {val: pending,                             lbl: 'Pending review',     cls: 'gold'},
+    {val: live.length,                         lbl: 'Live campaigns',     cls: 'green'},
+    {val: '$' + total.toLocaleString(),        lbl: 'Pipeline value',     cls: 'accent'},
+  ].map(k => `
+    <div class="kpi">
+      <span class="kpi-val ${k.cls}">${k.val}</span>
+      <span class="kpi-lbl">${k.lbl}</span>
+    </div>`).join('');
+
+  const filtered = campaigns.filter(c => {
+    const matchF = campFilter === 'all' || c.status === campFilter;
+    const matchS = !campSearch || c.name.toLowerCase().includes(campSearch.toLowerCase()) ||
+                   c.id.toLowerCase().includes(campSearch.toLowerCase());
+    return matchF && matchS;
+  });
+
+  const tbody = document.getElementById('campaign-tbody');
+  tbody.innerHTML = filtered.map(c => `
+    <tr style="cursor:pointer" onclick="openDetail('${c.id}')">
+      <td><span class="mono">${c.id}</span></td>
+      <td><strong>${c.name}</strong><br><span style="font-size:11px;color:var(--text3)">${c.contact}</span></td>
+      <td style="font-size:12px">${c.goal}</td>
+      <td style="font-size:11px;color:var(--text3)">${c.screens.length} screen${c.screens.length!==1?'s':''}</td>
+      <td><strong style="color:var(--text)">$${c.total.toLocaleString()}</strong></td>
+      <td style="font-size:11px" class="mono">${c.submitted}</td>
+      <td><span class="pill ${c.status}">${statusLabel(c.status)}</span></td>
+      <td onclick="event.stopPropagation()">
+        <div class="btn-row">
+          ${c.status==='pending' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Confirm →</button>` : ''}
+          ${c.status==='creative_review' ? `<button class="btn sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Approve</button>` : ''}
+          ${c.status==='confirmed' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Go live →</button>` : ''}
+          <button class="btn sm" onclick="event.stopPropagation();openDetail('${c.id}')">View</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function statusLabel(s) {
+  const m = {pending:'⏳ Pending',confirmed:'✓ Confirmed',live:'🟢 Live',creative_review:'🎨 Creative',cancelled:'✗ Cancelled'};
+  return m[s] || s;
+}
+
+function filterCampaigns(el, f) {
+  campFilter = f;
+  document.querySelectorAll('#view-campaigns .filter-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  renderCampaigns();
+}
+
+function searchCampaigns(q) {
+  campSearch = q;
+  renderCampaigns();
+}
+
+function advanceStatus(id) {
+  const c = campaigns.find(x => x.id === id);
+  if (!c) return;
+  const flow = ['pending','creative_review','confirmed','live'];
+  const idx = flow.indexOf(c.status);
+  if (idx < flow.length - 1) c.status = flow[idx + 1];
+  renderCampaigns();
+  if (document.getElementById('detail-panel').classList.contains('open')) openDetail(id);
+}
+
+function openDetail(id) {
+  const c = campaigns.find(x => x.id === id);
+  if (!c) return;
+
+  document.getElementById('dp-title').textContent = c.name;
+  document.getElementById('dp-id').textContent = c.id + ' · ' + c.submitted;
+
+  document.getElementById('dp-body').innerHTML = `
+    <div class="dp-section">
+      <div class="dp-section-title">Status</div>
+      <span class="pill ${c.status}">${statusLabel(c.status)}</span>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Contact</div>
+      <div class="dp-row"><span class="l">Name</span><span class="v">${c.contact}</span></div>
+      <div class="dp-row"><span class="l">Email</span><span class="v"><a href="mailto:${c.email}" style="color:var(--blue);text-decoration:none">${c.email}</a></span></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Campaign details</div>
+      <div class="dp-row"><span class="l">Goal</span><span class="v">${c.goal}</span></div>
+      <div class="dp-row"><span class="l">Duration</span><span class="v">${c.duration}</span></div>
+      <div class="dp-row"><span class="l">Total value</span><span class="v" style="color:var(--accent);font-family:'Fraunces',serif;font-size:16px">$${c.total.toLocaleString()}</span></div>
+      <div class="dp-row"><span class="l">Creative</span><span class="v"><span class="pill ${c.creative==='approved'?'live':c.creative==='uploaded'?'creative_review':'pending'}">${c.creative}</span></span></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">Screens selected (${c.screens.length})</div>
+      ${c.screens.map(s => `<div style="padding:7px 0;font-size:12px;border-bottom:1px solid var(--border);color:var(--text2)">📍 ${s}</div>`).join('')}
+    </div>
+    ${c.notes ? `<div class="dp-section"><div class="dp-section-title">Notes</div><div style="font-size:12px;color:var(--text2);line-height:1.6;font-style:italic">"${c.notes}"</div></div>` : ''}
+  `;
+
+  const flow = ['pending','creative_review','confirmed','live'];
+  const nextLabels = {pending:'Confirm availability →',creative_review:'Approve creative →',confirmed:'Mark as live →'};
+  document.getElementById('dp-footer').innerHTML = `
+    ${flow.indexOf(c.status) < flow.length-1 ? `<button class="btn green" style="flex:1" onclick="advanceStatus('${c.id}');renderCampaigns()">${nextLabels[c.status]||'Advance →'}</button>` : ''}
+    <button class="btn" onclick="window.open('mailto:${c.email}?subject=Re: ${c.id} — Your NWAAds campaign','_blank')">✉ Email advertiser</button>
+  `;
+
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+}
+
+/* ══════════════ INVENTORY & RATES ══════════════ */
+const TYPE_LABELS = {digital:'Billboard',gasstation:'Gas Station',cinema:'Cinema',airport:'Airport'};
+
+function renderInventory() {
+  // KPIs
+  const byType = {};
+  INV_DATA.forEach(s => { byType[s.type] = (byType[s.type]||0)+1; });
+  const avgCPM = (INV_DATA.reduce((a,s) => a+s.cpm,0)/INV_DATA.length).toFixed(2);
+  const totalImpr = INV_DATA.reduce((a,s) => a+s.wkly_impr,0);
+  document.getElementById('kpi-inventory').innerHTML = [
+    {val: INV_DATA.length, lbl: 'Total screens',      cls: ''},
+    {val: byType.digital||0,                 lbl: 'Billboards',         cls: ''},
+    {val: byType.gasstation||0,              lbl: 'Gas Station screens', cls: ''},
+    {val: '$'+avgCPM,                        lbl: 'Avg CPM',            cls: 'gold'},
+  ].map(k => `<div class="kpi"><span class="kpi-val ${k.cls}">${k.val}</span><span class="kpi-lbl">${k.lbl}</span></div>`).join('');
+
+  const filtered = INV_DATA.filter(s => {
+    const matchT = invFilter === 'all' || s.type === invFilter;
+    const matchS = !invSearch || s.name.toLowerCase().includes(invSearch.toLowerCase()) || s.area.toLowerCase().includes(invSearch.toLowerCase());
+    return matchT && matchS;
+  });
+
+  document.getElementById('inv-count-label').textContent = filtered.length + ' of ' + INV_DATA.length + ' screens';
+
+  const LAST_UPDATED = '2026-05-12';
+  const tbody = document.getElementById('inv-tbody');
+  tbody.innerHTML = filtered.map(s => {
+    const edited = editedRates[s.id];
+    const cpmVal = edited !== undefined ? edited : s.cpm;
+    const wklyRate = Math.round(cpmVal * s.wkly_impr / 1000);
+    const dailyRate = Math.round(wklyRate / 7);
+    const moRate = Math.round(wklyRate * 4.33);
+    return `
+      <tr>
+        <td>${s.icon}</td>
+        <td><strong>${s.name}</strong></td>
+        <td><span style="font-size:11px;color:var(--text3)">${TYPE_LABELS[s.type]||s.type}</span></td>
+        <td style="font-size:12px">${s.area}</td>
+        <td style="text-align:center">${s.faces}</td>
+        <td>
+          <div class="rate-cell">
+            <input class="rate-input${edited!==undefined?' edited':''}" id="cpm-${s.id}"
+              value="${cpmVal}" onchange="editCPM('${s.id}',this)"
+              oninput="editCPM('${s.id}',this)">
+            <button class="save-rate" id="save-${s.id}" onclick="saveCPM('${s.id}')">Save</button>
+          </div>
+        </td>
+        <td class="mono">${s.wkly_impr>=1000?Math.round(s.wkly_impr/1000)+'K':s.wkly_impr}</td>
+        <td class="mono">$${dailyRate}</td>
+        <td class="mono">$${wklyRate}</td>
+        <td class="mono">$${moRate}</td>
+        <td style="text-align:center">${s.video==='Y'?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--text3)">–</span>'}</td>
+        <td class="mono">${LAST_UPDATED}</td>
+      </tr>`;
+  }).join('');
+}
+
+function filterInv(el, f) {
+  invFilter = f;
+  document.querySelectorAll('#view-inventory .filter-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  renderInventory();
+}
+
+function searchInv(q) {
+  invSearch = q;
+  renderInventory();
+}
+
+function editCPM(id, input) {
+  const val = parseFloat(input.value);
+  if (isNaN(val) || val <= 0) return;
+  editedRates[id] = val;
+  input.classList.add('edited');
+  document.getElementById('save-'+id).style.display = 'inline-block';
+}
+
+function saveCPM(id) {
+  const input = document.getElementById('cpm-'+id);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) return;
+  editedRates[id] = val;
+  document.getElementById('save-'+id).style.display = 'none';
+  input.classList.remove('edited');
+  input.style.borderColor = 'var(--green)';
+  setTimeout(() => { if(input) input.style.borderColor = ''; }, 1500);
+}
+
+function exportRates() {
+  let csv = 'id,name,type,area,cpm_original,cpm_updated,wkly_impr,wkly_rate\n';
+  INV_DATA.forEach(s => {
+    const updated = editedRates[s.id] !== undefined ? editedRates[s.id] : s.cpm;
+    const wkly = Math.round(updated * s.wkly_impr / 1000);
+    csv += `${s.id},"${s.name}",${s.type},"${s.area}",${s.cpm},${updated},${s.wkly_impr},${wkly}\n`;
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'nwaads-rates-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+/* ══════════════ REVENUE PIPELINE ══════════════ */
+function renderPipeline() {
+  const total = campaigns.reduce((a,c) => a+c.total, 0);
+  const live  = campaigns.filter(c=>c.status==='live').reduce((a,c)=>a+c.total,0);
+  const pend  = campaigns.filter(c=>c.status==='pending').reduce((a,c)=>a+c.total,0);
+  const conf  = campaigns.filter(c=>c.status==='confirmed').reduce((a,c)=>a+c.total,0);
+  const margin = Math.round(total * 0.2);
+
+  document.getElementById('kpi-pipeline').innerHTML = [
+    {val:'$'+total.toLocaleString(), lbl:'Total pipeline',     cls:'accent'},
+    {val:'$'+live.toLocaleString(),  lbl:'Revenue live now',   cls:'green'},
+    {val:'$'+pend.toLocaleString(),  lbl:'Pending confirmation',cls:'gold'},
+    {val:'$'+margin.toLocaleString(),lbl:'Est. margin (20%)',  cls:''},
+  ].map(k=>`<div class="kpi"><span class="kpi-val ${k.cls}">${k.val}</span><span class="kpi-lbl">${k.lbl}</span></div>`).join('');
+
+  // By goal
+  const byGoal = {};
+  campaigns.forEach(c => { byGoal[c.goal] = (byGoal[c.goal]||0)+c.total; });
+  document.getElementById('pipeline-by-goal').innerHTML = Object.entries(byGoal)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([g,v]) => {
+      const pct = Math.round(v/total*100);
+      return `<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+          <span style="color:var(--text2)">${g}</span>
+          <span style="color:var(--text);font-weight:600">$${v.toLocaleString()}</span>
+        </div>
+        <div style="height:4px;background:var(--border);border-radius:2px">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:2px;transition:width 0.6s ease"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+  // By status
+  const byStatus = {};
+  campaigns.forEach(c => { byStatus[c.status] = (byStatus[c.status]||0)+c.total; });
+  const statusColors = {pending:'var(--gold)',confirmed:'var(--blue)',live:'var(--green)',creative_review:'#a78bfa'};
+  document.getElementById('pipeline-by-status').innerHTML = Object.entries(byStatus)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([s,v]) => {
+      const pct = Math.round(v/total*100);
+      const col = statusColors[s]||'var(--text3)';
+      return `<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+          <span class="pill ${s}">${statusLabel(s)}</span>
+          <span style="color:var(--text);font-weight:600">$${v.toLocaleString()}</span>
+        </div>
+        <div style="height:4px;background:var(--border);border-radius:2px">
+          <div style="height:100%;width:${pct}%;background:${col};border-radius:2px;transition:width 0.6s ease"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+  // Mini bar chart — 30 days of activity
+  const days = Array.from({length:30},(_,i)=>{
+    const d = new Date('2026-05-12');
+    d.setDate(d.getDate()-29+i);
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  });
+  const vals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,500,0,0,355,0,780,1492,0,592,0,4584,780,0];
+  const maxV = Math.max(...vals);
+  document.getElementById('pipeline-chart').innerHTML = `
+    <div style="display:flex;align-items:flex-end;gap:3px;height:80px">
+      ${vals.map((v,i)=>`
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="flex:1;width:100%;background:${v>0?'var(--accent)':'var(--border)'};border-radius:2px;min-height:2px;opacity:${v>0?Math.max(0.3,v/maxV):1};height:${v>0?Math.max(4,v/maxV*70):2}px"></div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--text3)">
+      <span>May 13</span><span>May 26</span><span>May 12</span>
+    </div>
+  `;
+}
+
+/* ══════════════ INVENTORY HEALTH ══════════════ */
+function renderHealth() {
+  const issues = [];
+  INV_DATA.forEach(s => {
+    if (!s.image_url || s.image_url === 'nan') issues.push({screen:s.name,area:s.area,severity:'warn',issue:'Missing photo',detail:'No image URL in Adomni data',icon:s.icon});
+    if (!s.spec_res || s.spec_res === '—') issues.push({screen:s.name,area:s.area,severity:'warn',issue:'Missing resolution spec',detail:'Content dimensions not in export',icon:s.icon});
+    if (s.cpm < 5) issues.push({screen:s.name,area:s.area,severity:'bad',issue:'Unusually low CPM',detail:`${s.cpm} CPM — verify with media owner`,icon:s.icon});
+    if (s.wkly_rate > 600 && s.type === 'gasstation') issues.push({screen:s.name,area:s.area,severity:'warn',issue:'High-value GS — confirm face count',detail:`${s.faces} faces × ${s.cpm} CPM = $${s.wkly_rate}/wk`,icon:s.icon});
+  });
+
+  const good = INV_DATA.length - new Set(issues.map(i=>i.screen)).size;
+  document.getElementById('kpi-health').innerHTML = [
+    {val: INV_DATA.length, lbl: 'Total screens', cls: ''},
+    {val: good,            lbl: 'Passing checks', cls: 'green'},
+    {val: issues.filter(i=>i.severity==='warn').length, lbl: 'Warnings', cls: 'gold'},
+    {val: issues.filter(i=>i.severity==='bad').length,  lbl: 'Errors',   cls: 'accent'},
+  ].map(k=>`<div class="kpi"><span class="kpi-val ${k.cls}">${k.val}</span><span class="kpi-lbl">${k.lbl}</span></div>`).join('');
+
+  document.getElementById('health-tbody').innerHTML = issues.length
+    ? issues.map(i=>`
+        <tr>
+          <td><div class="health-dot ${i.severity}"></div></td>
+          <td><strong>${i.icon} ${i.screen}</strong><br><span style="font-size:10px;color:var(--text3)">${i.area}</span></td>
+          <td style="font-size:12px;color:${i.severity==='bad'?'#e05050':'var(--gold)'};font-weight:600">${i.issue}</td>
+          <td style="font-size:11px;color:var(--text3)">${i.detail}</td>
+          <td><button class="btn sm">Investigate</button></td>
+        </tr>`).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:32px">✓ All screens passing health checks</td></tr>';
+}
+
+/* ══════════════ PRICING MANAGER ══════════════ */
+let pricingFilter = 'all';
+let pricingData = {}; // id → {daily, weekly, monthly, source}
+
+const TYPE_LABELS_P = {digital:'Billboard',gasstation:'Gas Station',airport:'Airport',cinema:'Cinema'};
+const OWNER_LABELS  = {digital:'Lamar NWA',gasstation:'GSTV / Local',airport:'XNA Airport Advertising',cinema:'NCM / Screenvision'};
+
+/* Multipliers for extrapolation */
+function extrapolate(daily, weekly, monthly) {
+  /* Given any one value, derive the others */
+  if (daily && !weekly && !monthly) {
+    return { daily: +daily, weekly: Math.round(daily*7*0.95), monthly: Math.round(daily*30*0.88) };
+  }
+  if (weekly && !daily && !monthly) {
+    return { daily: Math.round(weekly/7), weekly: +weekly, monthly: Math.round(weekly*4.33*0.93) };
+  }
+  if (monthly && !daily && !weekly) {
+    return { daily: Math.round(monthly/30), weekly: Math.round(monthly/4.33), monthly: +monthly };
+  }
+  /* All provided — use as-is */
+  return {
+    daily:   daily   ? +daily   : Math.round((monthly||0)/30),
+    weekly:  weekly  ? +weekly  : Math.round((monthly||0)/4.33),
+    monthly: monthly ? +monthly : Math.round((daily||0)*30*0.88),
+  };
+}
+
+function setPricingOwner(el, filter) {
+  pricingFilter = filter;
+  document.querySelectorAll('.mo-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  const titles = {all:'All screens',digital:'Billboards — Lamar NWA',gasstation:'Gas Station — GSTV / Local',airport:'XNA Airport — 7 zones',cinema:'Cinema — NCM / Screenvision'};
+  document.getElementById('pricing-card-title').textContent = (titles[filter]||'All screens') + ' — rate configuration';
+  renderPricingTable();
+}
+
+function renderPricingTable() {
+  const tbody = document.getElementById('pricing-tbody');
+  if (!tbody) return;
+
+  const screens = pricingFilter === 'all'
+    ? INV_DATA
+    : INV_DATA.filter(s => s.type === pricingFilter);
+
+  tbody.innerHTML = screens.map(s => {
+    const pd = pricingData[s.id] || { daily: s.daily_rate, weekly: s.wkly_rate, monthly: s.mo_rate, source: 'estimated' };
+    const ex = extrapolate(pd.daily, pd.weekly, pd.monthly);
+    const wklyImpr = s.wkly_impr || 1;
+    const cpm = ex.weekly ? ((ex.weekly / (wklyImpr / 1000))).toFixed(2) : '—';
+    const src = pd.source || 'estimated';
+    const isConf = src === 'confirmed';
+
+    return `
+      <tr id="pr-row-${s.id}">
+        <td>${s.icon}</td>
+        <td><strong>${s.name}</strong><br><span style="font-size:10px;color:var(--text3)">${s.area}</span></td>
+        <td><span style="font-size:11px;color:var(--text3)">${TYPE_LABELS_P[s.type]||s.type}</span></td>
+        <td>
+          <input class="price-input${isConf?' confirmed':' estimated'}" id="pr-daily-${s.id}"
+            value="${ex.daily}" onchange="onPriceChange('${s.id}','daily',this.value)"
+            onkeydown="if(event.key==='Tab'){event.preventDefault();document.getElementById('pr-weekly-${s.id}').focus()}">
+        </td>
+        <td>
+          <input class="price-input${isConf?' confirmed':' estimated'}" id="pr-weekly-${s.id}"
+            value="${ex.weekly}" onchange="onPriceChange('${s.id}','weekly',this.value)"
+            onkeydown="if(event.key==='Tab'){event.preventDefault();document.getElementById('pr-monthly-${s.id}').focus()}">
+        </td>
+        <td>
+          <input class="price-input${isConf?' confirmed':' estimated'}" id="pr-monthly-${s.id}"
+            value="${ex.monthly}" onchange="onPriceChange('${s.id}','monthly',this.value)">
+        </td>
+        <td><span class="price-calc">${ex.weekly?'$'+(ex.weekly*4).toLocaleString():'—'}</span></td>
+        <td><span class="price-calc">${ex.weekly?'$'+(Math.round(ex.weekly*13*0.9)).toLocaleString():'—'}</span></td>
+        <td><span class="price-calc${cpm==='—'?'':' auto'}">$${cpm}</span></td>
+        <td>
+          <select class="source-badge ${src==='confirmed'?'source-confirmed':src==='manual'?'source-manual':'source-estimated'}"
+            onchange="onSourceChange('${s.id}',this.value)"
+            style="font-size:9px;padding:2px 5px;border:1px solid var(--border2);border-radius:8px;cursor:pointer">
+            <option value="estimated"${src==='estimated'?' selected':''}>Estimated</option>
+            <option value="confirmed"${src==='confirmed'?' selected':''}>Confirmed</option>
+            <option value="manual"${src==='manual'?' selected':''}>Manual</option>
+          </select>
+        </td>
+        <td>
+          <span class="${isConf?'status-dot-confirmed':'status-dot-estimated'}">
+            ${isConf?'✓ Live':'~ Est.'}
+          </span>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function onPriceChange(id, field, val) {
+  if (!pricingData[id]) {
+    const s = INV_DATA.find(x=>x.id===id);
+    pricingData[id] = { daily: s.daily_rate, weekly: s.wkly_rate, monthly: s.mo_rate, source: 'manual' };
+  }
+  pricingData[id][field] = parseFloat(val) || 0;
+  pricingData[id].source = 'manual';
+
+  /* Auto-extrapolate other fields */
+  const pd = pricingData[id];
+  const ex = extrapolate(
+    field==='daily'  ? pd.daily  : null,
+    field==='weekly' ? pd.weekly : null,
+    field==='monthly'? pd.monthly: null
+  );
+
+  /* Update the other two inputs without re-rendering the whole table */
+  if (field !== 'daily')   { const el = document.getElementById(`pr-daily-${id}`);   if(el) el.value = ex.daily; }
+  if (field !== 'weekly')  { const el = document.getElementById(`pr-weekly-${id}`);  if(el) el.value = ex.weekly; }
+  if (field !== 'monthly') { const el = document.getElementById(`pr-monthly-${id}`); if(el) el.value = ex.monthly; }
+
+  /* Update calc cells */
+  const row = document.getElementById(`pr-row-${id}`);
+  if (row) {
+    const calcs = row.querySelectorAll('.price-calc');
+    if (calcs[0]) calcs[0].textContent = ex.weekly ? '$'+(ex.weekly*4).toLocaleString() : '—';
+    if (calcs[1]) calcs[1].textContent = ex.weekly ? '$'+(Math.round(ex.weekly*13*0.9)).toLocaleString() : '—';
+    const wklyImpr = (INV_DATA.find(x=>x.id===id)||{}).wkly_impr || 1;
+    const cpm = ex.weekly ? (ex.weekly/(wklyImpr/1000)).toFixed(2) : '—';
+    if (calcs[2]) calcs[2].textContent = '$'+cpm;
+  }
+
+  pd.daily   = ex.daily;
+  pd.weekly  = ex.weekly;
+  pd.monthly = ex.monthly;
+}
+
+function onSourceChange(id, val) {
+  if (!pricingData[id]) {
+    const s = INV_DATA.find(x=>x.id===id);
+    pricingData[id] = { daily: s.daily_rate, weekly: s.wkly_rate, monthly: s.mo_rate, source: val };
+  } else {
+    pricingData[id].source = val;
+  }
+  /* Update status cell */
+  const row = document.getElementById(`pr-row-${id}`);
+  if (row) {
+    const statusCell = row.querySelector('.status-dot-confirmed, .status-dot-estimated');
+    if (statusCell) {
+      statusCell.className = val==='confirmed' ? 'status-dot-confirmed' : 'status-dot-estimated';
+      statusCell.textContent = val==='confirmed' ? '✓ Live' : '~ Est.';
+    }
+  }
+}
+
+function applyBulkRate() {
+  const type   = document.getElementById('bulk-type').value;
+  const daily  = parseFloat(document.getElementById('bulk-daily').value)||0;
+  const weekly = parseFloat(document.getElementById('bulk-weekly').value)||0;
+
+  const screens = INV_DATA.filter(s => s.type === type);
+  screens.forEach(s => {
+    const ex = extrapolate(daily||null, weekly||null, null);
+    pricingData[s.id] = { daily: ex.daily, weekly: ex.weekly, monthly: ex.monthly, source: 'manual' };
+  });
+
+  document.getElementById('bulk-daily').value  = '';
+  document.getElementById('bulk-weekly').value = '';
+  renderPricingTable();
+  log(`Bulk rate applied to ${screens.length} ${type} screens`);
+}
+
+function applyPricingToSite() {
+  /* In production this would push to the booking tool via API.
+     For now, export a summary of what's changed. */
+  const changed = Object.entries(pricingData).filter(([id, pd]) => {
+    const s = INV_DATA.find(x=>x.id===id);
+    return s && (pd.daily !== s.daily_rate || pd.weekly !== s.wkly_rate);
+  });
+  if (!changed.length) { log('No rate changes to apply'); return; }
+  log(`${changed.length} rate(s) updated — export CSV to sync with booking tool`);
+  alert(`${changed.length} screen rate(s) updated.\n\nUse "Export CSV" to download the updated rate sheet, then share with Claude to sync into the booking tool.`);
+}
+
+function exportPricingCSV() {
+  let csv = 'id,name,type,area,daily_rate,weekly_rate,monthly_rate,source\n';
+  INV_DATA.forEach(s => {
+    const pd = pricingData[s.id] || { daily: s.daily_rate, weekly: s.wkly_rate, monthly: s.mo_rate, source: 'estimated' };
+    csv += `${s.id},"${s.name}",${s.type},"${s.area}",${pd.daily},${pd.weekly},${pd.monthly},${pd.source}\n`;
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'nwaads-pricing-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  log('Pricing CSV exported');
+}
+
+/* Initialize pricing data from INV_DATA on load */
+function initPricing() {
+  INV_DATA.forEach(s => {
+    pricingData[s.id] = {
+      daily: s.daily_rate, weekly: s.wkly_rate,
+      monthly: s.mo_rate, source: 'estimated'
+    };
+  });
+  renderPricingTable();
+}
+
+</script>
+</body>
+</html>

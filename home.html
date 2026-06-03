@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWAAds — Get Noticed in Northwest Arkansas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── OZARK PALETTE ───────────────────────────────────────────────────────
+   Inspired by: Bentonville's clay mountain bike trails (terra cotta),
+   Crystal Bridges glass-over-water reflections (sky blue + limestone cream),
+   the Ozark forest canopy (deep moss green), golden Walmart star energy
+──────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Core surface */
+  --cream:    #f5f0e6;   /* Arkansas limestone */
+  --cream2:   #efe9d8;
+  --white:    #ffffff;
+
+  /* Primary ink */
+  --ink:      #1c1a12;
+  --ink2:     #433e30;
+  --muted:    #8c8574;
+  --border:   #ddd7c8;
+  --border2:  #cac4b4;
+
+  /* Ozark clay — primary accent */
+  --clay:     #c8430c;   /* trail dirt, warm and bold */
+  --clay-d:   #a3360a;
+  --clay-l:   #fdf0ea;
+  --clay-m:   rgba(200,67,12,0.12);
+
+  /* Crystal Blue — secondary */
+  --blue:     #1b6e8c;   /* Crystal Bridges water reflection */
+  --blue-l:   #e6f3f8;
+
+  /* Ozark Forest */
+  --forest:   #1e4028;
+  --forest-l: #e8f2ea;
+
+  /* Ozark Gold — Walmart energy */
+  --gold:     #e0a020;
+  --gold-l:   #fdf6e0;
+
+  /* Bentonville night */
+  --night:    #13110c;
+  --night2:   #1e1b14;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fade { from { opacity:0; } to { opacity:1; } }
+.u1 { animation: up 0.6s 0.05s ease both; }
+.u2 { animation: up 0.6s 0.15s ease both; }
+.u3 { animation: up 0.6s 0.28s ease both; }
+.u4 { animation: up 0.6s 0.42s ease both; }
+
+/* ─────────────────────────────────────────
+   NAV
+───────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(245,240,230,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  font-family: 'Fraunces', serif;
+  font-size: 20px; font-weight: 800;
+  color: var(--ink); text-decoration: none;
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--clay); }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a { font-size: 13px; color: var(--ink2); text-decoration: none; transition: color 0.15s; font-weight: 500; }
+.nav-links a:hover { color: var(--ink); }
+.nav-links a.btn-book,
+.nav-links a.btn-book:hover { color: #ffffff; }
+.btn-book {
+  font-size: 13px; font-weight: 700;
+  background: var(--clay); color: #ffffff;
+  padding: 9px 22px; border-radius: 6px;
+  text-decoration: none; transition: all 0.18s;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 3px rgba(200,67,12,0.3);
+  -webkit-font-smoothing: antialiased;
+}
+.btn-book:hover { background: var(--clay-d); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,67,12,0.3); }
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 88px 48px 68px;
+  text-align: center;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--clay); margin-bottom: 26px;
+}
+.hero-tag::before, .hero-tag::after {
+  content: ''; width: 24px; height: 1.5px; background: var(--clay); opacity: 0.45;
+}
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(40px, 6vw, 66px);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: var(--ink);
+  margin-bottom: 22px;
+}
+h1 em { font-style: italic; color: var(--clay); }
+.hero-sub {
+  font-size: 17px; font-weight: 300;
+  color: var(--ink2); line-height: 1.75;
+  max-width: 560px; margin: 0 auto 40px;
+}
+.hero-btns {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; flex-wrap: wrap;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px; font-weight: 600;
+  background: var(--clay); color: var(--white);
+  padding: 15px 36px; border-radius: 8px;
+  text-decoration: none; transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(200,67,12,0.2), 0 6px 18px rgba(200,67,12,0.18);
+}
+.btn-primary:hover { background: var(--clay-d); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(200,67,12,0.25), 0 12px 28px rgba(200,67,12,0.2); }
+.btn-primary svg { transition: transform 0.2s; }
+.btn-primary:hover svg { transform: translateX(3px); }
+.btn-text {
+  font-size: 14px; color: var(--ink2); text-decoration: none;
+  font-weight: 400; border-bottom: 1px solid var(--border2);
+  padding-bottom: 2px; transition: all 0.15s;
+}
+.btn-text:hover { color: var(--ink); border-color: var(--ink2); }
+
+/* ─────────────────────────────────────────
+   PRODUCT PREVIEW — map + billboard photo
+───────────────────────────────────────── */
+.preview-outer {
+  max-width: 1100px; margin: 0 auto; padding: 0 48px 80px;
+}
+.preview-frame {
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow:
+    0 2px 4px rgba(28,26,18,0.04),
+    0 10px 36px rgba(28,26,18,0.09),
+    0 28px 72px rgba(28,26,18,0.06);
+  background: var(--white);
+}
+
+/* Browser chrome */
+.browser-bar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 18px; background: var(--cream2);
+  border-bottom: 1px solid var(--border);
+}
+.bdots { display: flex; gap: 6px; }
+.bdot { width: 11px; height: 11px; border-radius: 50%; }
+.bd1{background:#ff5f57} .bd2{background:#febc2e} .bd3{background:#28c840}
+.burl {
+  flex: 1; background: var(--white); border: 1px solid var(--border);
+  border-radius: 5px; padding: 4px 14px; font-size: 11px;
+  color: var(--muted); max-width: 280px; margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Main app grid: sidebar | map | photo-panel */
+.app-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 200px;
+  min-height: 420px;
+}
+
+/* LEFT SIDEBAR */
+.aside {
+  border-right: 1px solid var(--border);
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+.aside-head {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.aside-head-title {
+  font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700; margin-bottom: 2px;
+}
+.aside-head-sub { font-size: 10px; color: var(--muted); }
+.chips {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+}
+.chip {
+  font-size: 10px; font-weight: 500; padding: 3px 9px;
+  border-radius: 11px; border: 1px solid var(--border);
+  color: var(--ink2); background: var(--cream);
+}
+.chip.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+.screen-row {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 9px;
+  cursor: pointer; transition: background 0.15s;
+}
+.screen-row:hover { background: var(--cream); }
+.screen-row.sel { background: var(--clay-l); border-left: 2px solid var(--clay); }
+.sr-ico {
+  width: 32px; height: 32px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.sr-ico.r{background:#f0ebe0} .sr-ico.a{background:#e4f0f6} .sr-ico.g{background:#fdf3e0} .sr-ico.c{background:#f0eafa}
+.sr-info { flex: 1; min-width: 0; }
+.sr-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px; }
+.sr-area { font-size: 9px; color: var(--muted); }
+.sr-price {
+  font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700; color: var(--clay); flex-shrink: 0;
+}
+.sr-price small { font-size: 8px; color: var(--muted); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; }
+
+/* MAP AREA */
+.map-area {
+  position: relative; background: #e6e2d8; overflow: hidden;
+}
+.map-area::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg,   transparent, transparent 43px, rgba(190,184,170,0.45) 43px, rgba(190,184,170,0.45) 44px),
+    repeating-linear-gradient(90deg,  transparent, transparent 43px, rgba(190,184,170,0.45) 43px, rgba(190,184,170,0.45) 44px);
+}
+.rh { position: absolute; left:0; right:0; }
+.rv { position: absolute; top:0; bottom:0; }
+.r-main { background: rgba(168,162,148,0.8); }
+.r-sec  { background: rgba(185,178,162,0.6); }
+.rh.main { height: 9px; }
+.rh.sec  { height: 5px; }
+.rv.main { width: 9px; }
+.rv.sec  { width: 5px; }
+
+.city-lbl {
+  position: absolute; font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  color: rgba(44,38,24,0.32); font-family: 'Plus Jakarta Sans', sans-serif;
+  pointer-events: none; user-select: none;
+}
+
+/* Map pins */
+.mpin { position: absolute; transform: translate(-50%, -100%); cursor: pointer; }
+.pbub {
+  padding: 4px 8px; border-radius: 14px;
+  font-size: 10px; font-weight: 700; color: var(--white);
+  white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+  border: 1.5px solid rgba(255,255,255,0.85);
+  transition: transform 0.15s; letter-spacing: 0.2px;
+}
+.pbub:hover { transform: scale(1.1); }
+.ptail { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; margin: -1px auto 0; }
+.pbub.rd{background:var(--clay)} .ptail.rd{border-top:6px solid var(--clay)}
+.pbub.ar{background:var(--blue)} .ptail.ar{border-top:6px solid var(--blue)}
+.pbub.gs{background:#b45309}     .ptail.gs{border-top:6px solid #b45309}
+.pbub.cn{background:#6b21a8}     .ptail.cn{border-top:6px solid #6b21a8}
+.pbub.sel { outline: 2px solid var(--white); transform: scale(1.18); }
+
+/* HQ */
+.hq-pin { position: absolute; transform: translate(-50%, -50%); text-align: center; z-index: 5; }
+.hq-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--gold); border: 3px solid var(--white);
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  margin: 0 auto 3px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100%{ box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 0 rgba(224,160,32,0.4); }
+  50%    { box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 10px rgba(224,160,32,0); }
+}
+.hq-lbl {
+  background: rgba(0,0,0,0.6); color: var(--gold);
+  font-size: 7.5px; font-weight: 700; padding: 2px 6px; border-radius: 3px;
+  letter-spacing: 0.5px; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Proximity rings */
+.pring {
+  position: absolute; border-radius: 50%;
+  border: 1.5px dashed rgba(200,67,12,0.25);
+  transform: translate(-50%, -50%); pointer-events: none;
+}
+
+/* Map legend */
+.mlegend {
+  position: absolute; bottom: 48px; right: 10px;
+  background: rgba(255,255,255,0.93); backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.ml-title { font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 7px; }
+.ml-row { display: flex; align-items: center; gap: 7px; font-size: 10px; color: var(--ink2); margin-bottom: 4px; }
+.ml-row:last-child { margin-bottom: 0; }
+.ml-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* Cart bar */
+.cart-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--white); border-top: 1px solid var(--border);
+  padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.cart-info { font-size: 11px; color: var(--ink2); }
+.cart-info b { font-family: 'Fraunces', serif; font-size: 14px; color: var(--clay); }
+.cart-go { font-size: 11px; font-weight: 600; padding: 6px 14px; background: var(--clay); color: var(--white); border-radius: 5px; }
+
+/* ─── RIGHT PHOTO PANEL ─── */
+.photo-panel {
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: var(--white);
+}
+.photo-panel-head {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.photo-panel-title { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.photo-panel-sub   { font-size: 9px; color: var(--muted); }
+
+/* Google Maps style thumbnail */
+.photo-thumb {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-height: 160px;
+  background: var(--cream2);
+}
+.photo-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.photo-thumb-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.65));
+  padding: 20px 10px 8px;
+}
+.photo-thumb-name { font-size: 10px; font-weight: 600; color: var(--white); margin-bottom: 1px; }
+.photo-thumb-loc  { font-size: 9px; color: rgba(255,255,255,0.7); }
+
+/* Street view button */
+.sv-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 12px; border-top: 1px solid var(--border);
+  font-size: 10px; font-weight: 600; color: var(--blue);
+  cursor: pointer; transition: background 0.15s;
+  text-decoration: none; background: var(--white);
+}
+.sv-btn:hover { background: var(--blue-l); }
+
+/* Screen meta below photo */
+.photo-meta { padding: 10px 12px; }
+.pm-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 5px; }
+.pm-row .l { color: var(--muted); }
+.pm-row .v { font-weight: 600; color: var(--ink); }
+.pm-add {
+  display: block; width: 100%; margin-top: 8px;
+  padding: 8px; background: var(--clay); color: var(--white);
+  border: none; border-radius: 5px; font-size: 11px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
+  text-align: center; transition: background 0.15s;
+}
+.pm-add:hover { background: var(--clay-d); }
+
+/* ─────────────────────────────────────────
+   OBJECTIVES
+───────────────────────────────────────── */
+.objectives {
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 48px 80px;
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 18px;
+}
+.obj {
+  background: var(--white);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 30px 26px;
+  transition: all 0.2s;
+  position: relative; overflow: hidden;
+}
+.obj::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height:3px;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.obj:hover::before { transform: scaleX(1); }
+.obj:hover { box-shadow: 0 6px 28px rgba(28,26,18,0.09); transform: translateY(-3px); }
+.obj.blue::before  { background: var(--blue); }
+.obj.clay::before  { background: var(--clay); }
+.obj.forest::before{ background: var(--forest); }
+.obj-emoji { font-size: 30px; margin-bottom: 14px; display: block; }
+.obj-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; margin-bottom: 10px; line-height: 1.25; }
+.obj-desc  { font-size: 13px; color: var(--ink2); line-height: 1.72; font-weight: 400; }
+
+/* ─────────────────────────────────────────
+   HOW IT WORKS
+───────────────────────────────────────── */
+.how-outer { border-top: 1px solid var(--border); background: var(--white); }
+.how-inner { max-width: 1100px; margin: 0 auto; padding: 72px 48px; }
+.section-eyebrow {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--muted);
+  display: flex; align-items: center; gap: 12px; margin-bottom: 44px;
+}
+.section-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.steps {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.step {
+  padding: 38px 32px; border-right: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.step:last-child { border-right: none; }
+.step:hover { background: var(--cream); }
+.step-n {
+  font-family: 'Fraunces', serif; font-size: 46px; font-weight: 800;
+  color: var(--border); line-height: 1; margin-bottom: 18px;
+  transition: color 0.2s;
+}
+.step:hover .step-n { color: var(--clay); }
+.step-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.step-desc  { font-size: 13px; color: var(--ink2); line-height: 1.72; font-weight: 400; }
+.step-tag {
+  display: inline-block; margin-top: 14px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--clay);
+}
+
+/* ─────────────────────────────────────────
+   OOH EFFECTIVENESS BAR (replaces stat numbers)
+───────────────────────────────────────── */
+.effectiveness {
+  background: var(--night); padding: 56px 48px;
+}
+.eff-inner {
+  max-width: 1100px; margin: 0 auto;
+}
+.eff-top {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 36px; flex-wrap: wrap; gap: 16px;
+}
+.eff-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(24px, 3vw, 36px); font-weight: 800;
+  color: var(--white); letter-spacing: -1px; line-height: 1.1;
+}
+.eff-title em { font-style: italic; color: var(--clay); }
+.eff-src { font-size: 11px; color: rgba(255,255,255,0.3); }
+
+.eff-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 12px;
+}
+.eff-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 22px 20px;
+  transition: background 0.2s;
+}
+.eff-card:hover { background: rgba(255,255,255,0.08); }
+.eff-num {
+  font-family: 'Fraunces', serif;
+  font-size: 38px; font-weight: 800;
+  color: var(--white); display: block; line-height: 1;
+  margin-bottom: 6px; letter-spacing: -1px;
+}
+.eff-num em { color: var(--clay); font-style: normal; }
+.eff-label { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.55; font-weight: 300; }
+.eff-source { font-size: 9px; color: rgba(255,255,255,0.25); margin-top: 6px; font-style: italic; }
+
+/* ─────────────────────────────────────────
+   FINAL CTA
+───────────────────────────────────────── */
+.final-cta {
+  padding: 96px 48px;
+  text-align: center;
+  max-width: 640px; margin: 0 auto;
+}
+.final-cta h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 4.5vw, 50px); font-weight: 800;
+  letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 18px;
+}
+.final-cta h2 em { font-style: italic; color: var(--clay); }
+.final-cta p { font-size: 15px; color: var(--ink2); font-weight: 300; line-height: 1.72; margin-bottom: 36px; }
+.final-note { margin-top: 16px; font-size: 12px; color: var(--muted); }
+.final-note a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border); padding: 24px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--muted);
+}
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--ink); }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links a { display: none; }
+  .hero { padding: 56px 20px 40px; }
+  .preview-outer { padding: 0 16px 48px; }
+  .app-grid { grid-template-columns: 1fr; }
+  .aside { display: none; }
+  .photo-panel { display: none; }
+  .objectives { grid-template-columns: 1fr; padding: 0 20px 48px; }
+  .how-inner { padding: 48px 20px; }
+  .steps { grid-template-columns: 1fr; }
+  .step { border-right: none; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .eff-grid { grid-template-columns: 1fr 1fr; }
+  .effectiveness { padding: 40px 20px; }
+  .final-cta { padding: 64px 20px; }
+  footer { padding: 20px; flex-direction: column; gap: 8px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="/" class="logo">NWA<span>Ads</span></a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#inventory">Inventory</a>
+    <a href="#why-ooh">Why OOH</a>
+    <a href="book.html" class="btn-book">Book a screen →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-tag u1">Hyperlocal advertising · Northwest Arkansas</div>
+  <h1 class="u2">Get noticed in<br><em>Northwest Arkansas.</em></h1>
+  <p class="hero-sub u3">The best real-world ad inventory in Northwest Arkansas — digital billboards, gas stations, and airport screens — all bookable in a few clicks. Whether you want Walmart and Sam's Club buyers to know your name, customers walking through your door, or the NWA tech scene talking about you — book it in minutes, not weeks.</p>
+  <div class="hero-btns u4">
+    <a href="book.html" class="btn-primary">
+      Browse available screens
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="#how" class="btn-text">See how it works</a>
+  </div>
+</div>
+
+<!-- ── PRODUCT PREVIEW ── -->
+<div class="preview-outer" id="inventory">
+  <div class="preview-frame">
+
+    <!-- Browser bar -->
+    <div class="browser-bar">
+      <div class="bdots"><div class="bdot bd1"></div><div class="bdot bd2"></div><div class="bdot bd3"></div></div>
+      <div class="burl">nwaads.com/book</div>
+    </div>
+
+    <!-- App grid: sidebar | map | photo panel -->
+    <div class="app-grid">
+
+      <!-- Sidebar -->
+      <div class="aside">
+        <div class="aside-head">
+          <div class="aside-head-title">Pick your screens</div>
+          <div class="aside-head-sub">82 screens · NWA & XNA Airport</div>
+        </div>
+        <div class="chips">
+          <div class="chip on">All</div>
+          <div class="chip">Billboard</div>
+          <div class="chip">Airport</div>
+          <div class="chip">Near Walmart HQ</div>
+        </div>
+        <div class="screen-row sel">
+          <div class="sr-ico r">🛣</div>
+          <div class="sr-info"><div class="sr-name">I-49 & Pleasant Grove</div><div class="sr-area">Bentonville · Near Walmart HQ</div></div>
+          <div class="sr-price">$600<small>/wk</small></div>
+        </div>
+        <div class="screen-row">
+          <div class="sr-ico a">✈</div>
+          <div class="sr-info"><div class="sr-name">XNA Lobby Network</div><div class="sr-area">Highfill · 10 screens</div></div>
+          <div class="sr-price">$496<small>/wk</small></div>
+        </div>
+        <div class="screen-row">
+          <div class="sr-ico g">⛽</div>
+          <div class="sr-info"><div class="sr-name">Sam's Club Fuel — Rogers</div><div class="sr-area">Rogers · 8 screens</div></div>
+          <div class="sr-price">$146<small>/wk</small></div>
+        </div>
+        <div class="screen-row">
+          <div class="sr-ico r">🛣</div>
+          <div class="sr-info"><div class="sr-name">Walton Blvd & SW Regional</div><div class="sr-area">Bentonville · Digital</div></div>
+          <div class="sr-price">$541<small>/wk</small></div>
+        </div>
+        <div class="screen-row">
+          <div class="sr-ico c">🎬</div>
+          <div class="sr-info"><div class="sr-name">Malco Pinnacle Hills 12</div><div class="sr-area">Rogers · Pre-roll</div></div>
+          <div class="sr-price">$34<small>/wk</small></div>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="map-area">
+        <div class="rh r-main main" style="top:57%"></div>
+        <div class="rh r-sec  sec"  style="top:35%"></div>
+        <div class="rh r-sec  sec"  style="top:76%"></div>
+        <div class="rv r-main main" style="left:33%"></div>
+        <div class="rv r-sec  sec"  style="left:57%"></div>
+        <div class="rv r-sec  sec"  style="left:75%"></div>
+
+        <div class="city-lbl" style="top:8%;left:24%;">Bentonville</div>
+        <div class="city-lbl" style="top:41%;left:60%;">Rogers</div>
+        <div class="city-lbl" style="top:70%;left:26%;">Fayetteville</div>
+        <div class="city-lbl" style="top:27%;left:63%;">Springdale</div>
+
+        <!-- Walmart HQ -->
+        <div class="hq-pin" style="top:37%;left:29%;">
+          <div class="hq-circle">🏢</div>
+          <div class="hq-lbl">WALMART HQ</div>
+        </div>
+        <div class="pring" style="top:37%;left:29%;width:130px;height:130px;"></div>
+        <div class="pring" style="top:37%;left:29%;width:210px;height:210px;opacity:0.45;"></div>
+
+        <!-- Pins -->
+        <div class="mpin" style="top:30%;left:25%;"><div class="pbub rd sel">$600/wk</div><div class="ptail rd"></div></div>
+        <div class="mpin" style="top:23%;left:20%;"><div class="pbub rd">$541/wk</div><div class="ptail rd"></div></div>
+        <div class="mpin" style="top:50%;left:18%;"><div class="pbub rd">$399/wk</div><div class="ptail rd"></div></div>
+        <div class="mpin" style="top:64%;left:30%;"><div class="pbub rd">$290/wk</div><div class="ptail rd"></div></div>
+        <div class="mpin" style="top:40%;left:58%;"><div class="pbub gs">$146/wk</div><div class="ptail gs"></div></div>
+        <div class="mpin" style="top:29%;left:66%;"><div class="pbub gs">$37/wk</div><div class="ptail gs"></div></div>
+        <div class="mpin" style="top:53%;left:53%;"><div class="pbub cn">$34/wk</div><div class="ptail cn"></div></div>
+        <div class="mpin" style="top:17%;left:12%;"><div class="pbub ar">$496/wk</div><div class="ptail ar"></div></div>
+        <div class="mpin" style="top:60%;left:72%;"><div class="pbub rd">$355/wk</div><div class="ptail rd"></div></div>
+
+        <!-- Legend -->
+        <div class="mlegend">
+          <div class="ml-title">Format</div>
+          <div class="ml-row"><div class="ml-dot" style="background:var(--clay)"></div>Billboard</div>
+          <div class="ml-row"><div class="ml-dot" style="background:#b45309"></div>Gas Station</div>
+          <div class="ml-row"><div class="ml-dot" style="background:var(--blue)"></div>Airport</div>
+          <div class="ml-row"><div class="ml-dot" style="background:#6b21a8"></div>Cinema</div>
+        </div>
+
+        <!-- Cart bar -->
+        <div class="cart-bar">
+          <div class="cart-info">1 screen selected · <b>$600/wk</b></div>
+          <div style="font-size:10px;color:var(--muted);">Daily · Weekly · Monthly</div>
+          <div class="cart-go">Continue →</div>
+        </div>
+      </div>
+
+      <!-- ─── PHOTO PANEL (Google Maps style) ─── -->
+      <div class="photo-panel">
+        <div class="photo-panel-head">
+          <div class="photo-panel-title">I-49 & Pleasant Grove Rd</div>
+          <div class="photo-panel-sub">Digital · Bentonville, AR</div>
+        </div>
+        <div class="photo-thumb">
+          <img
+            src="https://content.adomni.com/5f4e8cfd14b9c2q_ghwzaF76eHz1knMTX1nqwAg3Ran792kd92_or"
+            alt="I-49 Bentonville digital billboard"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <!-- Fallback if image fails -->
+          <div style="display:none;width:100%;height:100%;min-height:160px;align-items:center;justify-content:center;font-size:36px;background:var(--cream2);">🛣</div>
+          <div class="photo-thumb-overlay">
+            <div class="photo-thumb-name">I-49 & Pleasant Grove</div>
+            <div class="photo-thumb-loc">Bentonville, AR · Digital</div>
+          </div>
+        </div>
+        <a class="sv-btn" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=36.3729,-94.2088" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="currentColor"/></svg>
+          Street View
+        </a>
+        <div class="photo-meta">
+          <div class="pm-row"><span class="l">Weekly impr.</span><span class="v">35K+</span></div>
+          <div class="pm-row"><span class="l">CPM</span><span class="v">$8.28</span></div>
+          <div class="pm-row"><span class="l">Format</span><span class="v">14×48 Digital</span></div>
+          <button class="pm-add">+ Add to campaign</button>
+        </div>
+      </div>
+
+    </div><!-- /app-grid -->
+  </div><!-- /preview-frame -->
+</div><!-- /preview-outer -->
+
+<!-- ── OBJECTIVES ── -->
+<div class="objectives">
+  <div class="obj blue">
+    <span class="obj-emoji">🏪</span>
+    <div class="obj-title">Reach Walmart &amp; Sam's Club Buyers</div>
+    <p class="obj-desc">Hyperlocal targeting along the exact corridors Walmart and Sam's Club buyers travel — I-49, Walton Blvd, and XNA Airport — all within miles of the Home Office.</p>
+  </div>
+  <div class="obj clay">
+    <span class="obj-emoji">📍</span>
+    <div class="obj-title">Drive Customers Through Your Door</div>
+    <p class="obj-desc">Pin your exact address and we surface every screen within driving distance — sorted by proximity, sorted for your neighborhood. Hyperlocal by design. $500 to start.</p>
+  </div>
+  <div class="obj forest">
+    <span class="obj-emoji">🚀</span>
+    <div class="obj-title">Build Your Brand Across NWA</div>
+    <p class="obj-desc">NWA's startup scene is one of the fastest-growing in the South. Reach founders, investors, and talent hyperlocally — on the commute routes and corridors they use every day.</p>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<div class="how-outer">
+  <div class="how-inner" id="how">
+    <div class="section-eyebrow">How it works</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01</div>
+        <div class="step-title">Pick your screens on the map</div>
+        <p class="step-desc">Browse 82 hyperlocal screens across Bentonville, Rogers, Fayetteville, and Springdale. Filter by format or proximity to your exact location. Real rates, real impressions.</p>
+        <span class="step-tag">Under 5 minutes</span>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <div class="step-title">Upload your creative</div>
+        <p class="step-desc">Drop in your artwork or choose a free template. We review every creative before it goes live — usually same day. No design experience needed.</p>
+        <span class="step-tag">Any format accepted</span>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <div class="step-title">Pay and go live</div>
+        <p class="step-desc">Secure checkout. Your campaign is active within 24 hours. Weekly impression reports land in your inbox. No long-term contracts.</p>
+        <span class="step-tag">Live in 24 hours</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── OOH EFFECTIVENESS ── -->
+<div class="effectiveness" id="why-ooh">
+  <div class="eff-inner">
+    <div class="eff-top">
+      <div class="eff-title">Why hyperlocal OOH<br><em>still works.</em></div>
+      <div class="eff-src">Sources: Nielsen, OAAA, Arbitron</div>
+    </div>
+    <div class="eff-grid">
+      <div class="eff-card">
+        <span class="eff-num"><em>90</em>%</span>
+        <div class="eff-label">of consumers noticed a billboard advertisement in the past month</div>
+        <div class="eff-source">Nielsen OOH Consumer Report</div>
+      </div>
+      <div class="eff-card">
+        <span class="eff-num"><em>4×</em></span>
+        <div class="eff-label">higher return on ad spend than online-only campaigns when OOH is added to the mix</div>
+        <div class="eff-source">OAAA / Nielsen Catalina</div>
+      </div>
+      <div class="eff-card">
+        <span class="eff-num"><em>46</em>%</span>
+        <div class="eff-label">of adults searched online for a product or service after seeing an OOH ad</div>
+        <div class="eff-source">Arbitron OOH Study</div>
+      </div>
+      <div class="eff-card">
+        <span class="eff-num"><em>24/7</em></span>
+        <div class="eff-label">visibility — no ad blocker, no skip button, no feed algorithm to fight</div>
+        <div class="eff-source">Always-on media</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FINAL CTA ── -->
+<div class="final-cta">
+  <h2>Ready to get<br><em>noticed?</em></h2>
+  <p>The only self-serve platform built specifically for Northwest Arkansas. Hyperlocal inventory, real screens, real rates — book in minutes without calling a single sales rep.</p>
+  <div class="hero-btns">
+    <a href="book.html" class="btn-primary">
+      Open the booking tool
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+  <p class="final-note">Questions? <a href="mailto:hello@nwaads.com">hello@nwaads.com</a></p>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <span style="font-family:'Fraunces',serif;font-size:17px;font-weight:800;color:var(--ink);">NWA<span style="color:var(--clay)">Ads</span></span>
+  <span>Northwest Arkansas · Self-serve OOH · Beta</span>
+  <a href="mailto:hello@nwaads.com">hello@nwaads.com</a>
+</footer>
+
+</body>
+</html>

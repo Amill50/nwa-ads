@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWAAds — Hyperlocal OOH Advertising · Northwest Arkansas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── OZARK PALETTE ───────────────────────────────────────────────────────
+   Inspired by: Bentonville's clay mountain bike trails (terra cotta),
+   Crystal Bridges glass-over-water reflections (sky blue + limestone cream),
+   the Ozark forest canopy (deep moss green), golden Walmart star energy
+──────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Core surface */
+  --cream:    #f5f0e6;   /* Arkansas limestone */
+  --cream2:   #efe9d8;
+  --white:    #ffffff;
+
+  /* Primary ink */
+  --ink:      #1c1a12;
+  --ink2:     #433e30;
+  --muted:    #8c8574;
+  --border:   #ddd7c8;
+  --border2:  #cac4b4;
+
+  /* Ozark clay — primary accent */
+  --clay:     #c8430c;   /* trail dirt, warm and bold */
+  --clay-d:   #a3360a;
+  --clay-l:   #fdf0ea;
+  --clay-m:   rgba(200,67,12,0.12);
+
+  /* Crystal Blue — secondary */
+  --blue:     #1b6e8c;   /* Crystal Bridges water reflection */
+  --blue-l:   #e6f3f8;
+
+  /* Ozark Forest */
+  --forest:   #1e4028;
+  --forest-l: #e8f2ea;
+
+  /* Ozark Gold — Walmart energy */
+  --gold:     #e0a020;
+  --gold-l:   #fdf6e0;
+
+  /* Bentonville night */
+  --night:    #13110c;
+  --night2:   #1e1b14;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fade { from { opacity:0; } to { opacity:1; } }
+.u1 { animation: up 0.6s 0.05s ease both; }
+.u2 { animation: up 0.6s 0.15s ease both; }
+.u3 { animation: up 0.6s 0.28s ease both; }
+.u4 { animation: up 0.6s 0.42s ease both; }
+
+/* ─────────────────────────────────────────
+   NAV
+───────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(245,240,230,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  font-family: 'Fraunces', serif;
+  font-size: 20px; font-weight: 800;
+  color: var(--ink); text-decoration: none;
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--clay); }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a { font-size: 13px; color: var(--ink2); text-decoration: none; transition: color 0.15s; font-weight: 500; }
+.nav-links a:hover { color: var(--ink); }
+.nav-links a.btn-book,
+.nav-links a.btn-book:hover { color: #ffffff; }
+.btn-book {
+  font-size: 13px; font-weight: 700;
+  background: var(--clay); color: #ffffff;
+  padding: 9px 22px; border-radius: 6px;
+  text-decoration: none; transition: all 0.18s;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 3px rgba(200,67,12,0.3);
+  -webkit-font-smoothing: antialiased;
+}
+.btn-book:hover { background: var(--clay-d); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,67,12,0.3); }
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 88px 48px 68px;
+  text-align: center;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--clay); margin-bottom: 26px;
+}
+.hero-tag::before, .hero-tag::after {
+  content: ''; width: 24px; height: 1.5px; background: var(--clay); opacity: 0.45;
+}
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(40px, 6vw, 66px);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: var(--ink);
+  margin-bottom: 22px;
+}
+h1 em { font-style: italic; color: var(--clay); }
+.hero-sub {
+  font-size: 17px; font-weight: 300;
+  color: var(--ink2); line-height: 1.75;
+  max-width: 560px; margin: 0 auto 40px;
+}
+.hero-btns {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; flex-wrap: wrap;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px; font-weight: 600;
+  background: var(--clay); color: var(--white);
+  padding: 15px 36px; border-radius: 8px;
+  text-decoration: none; transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(200,67,12,0.2), 0 6px 18px rgba(200,67,12,0.18);
+}
+.btn-primary:hover { background: var(--clay-d); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(200,67,12,0.25), 0 12px 28px rgba(200,67,12,0.2); }
+.btn-primary svg { transition: transform 0.2s; }
+.btn-primary:hover svg { transform: translateX(3px); }
+.btn-text {
+  font-size: 14px; color: var(--ink2); text-decoration: none;
+  font-weight: 400; border-bottom: 1px solid var(--border2);
+  padding-bottom: 2px; transition: all 0.15s;
+}
+.btn-text:hover { color: var(--ink); border-color: var(--ink2); }
+
+/* ─────────────────────────────────────────
+   PRODUCT PREVIEW — map + billboard photo
+───────────────────────────────────────── */
+.preview-outer {
+  max-width: 1100px; margin: 0 auto; padding: 0 48px 80px;
+}
+.preview-frame {
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow:
+    0 2px 4px rgba(28,26,18,0.04),
+    0 10px 36px rgba(28,26,18,0.09),
+    0 28px 72px rgba(28,26,18,0.06);
+  background: var(--white);
+}
+
+/* Browser chrome */
+.browser-bar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 18px; background: var(--cream2);
+  border-bottom: 1px solid var(--border);
+}
+.bdots { display: flex; gap: 6px; }
+.bdot { width: 11px; height: 11px; border-radius: 50%; }
+.bd1{background:#ff5f57} .bd2{background:#febc2e} .bd3{background:#28c840}
+.burl {
+  flex: 1; background: var(--white); border: 1px solid var(--border);
+  border-radius: 5px; padding: 4px 14px; font-size: 11px;
+  color: var(--muted); max-width: 280px; margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Main app grid: sidebar | map | photo-panel */
+.app-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 200px;
+  min-height: 420px;
+}
+
+/* LEFT SIDEBAR */
+.aside {
+  border-right: 1px solid var(--border);
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+.aside-head {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.aside-head-title {
+  font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700; margin-bottom: 2px;
+}
+.aside-head-sub { font-size: 10px; color: var(--muted); }
+.chips {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+}
+.chip {
+  font-size: 10px; font-weight: 500; padding: 3px 9px;
+  border-radius: 11px; border: 1px solid var(--border);
+  color: var(--ink2); background: var(--cream);
+}
+.chip.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+.screen-row {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 9px;
+  cursor: pointer; transition: background 0.15s;
+}
+.screen-row:hover { background: var(--cream); }
+.screen-row.sel { background: var(--clay-l); border-left: 2px solid var(--clay); }
+.sr-ico {
+  width: 32px; height: 32px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.sr-ico.r{background:#f0ebe0} .sr-ico.a{background:#e4f0f6} .sr-ico.g{background:#fdf3e0} .sr-ico.c{background:#f0eafa}
+.sr-info { flex: 1; min-width: 0; }
+.sr-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px; }
+.sr-area { font-size: 9px; color: var(--muted); }
+.sr-price {
+  font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700; color: var(--clay); flex-shrink: 0;
+}
+.sr-price small { font-size: 8px; color: var(--muted); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; }
+
+/* MAP AREA */
+.map-area {
+  position: relative; background: #e6e2d8; overflow: hidden;
+}
+.map-area::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg,   transparent, transparent 43px, rgba(190,184,170,0.45) 43px, rgba(190,184,170,0.45) 44px),
+    repeating-linear-gradient(90deg,  transparent, transparent 43px, rgba(190,184,170,0.45) 43px, rgba(190,184,170,0.45) 44px);
+}
+.rh { position: absolute; left:0; right:0; }
+.rv { position: absolute; top:0; bottom:0; }
+.r-main { background: rgba(168,162,148,0.8); }
+.r-sec  { background: rgba(185,178,162,0.6); }
+.rh.main { height: 9px; }
+.rh.sec  { height: 5px; }
+.rv.main { width: 9px; }
+.rv.sec  { width: 5px; }
+
+.city-lbl {
+  position: absolute; font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  color: rgba(44,38,24,0.32); font-family: 'Plus Jakarta Sans', sans-serif;
+  pointer-events: none; user-select: none;
+}
+
+/* Map pins */
+.mpin { position: absolute; transform: translate(-50%, -100%); cursor: pointer; }
+.pbub {
+  padding: 4px 8px; border-radius: 14px;
+  font-size: 10px; font-weight: 700; color: var(--white);
+  white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+  border: 1.5px solid rgba(255,255,255,0.85);
+  transition: transform 0.15s; letter-spacing: 0.2px;
+}
+.pbub:hover { transform: scale(1.1); }
+.ptail { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; margin: -1px auto 0; }
+.pbub.rd{background:var(--clay)} .ptail.rd{border-top:6px solid var(--clay)}
+.pbub.ar{background:var(--blue)} .ptail.ar{border-top:6px solid var(--blue)}
+.pbub.gs{background:#b45309}     .ptail.gs{border-top:6px solid #b45309}
+.pbub.cn{background:#6b21a8}     .ptail.cn{border-top:6px solid #6b21a8}
+.pbub.sel { outline: 2px solid var(--white); transform: scale(1.18); }
+
+/* HQ */
+.hq-pin { position: absolute; transform: translate(-50%, -50%); text-align: center; z-index: 5; }
+.hq-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--gold); border: 3px solid var(--white);
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  margin: 0 auto 3px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100%{ box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 0 rgba(224,160,32,0.4); }
+  50%    { box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 10px rgba(224,160,32,0); }
+}
+.hq-lbl {
+  background: rgba(0,0,0,0.6); color: var(--gold);
+  font-size: 7.5px; font-weight: 700; padding: 2px 6px; border-radius: 3px;
+  letter-spacing: 0.5px; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Proximity rings */
+.pring {
+  position: absolute; border-radius: 50%;
+  border: 1.5px dashed rgba(200,67,12,0.25);
+  transform: translate(-50%, -50%); pointer-events: none;
+}
+
+/* Map legend */
+.mlegend {
+  position: absolute; bottom: 48px; right: 10px;
+  background: rgba(255,255,255,0.93); backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.ml-title { font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 7px; }
+.ml-row { display: flex; align-items: center; gap: 7px; font-size: 10px; color: var(--ink2); margin-bottom: 4px; }
+.ml-row:last-child { margin-bottom: 0; }
+.ml-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* Cart bar */
+.cart-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--white); border-top: 1px solid var(--border);
+  padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.cart-info { font-size: 11px; color: var(--ink2); }
+.cart-info b { font-family: 'Fraunces', serif; font-size: 14px; color: var(--clay); }
+.cart-go { font-size: 11px; font-weight: 600; padding: 6px 14px; background: var(--clay); color: var(--white); border-radius: 5px; }
+
+/* ─── RIGHT PHOTO PANEL ─── */
+.photo-panel {
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: var(--white);
+}
+.photo-panel-head {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.photo-panel-title { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.photo-panel-sub   { font-size: 9px; color: var(--muted); }
+
+/* Google Maps style thumbnail */
+.photo-thumb {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-height: 160px;
+  background: var(--cream2);
+}
+.photo-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.photo-thumb-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.65));
+  padding: 20px 10px 8px;
+}
+.photo-thumb-name { font-size: 10px; font-weight: 600; color: var(--white); margin-bottom: 1px; }
+.photo-thumb-loc  { font-size: 9px; color: rgba(255,255,255,0.7); }
+
+/* Street view button */
+.sv-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 12px; border-top: 1px solid var(--border);
+  font-size: 10px; font-weight: 600; color: var(--blue);
+  cursor: pointer; transition: background 0.15s;
+  text-decoration: none; background: var(--white);
+}
+.sv-btn:hover { background: var(--blue-l); }
+
+/* Screen meta below photo */
+.photo-meta { padding: 10px 12px; }
+.pm-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 5px; }
+.pm-row .l { color: var(--muted); }
+.pm-row .v { font-weight: 600; color: var(--ink); }
+.pm-add {
+  display: block; width: 100%; margin-top: 8px;
+  padding: 8px; background: var(--clay); color: var(--white);
+  border: none; border-radius: 5px; font-size: 11px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
+  text-align: center; transition: background 0.15s;
+}
+.pm-add:hover { background: var(--clay-d); }
+
+/* ─────────────────────────────────────────
+   OBJECTIVES
+───────────────────────────────────────── */
+.objectives {
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 48px 80px;
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 18px;
+}
+.obj {
+  background: var(--white);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 30px 26px;
+  transition: all 0.2s;
+  position: relative; overflow: hidden;
+}
+.obj::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height:3px;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.obj:hover::before { transform: scaleX(1); }
+.obj:hover { box-shadow: 0 6px 28px rgba(28,26,18,0.09); transform: translateY(-3px); }
+.obj.blue::before  { background: var(--blue); }
+.obj.clay::before  { background: var(--clay); }
+.obj.forest::before{ background: var(--forest); }
+.obj-emoji { font-size: 30px; margin-bottom: 14px; display: block; }
+.obj-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; margin-bottom: 10px; line-height: 1.25; }
+.obj-desc  { font-size: 13px; color: var(--ink2); line-height: 1.72; font-weight: 400; }
+
+/* ─────────────────────────────────────────
+   HOW IT WORKS
+───────────────────────────────────────── */
+.how-outer { border-top: 1px solid var(--border); background: var(--white); }
+.how-inner { max-width: 1100px; margin: 0 auto; padding: 72px 48px; }
+.section-eyebrow {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--muted);
+  display: flex; align-items: center; gap: 12px; margin-bottom: 44px;
+}
+.section-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.steps {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.step {
+  padding: 38px 32px; border-right: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.step:last-child { border-right: none; }
+.step:hover { background: var(--cream); }
+.step-n {
+  font-family: 'Fraunces', serif; font-size: 46px; font-weight: 800;
+  color: var(--border); line-height: 1; margin-bottom: 18px;
+  transition: color 0.2s;
+}
+.step:hover .step-n { color: var(--clay); }
+.step-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.step-desc  { font-size: 13px; color: var(--ink2); line-height: 1.72; font-weight: 400; }
+.step-tag {
+  display: inline-block; margin-top: 14px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--clay);
+}
+
+/* ─────────────────────────────────────────
+   OOH EFFECTIVENESS BAR (replaces stat numbers)
+───────────────────────────────────────── */
+.effectiveness {
+  background: var(--night); padding: 56px 48px;
+}
+.eff-inner {
+  max-width: 1100px; margin: 0 auto;
+}
+.eff-top {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 36px; flex-wrap: wrap; gap: 16px;
+}
+.eff-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(24px, 3vw, 36px); font-weight: 800;
+  color: var(--white); letter-spacing: -1px; line-height: 1.1;
+}
+.eff-title em { font-style: italic; color: var(--clay); }
+.eff-src { font-size: 11px; color: rgba(255,255,255,0.3); }
+
+.eff-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 12px;
+}
+.eff-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 22px 20px;
+  transition: background 0.2s;
+}
+.eff-card:hover { background: rgba(255,255,255,0.08); }
+.eff-num {
+  font-family: 'Fraunces', serif;
+  font-size: 38px; font-weight: 800;
+  color: var(--white); display: block; line-height: 1;
+  margin-bottom: 6px; letter-spacing: -1px;
+}
+.eff-num em { color: var(--clay); font-style: normal; }
+.eff-label { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.55; font-weight: 300; }
+.eff-source { font-size: 9px; color: rgba(255,255,255,0.25); margin-top: 6px; font-style: italic; }
+
+/* ─────────────────────────────────────────
+   FINAL CTA
+───────────────────────────────────────── */
+.final-cta {
+  padding: 96px 48px;
+  text-align: center;
+  max-width: 640px; margin: 0 auto;
+}
+.final-cta h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 4.5vw, 50px); font-weight: 800;
+  letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 18px;
+}
+.final-cta h2 em { font-style: italic; color: var(--clay); }
+.final-cta p { font-size: 15px; color: var(--ink2); font-weight: 300; line-height: 1.72; margin-bottom: 36px; }
+.final-note { margin-top: 16px; font-size: 12px; color: var(--muted); }
+.final-note a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border); padding: 24px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--muted);
+}
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--ink); }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links a { display: none; }
+  .hero { padding: 56px 20px 40px; }
+  .preview-outer { padding: 0 16px 48px; }
+  .app-grid { grid-template-columns: 1fr; }
+  .aside { display: none; }
+  .photo-panel { display: none; }
+  .objectives { grid-template-columns: 1fr; padding: 0 20px 48px; }
+  .how-inner { padding: 48px 20px; }
+  .steps { grid-template-columns: 1fr; }
+  .step { border-right: none; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .eff-grid { grid-template-columns: 1fr 1fr; }
+  .effectiveness { padding: 40px 20px; }
+  .final-cta { padding: 64px 20px; }
+  footer { padding: 20px; flex-direction: column; gap: 8px; text-align: center; }
+}
+</style>
+<style>
+/* ── Gate-specific ── */
+.beta-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+  background: #eaf2ec; color: var(--forest);
+  padding: 5px 14px; border-radius: 20px;
+  border: 1px solid rgba(31,61,42,0.2); margin-bottom: 28px;
+}
+.gate-section {
+  background: var(--forest); padding: 72px 48px;
+}
+.gate-inner {
+  max-width: 620px; margin: 0 auto; text-align: center;
+}
+.gate-eyebrow {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 2px; color: rgba(255,255,255,0.45); margin-bottom: 16px;
+}
+.gate-title {
+  font-family: 'Fraunces', serif; font-size: clamp(28px,4vw,42px);
+  font-weight: 800; color: #fff; letter-spacing:-1px;
+  line-height: 1.1; margin-bottom: 12px;
+}
+.gate-title em { font-style: italic; color: #7ffbbc; }
+.gate-sub {
+  font-size: 15px; color: rgba(255,255,255,0.65);
+  line-height: 1.72; margin-bottom: 36px; font-weight: 300;
+}
+.gate-form {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+  padding: 32px; text-align: left;
+}
+.gf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.gf-row.full { grid-template-columns: 1fr; }
+.gf-group label {
+  display: block; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: rgba(255,255,255,0.45); margin-bottom: 6px;
+}
+.gf-group input, .gf-group select, .gf-group textarea {
+  width: 100%; padding: 10px 13px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14); border-radius: 7px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; color: #fff; outline: none;
+  transition: border-color 0.15s; -webkit-appearance: none;
+}
+.gf-group input::placeholder, .gf-group textarea::placeholder { color: rgba(255,255,255,0.28); }
+.gf-group input:focus, .gf-group select:focus, .gf-group textarea:focus { border-color: rgba(127,251,188,0.45); }
+.gf-group select option { background: #1f3d2a; }
+.gf-group textarea { resize: none; height: 76px; }
+.btn-request {
+  width: 100%; padding: 14px;
+  background: var(--clay); color: #fff; border: none;
+  border-radius: 8px; font-family: 'Fraunces', serif;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: all 0.18s; margin-top: 4px; letter-spacing: 0.2px;
+}
+.btn-request:hover { background: #a83208; transform: translateY(-1px); }
+.gf-note {
+  text-align: center; font-size: 11px;
+  color: rgba(255,255,255,0.32); margin-top: 13px; line-height: 1.6;
+}
+.thank-you {
+  display: none; text-align: center; padding: 48px 0;
+}
+.ty-icon { font-size: 44px; display: block; margin-bottom: 14px; }
+.ty-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+.ty-sub { font-size: 14px; color: rgba(255,255,255,0.62); line-height: 1.7; max-width: 380px; margin: 0 auto; }
+@media (max-width: 768px) {
+  .gate-section { padding: 48px 20px; }
+  .gate-form { padding: 22px 18px; }
+  .gf-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">NWA<span>Ads</span></a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#inventory">Inventory</a>
+    <a href="#why-ooh">Why OOH</a>
+    <a href="#gate-access" class="btn-book" style="color:#fff!important">Request access →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-tag u1">Hyperlocal advertising · Northwest Arkansas</div>
+  <h1 class="u2">Get noticed in<br><em>Northwest Arkansas.</em></h1>
+  <p class="hero-sub u3">The best real-world ad inventory in Northwest Arkansas — digital billboards, gas stations, and airport screens — all bookable in a few clicks. Whether you want Walmart and Sam&apos;s Club buyers to know your name, customers walking through your door, or the NWA tech scene talking about you — book it in minutes, not weeks.</p>
+  <div class="beta-badge u3">🔒 Currently in beta — request access below</div>
+  <div class="hero-btns u4">
+    <a href="#gate-access" class="btn-primary">
+      Request early access
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+
+  </div>
+</div>
+
+<!-- ── USE CASE CARDS ── -->
+<!-- ── OBJECTIVES ── -->
+<div class="objectives">
+  <div class="obj blue">
+    <span class="obj-emoji">🏪</span>
+    <div class="obj-title">Reach Walmart &amp; Sam's Club Buyers</div>
+    <p class="obj-desc">Hyperlocal targeting along the exact corridors Walmart and Sam's Club buyers travel — I-49, Walton Blvd, and XNA Airport — all within miles of the Home Office.</p>
+  </div>
+  <div class="obj clay">
+    <span class="obj-emoji">📍</span>
+    <div class="obj-title">Drive Customers Through Your Door</div>
+    <p class="obj-desc">Pin your exact address and we surface every screen within driving distance — sorted by proximity, sorted for your neighborhood. Hyperlocal by design. $500 to start.</p>
+  </div>
+  <div class="obj forest">
+    <span class="obj-emoji">🚀</span>
+    <div class="obj-title">Build Your Brand Across NWA</div>
+    <p class="obj-desc">NWA's startup scene is one of the fastest-growing in the South. Reach founders, investors, and talent hyperlocally — on the commute routes and corridors they use every day.</p>
+  </div>
+</div>
+
+<!-- ── OOH STATS ── -->
+<div class="effectiveness" id="why-ooh">
+  <div class="eff-inner">
+    <div class="eff-top">
+      <div class="eff-title">Why hyperlocal OOH<br><em>still works.</em></div>
+      <div class="eff-src">Sources: Nielsen, OAAA, Arbitron</div>
+    </div>
+    <div class="eff-grid">
+      <div class="eff-card">
+        <span class="eff-num"><em>90</em>%</span>
+        <div class="eff-label">of consumers noticed a billboard advertisement in the past month</div>
+        <div class="eff-source">Nielsen OOH Consumer Report</div>
+      </div>
+      <div class="eff-card">
+        <span class="eff-num"><em>4×</em></span>
+        <div class="eff-label">higher return on ad spend than online-only campaigns when OOH is added to the mix</div>
+        <div class="eff-source">OAAA / Nielsen Catalina</div>
+      </div>
+      <div class="eff-card">
+        <span class="eff-num"><em>46</em>%</span>
+        <div class="eff-label">of adults searched online for a product or service after seeing an OOH ad</div>
+        <div class="eff-source">Arbitron OOH Study</div>
+      </div>
+      <div class="eff-card">
+        <span class="eff-num"><em>24/7</em></span>
+        <div class="eff-label">visibility — no ad blocker, no skip button, no feed algorithm to fight</div>
+        <div class="eff-source">Always-on media</div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- ── REQUEST ACCESS ── -->
+<div class="gate-section" id="gate-access">
+  <div class="gate-inner">
+    <div class="gate-eyebrow">Beta access</div>
+    <h2 class="gate-title">Get early access to <em>NWAAds</em></h2>
+    <p class="gate-sub">We&apos;re onboarding a small group of NWA businesses and Walmart suppliers first. Tell us about your campaign goal and we&apos;ll get you in.</p>
+
+    <div class="gate-form" id="gate-form-wrap">
+      <div class="gf-row">
+        <div class="gf-group"><label>First name</label><input id="g-fname" type="text" placeholder="Andrew"></div>
+        <div class="gf-group"><label>Last name</label><input id="g-lname" type="text" placeholder="Miller"></div>
+      </div>
+      <div class="gf-row">
+        <div class="gf-group"><label>Email</label><input id="g-email" type="email" placeholder="you@company.com"></div>
+        <div class="gf-group"><label>Company</label><input id="g-company" type="text" placeholder="Acme Brands LLC"></div>
+      </div>
+      <div class="gf-row full">
+        <div class="gf-group">
+          <label>Campaign goal</label>
+          <select id="g-goal">
+            <option value="">— Select your primary goal —</option>
+            <option>Reach Walmart &amp; Sam's Club buyers</option>
+            <option>Drive foot traffic to my store</option>
+            <option>Promote a grand opening</option>
+            <option>Promote an event</option>
+            <option>Build brand awareness in NWA</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="gf-row full">
+        <div class="gf-group">
+          <label>Notes <span style="font-weight:400;opacity:0.4">(optional)</span></label>
+          <textarea id="g-notes" placeholder="Tell us about your business or what you&apos;re trying to achieve…"></textarea>
+        </div>
+      </div>
+      <button class="btn-request" onclick="submitRequest()">Request access →</button>
+      <div class="gf-note">We review every request personally and respond within 24 hours.<br>No spam, no sales calls — just a link to the platform.</div>
+    </div>
+
+    <div class="thank-you" id="thank-you">
+      <span class="ty-icon">✉</span>
+      <div class="ty-title">Request received.</div>
+      <p class="ty-sub">We&apos;ll review your request and send access within 24 hours to the email you provided.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span style="font-family:'Fraunces',serif;font-size:17px;font-weight:800;color:var(--ink);">NWA<span style="color:var(--clay)">Ads</span></span>
+  <span>Northwest Arkansas · Self-serve OOH · Beta</span>
+  <a href="mailto:hello@nwaads.com">hello@nwaads.com</a>
+</footer>
+
+<script>
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('access')==='open' || window.location.hash==='#open') window.location.href='book.html';
+})();
+
+function submitRequest(){
+  const fname = document.getElementById('g-fname').value.trim();
+  const email = document.getElementById('g-email').value.trim();
+  if (!fname||!email){alert('Please enter your name and email.');return;}
+  if (!email.includes('@')){alert('Please enter a valid email address.');return;}
+  const lname   = document.getElementById('g-lname').value.trim();
+  const company = document.getElementById('g-company').value.trim();
+  const goal    = document.getElementById('g-goal').value;
+  const notes   = document.getElementById('g-notes').value.trim();
+  const subject = encodeURIComponent('NWAAds Access Request — '+fname+' '+lname);
+  const body    = encodeURIComponent(
+    'New access request from NWAAds.com\n\n'+
+    'Name: '+fname+' '+lname+'\n'+
+    'Email: '+email+'\n'+
+    'Company: '+(company||'—')+'\n'+
+    'Goal: '+(goal||'—')+'\n'+
+    'Notes: '+(notes||'—')+'\n\n'+
+    '---\nDirect access link:\nhttps://nwa-ads.com/?access=open'
+  );
+  window.location.href='mailto:andrew@nwa-ads.com?subject='+subject+'&body='+body;
+  document.getElementById('gate-form-wrap').style.display='none';
+  document.getElementById('thank-you').style.display='block';
+}
+</script>
+</body>
+</html>
