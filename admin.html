@@ -341,6 +341,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="nav-item" onclick="showView('pricing')" id="nav-pricing">
         <span class="ni-icon">💲</span> Pricing manager
       </div>
+      <div class="nav-item" onclick="showView('rateconfig')" id="nav-rateconfig">
+        <span class="ni-icon">⚙️</span> Margin &amp; rate settings
+      </div>
     </nav>
 
     <!-- Content -->
@@ -568,6 +571,98 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
 
+
+      <!-- ════ MARGIN & RATE SETTINGS ════ -->
+      <div class="view" id="view-rateconfig">
+        <div class="page-head">
+          <div class="page-title">Margin &amp; rate settings</div>
+          <div class="page-sub">Control daily premium and markup tiers — all booking site prices update after saving</div>
+        </div>
+
+        <div class="notice warn">
+          <span>⚠</span>
+          <div><strong>Temporary estimates in use:</strong> Daily premium is set to +10% above the 4-week rate card, pending confirmed media owner sheets. Update <strong>Daily rate premium</strong> once sheets are returned.</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+          <div class="card">
+            <div class="card-head">
+              <div><div class="card-title">Rate card multipliers</div><div class="card-sub">Applied to CPM × impressions base rate</div></div>
+            </div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Daily rate premium (× 4-week ÷ 28 days)</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <input type="number" id="cfg-daily-premium" class="search-input" style="width:90px" step="0.01" min="1" max="2" value="1.10" oninput="renderRatePreview()">
+                  <span id="cfg-daily-pct" style="font-size:12px;color:var(--gold);font-family:'Geist Mono',monospace"></span>
+                </div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Currently +10% above 4-week rate card (estimated). Update when Lamar/GSTV sheets confirmed.</div>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Weekly rate premium (× 4-week ÷ 4)</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <input type="number" id="cfg-weekly-premium" class="search-input" style="width:90px" step="0.01" min="1" max="2" value="1.00" oninput="renderRatePreview()">
+                  <span style="font-size:12px;color:var(--text3)">No premium on weekly buys</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Monthly rate premium (× 4-week rate)</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <input type="number" id="cfg-monthly-premium" class="search-input" style="width:90px" step="0.001" min="1" max="2" value="1.083" oninput="renderRatePreview()">
+                  <span style="font-size:12px;color:var(--text3)">+8.3% for 30-day commitment</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div><div class="card-title">Margin markup tiers</div><div class="card-sub">Applied on top of cost — customer never sees cost price</div></div>
+            </div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Deals under $10,000 total</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <input type="number" id="cfg-markup-under" class="search-input" style="width:80px" step="1" min="0" max="100" value="20" oninput="renderRatePreview()">
+                  <span style="font-size:13px;color:var(--text3)">%</span>
+                  <span id="cfg-under-mult" style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--green);margin-left:auto">× 1.20</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px">Deals $10,000 and over</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <input type="number" id="cfg-markup-over" class="search-input" style="width:80px" step="1" min="0" max="100" value="15" oninput="renderRatePreview()">
+                  <span style="font-size:13px;color:var(--text3)">%</span>
+                  <span id="cfg-over-mult" style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--green);margin-left:auto">× 1.15</span>
+                </div>
+              </div>
+              <div style="background:var(--surface2);border-radius:8px;padding:12px;font-size:11px;color:var(--text3);line-height:1.6">
+                <strong style="color:var(--text2)">How it works:</strong> Cart total is calculated at cost, then the appropriate markup tier is applied. The $10K threshold uses the total deal value including all screens and duration.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Live rate preview</div><div class="card-sub">Cost vs. customer price at current settings — adjusts as you type</div></div>
+            <button class="btn accent" onclick="saveRateConfig()">✓ Save &amp; apply to booking site</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead><tr><th>Screen</th><th>Format</th><th>4-wk base (cost)</th><th>Daily cost</th><th>Daily → customer</th><th>Weekly cost</th><th>Weekly → customer</th><th>Markup tier</th></tr></thead>
+              <tbody id="rate-preview-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="notice info" style="margin-top:4px">
+          <span>ℹ</span>
+          <div id="rate-config-status">Not yet saved this session — click <strong>Save &amp; apply</strong> to commit changes.</div>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -626,6 +721,7 @@ function init() {
   renderPipeline();
   renderHealth();
   initPricing();
+  initRateConfig();
 }
 
 function startClock() {
@@ -797,7 +893,7 @@ function renderInventory() {
     const edited = editedRates[s.id];
     const cpmVal = edited !== undefined ? edited : s.cpm;
     const wklyRate = Math.round(cpmVal * s.wkly_impr / 1000);
-    const dailyRate = Math.round(wklyRate / 7);
+    const dailyRate = Math.round((moRate / 28) * RATE_CONFIG.daily_premium);
     const moRate = Math.round(wklyRate * 4.33);
     return `
       <tr>
@@ -1171,6 +1267,92 @@ function initPricing() {
   });
   renderPricingTable();
 }
+
+/* ══════════════ RATE CONFIG ══════════════ */
+let RATE_CONFIG = {
+  daily_premium:    1.10,
+  weekly_premium:   1.00,
+  monthly_premium:  1.083,
+  markup_under_10k: 0.20,
+  markup_over_10k:  0.15,
+};
+
+function renderRatePreview() {
+  const dp  = parseFloat(document.getElementById('cfg-daily-premium')?.value)   || 1.10;
+  const wp  = parseFloat(document.getElementById('cfg-weekly-premium')?.value)  || 1.00;
+  const mu  = parseFloat(document.getElementById('cfg-markup-under')?.value)    || 20;
+  const mo  = parseFloat(document.getElementById('cfg-markup-over')?.value)     || 15;
+
+  const pctEl = document.getElementById('cfg-daily-pct');
+  if (pctEl) pctEl.textContent = '+' + Math.round((dp-1)*100) + '% above rate card';
+  const umEl = document.getElementById('cfg-under-mult');
+  if (umEl) umEl.textContent = '× ' + (1 + mu/100).toFixed(2);
+  const omEl = document.getElementById('cfg-over-mult');
+  if (omEl) omEl.textContent = '× ' + (1 + mo/100).toFixed(2);
+
+  const preview = [
+    INV_DATA.find(s=>s.type==='digital'    && s.mo_rate > 1400),
+    INV_DATA.find(s=>s.type==='digital'    && s.mo_rate < 1200),
+    INV_DATA.find(s=>s.type==='gasstation' && s.faces >= 12),
+    INV_DATA.find(s=>s.type==='gasstation' && s.faces <= 4),
+    INV_DATA.find(s=>s.type==='airport'    && s.wkly_impr > 60000),
+    INV_DATA.find(s=>s.type==='cinema'),
+  ].filter(Boolean);
+
+  const tbody = document.getElementById('rate-preview-tbody');
+  if (!tbody) return;
+  const fmtLabel = {digital:'Billboard',gasstation:'Gas Station',airport:'Airport',cinema:'Cinema'};
+
+  tbody.innerHTML = preview.map(s => {
+    const fourWk       = s.mo_rate;
+    const dailyCost    = Math.round((fourWk / 28) * dp);
+    const weeklyCost   = Math.round((fourWk / 4)  * wp);
+    const dailyCust    = Math.round(dailyCost  * (1 + mu/100));
+    const weeklyCust   = Math.round(weeklyCost * (1 + mu/100));
+    const tier         = weeklyCost * 4 >= 10000 ? 'Over $10K — ' + mo + '%' : 'Under $10K — ' + mu + '%';
+    return `<tr>
+      <td><strong>${s.icon} ${s.name.substring(0,30)}${s.name.length>30?'…':''}</strong></td>
+      <td style="font-size:11px;color:var(--text3)">${fmtLabel[s.type]||s.type}</td>
+      <td class="mono">$${fourWk.toLocaleString()}</td>
+      <td class="mono" style="color:var(--text3)">$${dailyCost}</td>
+      <td class="mono" style="color:var(--accent);font-weight:600">$${dailyCust} <span style="font-size:9px;color:var(--green)">+${mu}%</span></td>
+      <td class="mono" style="color:var(--text3)">$${weeklyCost}</td>
+      <td class="mono" style="color:var(--accent);font-weight:600">$${weeklyCust} <span style="font-size:9px;color:var(--green)">+${mu}%</span></td>
+      <td style="font-size:11px;color:var(--gold)">${tier}</td>
+    </tr>`;
+  }).join('');
+}
+
+function saveRateConfig() {
+  RATE_CONFIG.daily_premium    = parseFloat(document.getElementById('cfg-daily-premium').value)   || 1.10;
+  RATE_CONFIG.weekly_premium   = parseFloat(document.getElementById('cfg-weekly-premium').value)  || 1.00;
+  RATE_CONFIG.monthly_premium  = parseFloat(document.getElementById('cfg-monthly-premium').value) || 1.083;
+  RATE_CONFIG.markup_under_10k = (parseFloat(document.getElementById('cfg-markup-under').value)   || 20) / 100;
+  RATE_CONFIG.markup_over_10k  = (parseFloat(document.getElementById('cfg-markup-over').value)    || 15) / 100;
+  localStorage.setItem('nwaads_rate_config', JSON.stringify(RATE_CONFIG));
+  const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const el = document.getElementById('rate-config-status');
+  if (el) el.innerHTML = 'Saved at <strong>' + now + '</strong>. Copy values below to book.html RATE_CONFIG for permanent update:';
+  const exportStr = 'daily_premium: ' + RATE_CONFIG.daily_premium + ', markup_under_10k: ' + RATE_CONFIG.markup_under_10k + ', markup_over_10k: ' + RATE_CONFIG.markup_over_10k;
+  alert('Saved!\n\nFor book.html RATE_CONFIG:\n' + exportStr);
+  renderRatePreview();
+}
+
+function initRateConfig() {
+  const saved = localStorage.getItem('nwaads_rate_config');
+  if (saved) {
+    try {
+      Object.assign(RATE_CONFIG, JSON.parse(saved));
+      if(document.getElementById('cfg-daily-premium'))   document.getElementById('cfg-daily-premium').value   = RATE_CONFIG.daily_premium;
+      if(document.getElementById('cfg-weekly-premium'))  document.getElementById('cfg-weekly-premium').value  = RATE_CONFIG.weekly_premium;
+      if(document.getElementById('cfg-monthly-premium')) document.getElementById('cfg-monthly-premium').value = RATE_CONFIG.monthly_premium;
+      if(document.getElementById('cfg-markup-under'))    document.getElementById('cfg-markup-under').value    = Math.round(RATE_CONFIG.markup_under_10k * 100);
+      if(document.getElementById('cfg-markup-over'))     document.getElementById('cfg-markup-over').value     = Math.round(RATE_CONFIG.markup_over_10k  * 100);
+    } catch(e) {}
+  }
+  renderRatePreview();
+}
+
 
 </script>
 </body>
