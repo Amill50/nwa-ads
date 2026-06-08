@@ -6524,13 +6524,8 @@ function loadProposalFromURL() {
     // Restore cart
     ST.cart = {};
     (p.screens || []).forEach(id => {
-      const screen = INVENTORY.find ? INVENTORY.find(s => s.id === id) :
-                     Object.values(window).find && undefined;
-      // Try to find screen in INV_DATA from book.html
-      if (typeof INV_DATA !== 'undefined') {
-        const s = INV_DATA.find(x => x.id === id);
-        if (s) ST.cart[id] = s;
-      }
+      const s = INV.find(x => x.id === id);
+      if (s) ST.cart[id] = s;
     });
 
     // Show proposal UI
