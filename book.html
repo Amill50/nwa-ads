@@ -2393,6 +2393,12 @@ function costUnitRate(s) {
 /* ── Duration helpers ── */
 /* Customer-facing price = cost + markup */
 function unitRate(s) {
+  // Custom schedule: total cost = daily rate × number of booked days
+  if (ST.schedMode === 'custom' && ST.customDayCount > 0) {
+    const fourWk = s.mo_rate || s.price || 0;
+    const dailyCost = Math.round((fourWk / 28) * RATE_CONFIG.daily_premium);
+    return markupRate(dailyCost) * ST.customDayCount;
+  }
   return markupRate(costUnitRate(s));
 }
 function unitRateFromPrice(mo_rate) {
