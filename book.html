@@ -6317,13 +6317,11 @@ function renderSummary() {
   const disc = keys.length>=3 ? Math.round(subUnit * 0.1) : 0;
   const effQty2 = (ST.schedMode === 'custom' && ST.customDayCount > 0) ? 1 : ST.qty;
   const grand = (subUnit - disc) * effQty2;
-  document.getElementById('os-sub').textContent = '$' + Math.round(subUnit).toLocaleString() + rateLabel();
-  const rl = document.getElementById('os-rate-label'); if(rl) rl.textContent = ST.inc;
-  document.getElementById('os-sub').textContent = '$' + Math.round(subUnit * ST.qty).toLocaleString();
   document.getElementById('os-disc-row').style.display = disc>0?'flex':'none';
   document.getElementById('os-disc').textContent = '-$' + Math.round(disc * effQty2).toLocaleString();
   document.getElementById('os-grand').textContent = '$' + Math.round(grand).toLocaleString();
-  // Update order summary label to reflect custom schedule
+  // Update order summary sub-total and rate label
+  document.getElementById('os-sub').textContent = '$' + Math.round(subUnit * effQty2).toLocaleString();
   const rl = document.getElementById('os-rate-label');
   if (rl) {
     if (ST.schedMode === 'custom' && ST.customDayCount > 0) {
