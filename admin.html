@@ -1294,44 +1294,157 @@ function importRatesCSV(input) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    const lines = e.target.result.trim().split('\n');
-    const header = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
-    // Expected columns: id, name, type, area, cpm_original, cpm_updated, wkly_impr, wkly_rate
-    const idIdx   = header.indexOf('id');
-    const cpmIdx  = header.indexOf('cpm_updated');
-    const imprIdx = header.indexOf('wkly_impr');
-    if (idIdx === -1 || cpmIdx === -1) {
-      alert('Invalid CSV format. Expected columns: id, cpm_updated (from NWA Ads export).');
+    // Strip BOM if present
+    let text = e.target.result.replace(/^\uFEFF/, '');
+    const lines = text.split('\n');
+
+    // ── Detect format ──────────────────────────────────────────
+    // NWA Ads Lamar Rate Package format:
+    //   Row 0-4: header/title rows (skip)
+    //   Row 5 (index 5): column headers — "Screen Location,City,CPM ($),Faces,Wkly Impr,1 Day,3 Days,1 Week,2 Weeks,4 Weeks,..."
+    //   Row 6+: data rows
+    // NWA Ads admin export format:
+    //   Row 0: column headers — "id,name,type,area,cpm_original,cpm_updated,wkly_impr,wkly_rate"
+    //   Row 1+: data rows
+
+    function parseCSVLine(line) {
+      const result = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      result.push(cur.trim());
+      return result.map(c => c.replace(/^"|"$/g, '').trim());
+    }
+
+    // Find the header row — look for "Screen Location" or "id"
+    let headerIdx = -1, isLamarFormat = false;
+    for (let i = 0; i < Math.min(lines.length, 10); i++) {
+      const l = lines[i].toLowerCase();
+      if (l.includes('screen location') && l.includes('city')) {
+        headerIdx = i; isLamarFormat = true; break;
+      }
+      if (l.startsWith('id,') || l.includes(',cpm_updated,')) {
+        headerIdx = i; isLamarFormat = false; break;
+      }
+    }
+
+    if (headerIdx === -1) {
+      alert('Could not detect CSV format.\n\nSupported formats:\n• NWA Ads Lamar Rate Package (Screen Location, City, CPM...)\n• NWA Ads admin export (id, name, cpm_updated...)');
       input.value = '';
       return;
     }
-    let updated = 0, skipped = 0;
-    lines.slice(1).forEach(line => {
-      if (!line.trim()) return;
-      const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || line.split(',');
-      const clean = cols.map(c => c.replace(/^"|"$/g,'').trim());
-      const id  = clean[idIdx];
-      const cpm = parseFloat(clean[cpmIdx]);
-      const impr = imprIdx !== -1 ? parseInt(clean[imprIdx]) : null;
-      if (!id || isNaN(cpm)) { skipped++; return; }
-      const screen = INV_DATA.find(s => s.id === id);
-      if (!screen) { skipped++; return; }
-      // Update the editable CPM input in the DOM
-      const input_el = document.getElementById('cpm-' + id);
-      if (input_el) {
-        input_el.value = cpm;
-        input_el.classList.add('edited');
+
+    const header = parseCSVLine(lines[headerIdx]).map(h => h.toLowerCase());
+    let updated = 0, skipped = 0, noMatch = [];
+
+    if (isLamarFormat) {
+      // ── LAMAR FORMAT ──────────────────────────────────────────
+      // Cols: Screen Location(0), City(1), CPM(2), Faces(3), Wkly Impr(4),
+      //       1 Day(5), 3 Days(6), 1 Week(7), 2 Weeks(8), 4 Weeks(9)...
+      const nameIdx = 0, cityIdx = 1, cpmIdx = 2, imprIdx = 4;
+      const wklyIdx = 7, moIdx = 9;  // 1 Week and 4 Weeks columns
+
+      lines.slice(headerIdx + 1).forEach(line => {
+        if (!line.trim() || line.replace(/,/g,'').trim() === '') return;
+        const cols = parseCSVLine(line);
+        if (cols.length < 3) return;
+
+        const screenName = cols[nameIdx];
+        const city       = cols[cityIdx];
+        const cpmRaw     = cols[cpmIdx];
+        const imprRaw    = cols[imprIdx];
+        const wklyRaw    = cols[wklyIdx];
+        const moRaw      = cols[moIdx];
+
+        // Skip summary/legend rows
+        if (!screenName || screenName.toLowerCase().includes('total') ||
+            screenName.toLowerCase().includes('legend') ||
+            screenName.toLowerCase().includes('yellow') ||
+            screenName.toLowerCase().includes('grey') ||
+            screenName.toLowerCase().includes('rates shown')) return;
+
+        const cpm  = parseFloat(cpmRaw.replace(/[$,]/g, ''));
+        const impr = parseInt((imprRaw||'').replace(/[$,]/g, ''));
+        const wkly = parseFloat((wklyRaw||'').replace(/[$,]/g, ''));
+        const mo   = parseFloat((moRaw||'').replace(/[$,]/g, ''));
+
+        if (isNaN(cpm) && isNaN(wkly) && isNaN(mo)) { skipped++; return; }
+
+        // Fuzzy match: find screen in INV_DATA by name similarity + city
+        const nameLower = screenName.toLowerCase();
+        const cityLower = (city||'').toLowerCase();
+
+        let best = null, bestScore = 0;
+        INV_DATA.forEach(s => {
+          const sName = s.name.toLowerCase();
+          const sArea = (s.area||'').toLowerCase();
+          // Score: city match + shared words
+          let score = 0;
+          if (cityLower && sArea.includes(cityLower.split(',')[0].trim())) score += 3;
+          // Word overlap
+          const nameWords = nameLower.replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w => w.length > 2);
+          const sWords    = sName.replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w => w.length > 2);
+          nameWords.forEach(w => { if (sWords.includes(w)) score++; });
+          if (score > bestScore) { bestScore = score; best = s; }
+        });
+
+        if (!best || bestScore < 2) {
+          noMatch.push(screenName);
+          skipped++;
+          return;
+        }
+
+        // Apply updates
+        if (!isNaN(cpm))  { editedRates[best.id] = cpm; }
+        if (!isNaN(impr) && impr > 0) { best.wkly_impr = impr; }
+        if (!isNaN(mo)   && mo > 0)   { best.mo_rate   = mo; }
+        if (!isNaN(wkly) && wkly > 0) { best.wkly_rate = wkly; }
+
+        // Update DOM input
+        const el = document.getElementById('cpm-' + best.id);
+        if (el) { el.value = !isNaN(cpm) ? cpm : best.cpm; el.classList.add('edited'); }
+        updated++;
+      });
+
+    } else {
+      // ── ADMIN EXPORT FORMAT ───────────────────────────────────
+      const idIdx   = header.indexOf('id');
+      const cpmIdx  = header.indexOf('cpm_updated');
+      const imprIdx = header.indexOf('wkly_impr');
+      if (idIdx === -1 || cpmIdx === -1) {
+        alert('Admin export format detected but missing required columns (id, cpm_updated).');
+        input.value = ''; return;
       }
-      editedRates[id] = cpm;
-      if (impr && impr !== screen.wkly_impr) {
-        screen.wkly_impr = impr;
-      }
-      updated++;
-    });
-    log(updated + ' rate(s) imported from CSV' + (skipped ? ', ' + skipped + ' skipped (id not found)' : ''));
+      lines.slice(headerIdx + 1).forEach(line => {
+        if (!line.trim()) return;
+        const cols = parseCSVLine(line);
+        const id  = cols[idIdx];
+        const cpm = parseFloat(cols[cpmIdx]);
+        const impr = imprIdx !== -1 ? parseInt(cols[imprIdx]) : null;
+        if (!id || isNaN(cpm)) { skipped++; return; }
+        const screen = INV_DATA.find(s => s.id === id);
+        if (!screen) { skipped++; return; }
+        const el = document.getElementById('cpm-' + id);
+        if (el) { el.value = cpm; el.classList.add('edited'); }
+        editedRates[id] = cpm;
+        if (impr && impr > 0) screen.wkly_impr = impr;
+        updated++;
+      });
+    }
+
     renderInventory();
-    alert(updated + ' screen rate(s) imported successfully.' + (skipped ? '\n' + skipped + ' rows skipped (screen ID not found in inventory).' : '') + '\n\nReview changes and click "Save rates" to confirm.');
-    input.value = ''; // reset file input
+
+    let msg = updated + ' screen rate(s) imported successfully.';
+    if (skipped)  msg += '\n' + skipped + ' row(s) skipped.';
+    if (noMatch.length) msg += '\n\nCould not match ' + noMatch.length + ' screen(s):\n' + noMatch.slice(0,5).join('\n') + (noMatch.length > 5 ? '\n…and ' + (noMatch.length-5) + ' more' : '');
+    msg += '\n\nReview the highlighted rows and click "Save rates" to confirm.';
+    alert(msg);
+    log(updated + ' rate(s) imported from ' + (isLamarFormat ? 'Lamar Rate Package' : 'admin export') + ' CSV');
+    input.value = '';
   };
   reader.readAsText(file);
 }
