@@ -290,6 +290,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 #panel-2.active { display: flex; flex-direction: column; height: 100vh; padding-top: 64px; }
 
 .s2-top {
+  background: var(--green,#1f3d2a) !important;
   flex-shrink: 0;
   background: #1f3d2a; border-bottom: 1px solid #2d5a3d;
   padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -2234,7 +2235,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
       <div class="os-divider"></div>
       <div class="os-row"><span class="l">Rate (<span id="os-rate-label">weekly</span>)</span><span class="v" id="os-sub">$0</span></div>
       <div class="os-row disc" id="os-disc-row" style="display:none">
-        <span class="l">Multi-screen discount (10%)</span><span class="v" id="os-disc">—</span>
+        <span class="l">Volume discount</span><span class="v" id="os-disc">—</span>
       </div>
       <div class="os-divider"></div>
       <div class="os-grand">
@@ -2375,6 +2376,9 @@ function markupRate(costPrice) {
 
 /* Cart grand total at cost (before markup) — used to determine markup tier */
 function cartGrandTotal() {
+  if (ST.schedMode === 'custom' && ST.customDayCount > 0) {
+    return Object.values(ST.cart).reduce((sum, s) => sum + customSchedTotalCost(s.mo_rate * (1 + RATE_CONFIG.markup_under_10k)), 0);
+  }
   return Object.values(ST.cart).reduce((sum, s) => sum + (costUnitRate(s) * ST.qty), 0);
 }
 
@@ -2404,6 +2408,11 @@ function unitRateFromPrice(mo_rate) {
   return Math.round(cost * (1 + markup));
 }
 function durLabel() {
+  if (ST.schedMode === 'custom' && ST.customDayCount > 0) {
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const days = ST.customDays.map(d => dayNames[d]).join(' + ');
+    return days + ' · ' + ST.customDayCount + ' days';
+  }
   const u = ST.inc === 'daily' ? 'day' : ST.inc === 'weekly' ? 'week' : 'month';
   return ST.qty + ' ' + u + (ST.qty !== 1 ? 's' : '');
 }
@@ -6228,8 +6237,11 @@ function renderCart() {
       </div>`;
   }).filter(Boolean).join('');
 
-  const disc  = keys.length >= 3 ? Math.round(subUnit * 0.10) : 0;
-  const grand = Math.round((subUnit - disc) * ST.qty);
+  const disc  = 0; // Volume discounts applied manually — removed auto 3-screen discount
+  // For custom schedule, grand = subUnit already includes all days (customSchedTotalCost)
+  // For standard, grand = subUnit * qty
+  const effQty = (ST.schedMode === 'custom' && ST.customDayCount > 0) ? 1 : ST.qty;
+  const grand = Math.round((subUnit - disc) * effQty);
   const imprStr = totalWklyImpr >= 1000
     ? Math.round(totalWklyImpr/1000)+'K+' : totalWklyImpr.toLocaleString();
 
@@ -6241,7 +6253,7 @@ function renderCart() {
   const discRow = document.getElementById('ct-disc-row');
   if (discRow) discRow.style.display = disc ? 'flex' : 'none';
   const discEl = document.getElementById('ct-disc');
-  if (discEl && disc) discEl.textContent = '-$' + Math.round(disc*ST.qty).toLocaleString();
+  if (discEl && disc) discEl.textContent = '-$' + Math.round(disc*effQty).toLocaleString();
   const subEl = document.getElementById('ct-sub');
   if (subEl) subEl.textContent = '$' + Math.round(subUnit).toLocaleString() + rateLabel();
   const moEl = document.getElementById('ct-mo');
@@ -6252,8 +6264,8 @@ function renderCart() {
   if (csTitle) csTitle.textContent = keys.length + ' screen' + (keys.length!==1?'s':'') +
     ' · ' + imprStr + ' wkly impr';
   if (noteEl) noteEl.textContent = disc
-    ? '10% multi-screen discount applied — saving $' + Math.round(disc*ST.qty).toLocaleString()
-    : keys.length < 3 ? `Add ${3-keys.length} more screen${3-keys.length!==1?'s':''} to unlock 10% off` : '';
+    ? '10% multi-screen discount applied — saving $' + Math.round(disc*effQty).toLocaleString()
+    : '';
 
   updateCartHeader();
   updateNavSel();
@@ -6297,13 +6309,25 @@ function renderSummary() {
     return `<div class="os-item"><div><div class="name">${s.icon} ${s.name}</div><div class="meta">${s.area} · ${s.impr} · ${durLabel()}</div></div><div class="price">$${lineTotal.toLocaleString()}</div></div>`;
   }).join('');
   const disc = keys.length>=3 ? Math.round(subUnit * 0.1) : 0;
-  const grand = (subUnit - disc) * ST.qty;
+  const effQty2 = (ST.schedMode === 'custom' && ST.customDayCount > 0) ? 1 : ST.qty;
+  const grand = (subUnit - disc) * effQty2;
   document.getElementById('os-sub').textContent = '$' + Math.round(subUnit).toLocaleString() + rateLabel();
   const rl = document.getElementById('os-rate-label'); if(rl) rl.textContent = ST.inc;
   document.getElementById('os-sub').textContent = '$' + Math.round(subUnit * ST.qty).toLocaleString();
   document.getElementById('os-disc-row').style.display = disc>0?'flex':'none';
-  document.getElementById('os-disc').textContent = '-$' + Math.round(disc * ST.qty).toLocaleString();
+  document.getElementById('os-disc').textContent = '-$' + Math.round(disc * effQty2).toLocaleString();
   document.getElementById('os-grand').textContent = '$' + Math.round(grand).toLocaleString();
+  // Update order summary label to reflect custom schedule
+  const rl = document.getElementById('os-rate-label');
+  if (rl) {
+    if (ST.schedMode === 'custom' && ST.customDayCount > 0) {
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const days = ST.customDays.map(d => dayNames[d]).join('+');
+      rl.textContent = days + ' · ' + ST.customDayCount + ' days';
+    } else {
+      rl.textContent = ST.inc;
+    }
+  }
 }
 
 /* ══════════════ CONFIRM + DASHBOARD ══════════════ */
@@ -7681,7 +7705,7 @@ function showSummary() {
     </div>
     <div class="sum-detail-card">
       <div class="sum-detail-label">Multi-screen discount</div>
-      <div class="sum-detail-val">${disc > 0 ? '✓ 10% applied — saving $' + Math.round(disc * ST.qty).toLocaleString() : keys.length < 3 ? 'Add ' + (3 - keys.length) + ' more screens for 10% off' : '—'}</div>
+      <div class="sum-detail-val">${disc > 0 ? '✓ 10% applied — saving $' + Math.round(disc * ST.qty).toLocaleString() : '—'}</div>
     </div>
   `;
 
