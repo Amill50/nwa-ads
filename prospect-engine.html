@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWA Ads — OOH Prospect Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0e1a0e;--green:#1f3d2a;--green-l:#eaf2ec;
+  --orange:#c8440a;--orange-l:#fdf1eb;
+  --gold:#9a7b00;--gold-l:#fefbe8;
+  --red:#991b1b;--red-l:#fef2f2;
+  --border:#e2ddd6;--muted:#7a7570;
+  --white:#fffef9;--off:#f6f4ef;--off2:#ede9e3;
+}
+body{font-family:'Instrument Sans',sans-serif;background:var(--off);color:var(--ink);min-height:100vh}
+#root{max-width:860px;margin:0 auto;padding:32px 20px 80px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useRef, useCallback } = React;
+
+/* ── NWA inventory — real CPM & rate data ── */
+const NWA_SCREENS = [
+  { id:'loc_595406', name:'5500 W Sunset (Springdale)', type:'digital', area:'Springdale', cpm:10.14, wkly_impr:35000, mo_rate:1537, wkly_rate:355 },
+  { id:'loc_595408', name:'Walton Blvd E/S (Bentonville)', type:'digital', area:'Bentonville', cpm:7.25, wkly_impr:35000, mo_rate:1100, wkly_rate:254 },
+  { id:'loc_595412', name:'I-49 @ Don Tyson Pkwy (Springdale)', type:'digital', area:'Springdale', cpm:10.14, wkly_impr:35000, mo_rate:1537, wkly_rate:355 },
+  { id:'loc_595414', name:'Hwy 71 / I-49 @ N Walton (Bentonville)', type:'digital', area:'Bentonville', cpm:10.14, wkly_impr:35000, mo_rate:1537, wkly_rate:355 },
+  { id:'loc_595434', name:'14th & S Walton E/S (Bentonville)', type:'digital', area:'Bentonville', cpm:7.25, wkly_impr:35000, mo_rate:1100, wkly_rate:254 },
+  { id:'loc_595441', name:'I-49 W/S NB (Rogers)', type:'digital', area:'Rogers', cpm:7.25, wkly_impr:35000, mo_rate:1100, wkly_rate:254 },
+  { id:'loc_595442', name:'I-49 E/S NB (Rogers)', type:'digital', area:'Rogers', cpm:7.25, wkly_impr:35000, mo_rate:1100, wkly_rate:254 },
+  { id:'loc_595430', name:'SW Regional Airport Blvd (Bentonville)', type:'digital', area:'Bentonville', cpm:10.14, wkly_impr:35000, mo_rate:1537, wkly_rate:355 },
+  { id:'loc_740950', name:'Gas Station Network — 12 screens (Fayetteville)', type:'gasstation', area:'Fayetteville', cpm:20.29, wkly_impr:21600, mo_rate:1897, wkly_rate:438 },
+  { id:'loc_2003347', name:'Gas Station Network — 20 screens (Lowell)', type:'gasstation', area:'Lowell', cpm:20.29, wkly_impr:36000, mo_rate:3161, wkly_rate:730 },
+  { id:'loc_2551020', name:'Gas Station Network — 16 screens (Bentonville)', type:'gasstation', area:'Bentonville', cpm:20.29, wkly_impr:28800, mo_rate:2529, wkly_rate:584 },
+  { id:'xna_billboard_1', name:'XNA Airport — Digital Billboard', type:'airport', area:'XNA Airport', cpm:8.25, wkly_impr:70000, mo_rate:2500, wkly_rate:577 },
+  { id:'xna_eposter', name:'XNA Airport — E-Poster Network', type:'airport', area:'XNA Airport', cpm:8.26, wkly_impr:60000, mo_rate:2145, wkly_rate:495 },
+  { id:'loc_237536', name:'Rogers Towne Center 12 (Cinema Lobby)', type:'cinema', area:'Rogers', cpm:7.61, wkly_impr:4500, mo_rate:147, wkly_rate:34 },
+  { id:'loc_442131', name:'Pinnacle Hills 12 (Cinema Lobby)', type:'cinema', area:'Rogers', cpm:7.61, wkly_impr:4500, mo_rate:147, wkly_rate:34 },
+];
+
+const MARKUP = 1.20;
+const CATEGORIES = [
+  'Gas Station / C-Store','QSR / Fast Casual','Auto Dealer','Gym / Fitness',
+  'Real Estate / Builder','Healthcare / Urgent Care','Retail Chain',
+  'Walmart Supplier / CPG','Hotel / Hospitality','Entertainment / Venue',
+  'Financial Services','Home Services','Other',
+];
+
+/* ── Claude API call with web_search tool ── */
+async function runAnalysis(brand, category, nwaContext) {
+  const invSummary = NWA_SCREENS.slice(0,8).map(s =>
+    `${s.id}|${s.name}|${s.area}|${s.type}|CPM $${s.cpm}|${(s.wkly_impr/1000).toFixed(0)}K wkly impr|$${Math.round(s.mo_rate*MARKUP)}/4wk customer price`
+  ).join('\n');
+
+  const systemPrompt = `You are a competitive media analyst for NWA Ads, an out-of-home advertising marketplace in Northwest Arkansas. Your job is to research brands running social media ads and build the case for why OOH (billboard, airport, gas station screens) in NWA would outperform their current digital spend.
+
+NWA context:
+- Population: ~600,000 across Bentonville, Rogers, Fayetteville, Springdale
+- Walmart HQ is in Bentonville — major supplier/executive audience
+- Fast-growing market — many national chains have NWA locations
+- OOH CPM benchmarks: digital billboard $7–$10, gas station screens $20, airport $8–$23
+- Social media CPM benchmarks: X/Twitter $2–$7 (but 2–5% reaches NWA), Meta/Instagram $8–$15 (geo-targeted), YouTube $10–$30
+
+NWA Ads inventory sample (id|name|area|type|CPM|weekly impr|customer price):
+${invSummary}
+
+Always apply 20% markup on deals under $10K. Always cite specific screen names from the inventory. Always calculate effective local CPM (social CPM ÷ local audience %).`;
+
+  const userPrompt = `Research and analyze: ${brand} (category: ${category})
+${nwaContext ? `Additional context: ${nwaContext}` : ''}
+
+Use web search to find:
+1. Whether ${brand} is actively running Meta (Facebook/Instagram) or X/Twitter ads
+2. Whether ${brand} has locations in Northwest Arkansas / Bentonville area
+3. Any recent NWA expansion, new locations, or promotional campaigns
+4. Estimated ad spend level (national vs local)
+
+Then produce a JSON response ONLY (no markdown, no explanation outside JSON) with this exact structure:
+{
+  "brand": "${brand}",
+  "category": "${category}",
+  "nwa_presence": {
+    "has_locations": true/false,
+    "location_count": number,
+    "cities": ["Bentonville","Rogers",...],
+    "recent_news": "one sentence about recent NWA activity or expansion",
+    "confidence": "confirmed|likely|unknown"
+  },
+  "digital_activity": {
+    "platforms": ["Meta","X","YouTube"],
+    "campaign_type": "national|regional|local|unknown",
+    "estimated_impressions": number or null,
+    "estimated_spend_range": "$X–$Y" or "unknown",
+    "ad_description": "one sentence describing what their ads are about",
+    "local_targeting": true/false/null,
+    "effective_nwa_pct": number (estimated % of digital spend reaching NWA audience, 0–100),
+    "source_notes": "where you found this info"
+  },
+  "ooh_opportunity": {
+    "fit_score": number (1–10),
+    "fit_rationale": "2–3 sentences explaining the OOH opportunity",
+    "key_insight": "one punchy sentence — the headline finding",
+    "urgency_trigger": "new location|promo|rebrand|seasonal|evergreen|none",
+    "recommended_formats": ["digital","gasstation","airport","cinema"],
+    "campaign_goal": "foot traffic|brand awareness|supplier reach|event"
+  },
+  "cpm_comparison": {
+    "social_cpm_national": number,
+    "social_cpm_nwa_effective": number,
+    "ooh_cpm": number,
+    "efficiency_multiplier": number,
+    "explanation": "2 sentences explaining the CPM gap"
+  },
+  "recommended_screens": [
+    {
+      "screen_id": "from inventory above",
+      "screen_name": "exact name from inventory",
+      "why": "one sentence — specific reason this screen fits this brand"
+    }
+  ],
+  "package": {
+    "screens": number,
+    "duration_weeks": 4,
+    "weekly_impressions": number,
+    "four_week_impressions": number,
+    "customer_price": number,
+    "blended_cpm": number
+  },
+  "pitch_headline": "compelling one-liner for the proposal cover",
+  "pitch_body": "3–4 sentence paragraph making the case — use specific numbers",
+  "suggested_copy": [
+    {"placement": "screen name", "copy": "8-word billboard copy with location cue"}
+  ]
+}`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    })
+  });
+
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message);
+
+  // Extract the final text block (after tool use)
+  const textBlocks = (data.content || []).filter(b => b.type === 'text');
+  const raw = textBlocks.map(b => b.text).join('');
+  const clean = raw.replace(/```json|```/g, '').trim();
+  const jsonStart = clean.indexOf('{');
+  const jsonEnd = clean.lastIndexOf('}');
+  if (jsonStart === -1) throw new Error('No JSON in response');
+  return JSON.parse(clean.slice(jsonStart, jsonEnd + 1));
+}
+
+/* ── Components ── */
+function ScoreBadge({ score }) {
+  const color = score >= 8 ? '#065f46' : score >= 6 ? '#92400e' : '#991b1b';
+  const bg = score >= 8 ? '#d1fae5' : score >= 6 ? '#fef3c7' : '#fef2f2';
+  const label = score >= 8 ? 'High priority' : score >= 6 ? 'Medium' : 'Low fit';
+  return (
+    <span style={{
+      display:'inline-flex',alignItems:'center',gap:6,
+      background:bg,color,fontWeight:700,fontSize:11,
+      padding:'3px 10px',borderRadius:20,border:`1px solid ${color}33`
+    }}>
+      <span style={{fontFamily:'Fraunces,serif',fontSize:16,lineHeight:1}}>{score}</span>
+      <span style={{textTransform:'uppercase',letterSpacing:'0.06em'}}>/10 — {label}</span>
+    </span>
+  );
+}
+
+function CPMBar({ social, ooh, multiplier }) {
+  const max = Math.max(social, ooh, 10);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:10,padding:'16px 0'}}>
+      <div>
+        <div style={{display:'flex',justifyContent:'space-between',fontSize:11,fontWeight:600,marginBottom:4}}>
+          <span style={{color:'var(--muted)'}}>Social (effective NWA CPM)</span>
+          <span style={{color:'var(--red)',fontFamily:'Fraunces,serif',fontSize:14}}>${social.toFixed(2)}</span>
+        </div>
+        <div style={{height:10,background:'var(--off2)',borderRadius:5,overflow:'hidden'}}>
+          <div style={{height:'100%',width:`${Math.min(100,(social/max)*100)}%`,background:'var(--red)',borderRadius:5,transition:'width 1s ease'}}/>
+        </div>
+      </div>
+      <div>
+        <div style={{display:'flex',justifyContent:'space-between',fontSize:11,fontWeight:600,marginBottom:4}}>
+          <span style={{color:'var(--muted)'}}>NWA OOH CPM</span>
+          <span style={{color:'var(--green)',fontFamily:'Fraunces,serif',fontSize:14}}>${ooh.toFixed(2)}</span>
+        </div>
+        <div style={{height:10,background:'var(--off2)',borderRadius:5,overflow:'hidden'}}>
+          <div style={{height:'100%',width:`${Math.min(100,(ooh/max)*100)}%`,background:'var(--green)',borderRadius:5,transition:'width 1s ease'}}/>
+        </div>
+      </div>
+      <div style={{fontSize:12,color:'var(--green)',fontWeight:600,textAlign:'center',paddingTop:4}}>
+        OOH is <span style={{fontFamily:'Fraunces,serif',fontSize:16}}>{multiplier.toFixed(1)}×</span> more efficient for NWA audience
+      </div>
+    </div>
+  );
+}
+
+function ScreenCard({ screen, why }) {
+  const icons = {digital:'🛣',gasstation:'⛽',airport:'✈',cinema:'🎬'};
+  const inv = NWA_SCREENS.find(s => s.id === screen.screen_id);
+  const price = inv ? Math.round(inv.mo_rate * MARKUP) : null;
+  return (
+    <div style={{
+      border:'1px solid var(--border)',borderRadius:10,padding:'14px 16px',
+      background:'var(--white)',display:'flex',gap:12,alignItems:'flex-start'
+    }}>
+      <span style={{fontSize:22,flexShrink:0}}>{icons[inv?.type]||'📍'}</span>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontWeight:700,fontSize:13,marginBottom:3}}>{screen.screen_name}</div>
+        <div style={{fontSize:11,color:'var(--muted)',marginBottom:6,lineHeight:1.5}}>{why}</div>
+        {inv && (
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            <span style={pill('var(--green-l)','var(--green)')}>{(inv.wkly_impr/1000).toFixed(0)}K wkly impr</span>
+            <span style={pill('var(--off2)','var(--muted)')}>CPM ${inv.cpm}</span>
+            <span style={pill('var(--orange-l)','var(--orange)')}>${price}/4wk</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const pill = (bg,color) => ({
+  display:'inline-flex',alignItems:'center',
+  background:bg,color,fontSize:10,fontWeight:700,
+  padding:'2px 8px',borderRadius:10
+});
+
+function ResultDeck({ result }) {
+  const r = result;
+  const p = r.package;
+  const c = r.cpm_comparison;
+  const o = r.ooh_opportunity;
+  const n = r.nwa_presence;
+  const d = r.digital_activity;
+
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:16}}>
+
+      {/* Header */}
+      <div style={{background:'var(--green)',borderRadius:14,padding:'28px 28px 24px',color:'#fff',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',top:-40,right:-40,width:200,height:200,borderRadius:'50%',background:'rgba(255,255,255,0.04)'}}/>
+        <div style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',opacity:0.5,marginBottom:6}}>{r.category}</div>
+        <div style={{fontFamily:'Fraunces,serif',fontSize:28,fontWeight:700,lineHeight:1.2,marginBottom:10}}>{r.pitch_headline}</div>
+        <div style={{fontSize:13,opacity:0.75,lineHeight:1.7,marginBottom:20,maxWidth:560}}>{r.pitch_body}</div>
+        <div style={{display:'flex',gap:24,paddingTop:18,borderTop:'1px solid rgba(255,255,255,0.12)',flexWrap:'wrap'}}>
+          {[
+            {num:p?.four_week_impressions?.toLocaleString(), lbl:'NWA impressions / 4wk'},
+            {num:`$${c?.ooh_cpm?.toFixed(2)}`, lbl:'OOH CPM'},
+            {num:`${c?.efficiency_multiplier?.toFixed(1)}×`, lbl:'vs social effective CPM'},
+            {num:`$${p?.customer_price?.toLocaleString()}`, lbl:'4-week package price'},
+          ].map((s,i) => (
+            <div key={i}>
+              <div style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:700}}>{s.num||'—'}</div>
+              <div style={{fontSize:10,opacity:0.55,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.07em',marginTop:2}}>{s.lbl}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Two columns */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+
+        {/* NWA Presence */}
+        <div style={card()}>
+          <div style={eyebrow()}>NWA presence</div>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+            <span style={{fontSize:20}}>{n.has_locations ? '✅' : '❓'}</span>
+            <div>
+              <div style={{fontWeight:700,fontSize:13}}>
+                {n.has_locations ? `${n.location_count} location${n.location_count!==1?'s':''} confirmed` : 'Presence unknown'}
+              </div>
+              <div style={{fontSize:11,color:'var(--muted)'}}>
+                {n.cities?.join(', ')||'—'} · confidence: {n.confidence}
+              </div>
+            </div>
+          </div>
+          {n.recent_news && <div style={{fontSize:12,color:'#7a3210',background:'var(--orange-l)',borderRadius:8,padding:'8px 12px',lineHeight:1.6}}>{n.recent_news}</div>}
+        </div>
+
+        {/* Digital activity */}
+        <div style={card()}>
+          <div style={eyebrow()}>Digital ad activity</div>
+          <div style={{fontSize:12,color:'var(--ink)',lineHeight:1.6,marginBottom:8}}>{d.ad_description||'No active ads found'}</div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:8}}>
+            {(d.platforms||[]).map(p => <span key={p} style={pill('var(--off2)','var(--muted)')}>{p}</span>)}
+            <span style={pill(d.campaign_type==='national'?'var(--red-l)':'var(--green-l)',d.campaign_type==='national'?'var(--red)':'var(--green)')}>
+              {d.campaign_type||'unknown'} campaign
+            </span>
+          </div>
+          <div style={{fontSize:11,color:'var(--muted)',fontStyle:'italic'}}>{d.source_notes}</div>
+        </div>
+      </div>
+
+      {/* CPM comparison */}
+      <div style={card()}>
+        <div style={eyebrow()}>CPM efficiency — social vs NWA OOH</div>
+        <CPMBar
+          social={c?.social_cpm_nwa_effective||0}
+          ooh={c?.ooh_cpm||10.93}
+          multiplier={c?.efficiency_multiplier||1}
+        />
+        <div style={{fontSize:12,color:'var(--muted)',lineHeight:1.7,borderTop:'1px solid var(--border)',paddingTop:12,marginTop:4}}>
+          {c?.explanation}
+        </div>
+      </div>
+
+      {/* OOH fit */}
+      <div style={card()}>
+        <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,marginBottom:12}}>
+          <div style={eyebrow()}>OOH opportunity score</div>
+          <ScoreBadge score={o.fit_score} />
+        </div>
+        <div style={{fontFamily:'Fraunces,serif',fontSize:16,fontWeight:600,marginBottom:8,lineHeight:1.4,color:'var(--orange)'}}>
+          "{o.key_insight}"
+        </div>
+        <div style={{fontSize:12,color:'var(--ink)',lineHeight:1.7}}>{o.fit_rationale}</div>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:10}}>
+          <span style={pill('var(--gold-l)','var(--gold)')}>⚡ {o.urgency_trigger}</span>
+          <span style={pill('var(--green-l)','var(--green)')}>Goal: {o.campaign_goal}</span>
+          {(o.recommended_formats||[]).map(f => <span key={f} style={pill('var(--off2)','var(--muted)')}>{f}</span>)}
+        </div>
+      </div>
+
+      {/* Recommended screens */}
+      {result.recommended_screens?.length > 0 && (
+        <div style={card()}>
+          <div style={eyebrow()}>Recommended screens</div>
+          <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:4}}>
+            {result.recommended_screens.map((s,i) => <ScreenCard key={i} screen={s} why={s.why}/>)}
+          </div>
+          {p && (
+            <div style={{
+              background:'var(--green)',color:'#fff',borderRadius:10,
+              padding:'14px 18px',marginTop:12,
+              display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12
+            }}>
+              {[
+                {v:`${p.screens} screens`,l:'Package'},
+                {v:(p.four_week_impressions||0).toLocaleString(),l:'4-wk impressions'},
+                {v:`$${p.blended_cpm?.toFixed(2)}`,l:'Blended CPM'},
+                {v:`$${p.customer_price?.toLocaleString()}`,l:'4-week total'},
+              ].map((x,i) => (
+                <div key={i} style={{textAlign:'center'}}>
+                  <div style={{fontFamily:'Fraunces,serif',fontSize:18,fontWeight:700}}>{x.v}</div>
+                  <div style={{fontSize:9,opacity:0.55,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.07em',marginTop:1}}>{x.l}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Creative suggestions */}
+      {result.suggested_copy?.length > 0 && (
+        <div style={card()}>
+          <div style={eyebrow()}>Suggested creative copy</div>
+          <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:4}}>
+            {result.suggested_copy.map((c,i) => (
+              <div key={i} style={{display:'flex',gap:12,alignItems:'flex-start',padding:'10px 0',borderBottom:i<result.suggested_copy.length-1?'1px solid var(--border)':'none'}}>
+                <div style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.07em',color:'var(--muted)',width:90,flexShrink:0,paddingTop:3}}>{c.placement}</div>
+                <div style={{fontFamily:'Fraunces,serif',fontSize:17,fontWeight:600,lineHeight:1.4,color:'var(--ink)'}}>{c.copy}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+const card = () => ({
+  background:'var(--white)',border:'1px solid var(--border)',
+  borderRadius:12,padding:'18px 20px'
+});
+const eyebrow = () => ({
+  fontSize:10,fontWeight:700,textTransform:'uppercase',
+  letterSpacing:'0.1em',color:'var(--orange)',marginBottom:10
+});
+
+/* ── Queue item ── */
+function QueueItem({ item, onRemove }) {
+  const statusColors = {
+    pending:   ['var(--off2)','var(--muted)'],
+    running:   ['var(--gold-l)','var(--gold)'],
+    done:      ['var(--green-l)','var(--green)'],
+    error:     ['var(--red-l)','var(--red)'],
+  };
+  const [bg,color] = statusColors[item.status]||statusColors.pending;
+  const labels = {pending:'Queued',running:'Analyzing…',done:'Complete',error:'Failed'};
+  return (
+    <div style={{
+      display:'flex',alignItems:'center',gap:12,
+      padding:'10px 14px',background:'var(--white)',
+      border:'1px solid var(--border)',borderRadius:10,
+    }}>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontWeight:700,fontSize:13,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.brand}</div>
+        <div style={{fontSize:11,color:'var(--muted)'}}>{item.category}</div>
+      </div>
+      <span style={{
+        fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.07em',
+        padding:'2px 8px',borderRadius:10,background:bg,color,flexShrink:0
+      }}>
+        {item.status==='running'?'⟳ ':''}{labels[item.status]}
+      </span>
+      {item.result && <span style={{fontSize:10,fontWeight:700,color:item.result.ooh_opportunity?.fit_score>=7?'var(--green)':'var(--muted)'}}>
+        {item.result.ooh_opportunity?.fit_score}/10
+      </span>}
+      <button onClick={()=>onRemove(item.id)} style={{
+        background:'none',border:'none',cursor:'pointer',
+        color:'var(--muted)',fontSize:16,lineHeight:1,padding:'0 4px'
+      }}>×</button>
+    </div>
+  );
+}
+
+/* ── Main App ── */
+function App() {
+  const [apiKey, setApiKey] = useState('');
+  const [keySet, setKeySet] = useState(false);
+  const [brand, setBrand] = useState('');
+  const [category, setCategory] = useState(CATEGORIES[0]);
+  const [context, setContext] = useState('');
+  const [queue, setQueue] = useState([]);
+  const [activeId, setActiveId] = useState(null);
+  const [running, setRunning] = useState(false);
+  const idRef = useRef(0);
+
+  const addToQueue = () => {
+    if (!brand.trim()) return;
+    const id = ++idRef.current;
+    setQueue(q => [...q, { id, brand:brand.trim(), category, context:context.trim(), status:'pending', result:null, error:null }]);
+    setBrand(''); setContext('');
+  };
+
+  const removeFromQueue = (id) => {
+    setQueue(q => q.filter(x => x.id !== id));
+    if (activeId === id) setActiveId(null);
+  };
+
+  const runNext = useCallback(async () => {
+    const pending = queue.find(x => x.status === 'pending');
+    if (!pending || running) return;
+    setRunning(true);
+    setQueue(q => q.map(x => x.id===pending.id ? {...x,status:'running'} : x));
+    setActiveId(pending.id);
+    try {
+      // Temporarily set API key header
+      const origFetch = window.fetch;
+      window.fetch = (url, opts={}) => {
+        if (url.includes('anthropic.com')) {
+          opts.headers = {...opts.headers, 'x-api-key': apiKey, 'anthropic-dangerous-direct-browser-access':'true'};
+        }
+        return origFetch(url, opts);
+      };
+      const result = await runAnalysis(pending.brand, pending.category, pending.context);
+      window.fetch = origFetch;
+      setQueue(q => q.map(x => x.id===pending.id ? {...x,status:'done',result} : x));
+    } catch(e) {
+      setQueue(q => q.map(x => x.id===pending.id ? {...x,status:'error',error:e.message} : x));
+    }
+    setRunning(false);
+  }, [queue, running, apiKey]);
+
+  const activeItem = queue.find(x => x.id === activeId);
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{marginBottom:28}}>
+        <div style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'var(--orange)',marginBottom:6}}>NWA Ads</div>
+        <div style={{fontFamily:'Fraunces,serif',fontSize:32,fontWeight:700,lineHeight:1.15,marginBottom:8,letterSpacing:'-0.3px'}}>
+          OOH Prospect Engine
+        </div>
+        <div style={{fontSize:14,color:'var(--muted)',lineHeight:1.6,maxWidth:540}}>
+          Input a brand name and category. The engine researches their social ad activity, finds their NWA presence, and generates a full competitive analysis with a personalized OOH pitch deck.
+        </div>
+      </div>
+
+      {/* API key */}
+      {!keySet ? (
+        <div style={{...card(),marginBottom:20,borderColor:'var(--orange)',background:'var(--orange-l)'}}>
+          <div style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'var(--orange)',marginBottom:8}}>Anthropic API key required</div>
+          <div style={{fontSize:12,color:'#7a3210',marginBottom:12}}>Your key is used only in your browser and never stored. Get one at console.anthropic.com.</div>
+          <div style={{display:'flex',gap:8}}>
+            <input
+              type="password"
+              placeholder="sk-ant-..."
+              value={apiKey}
+              onChange={e=>setApiKey(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&apiKey.startsWith('sk-')&&setKeySet(true)}
+              style={{
+                flex:1,padding:'9px 14px',borderRadius:8,border:'1px solid rgba(200,68,10,0.3)',
+                background:'var(--white)',fontSize:13,fontFamily:'Courier New,monospace',outline:'none'
+              }}
+            />
+            <button
+              onClick={()=>apiKey.startsWith('sk-')&&setKeySet(true)}
+              style={{
+                padding:'9px 18px',background:'var(--green)',color:'#fff',border:'none',
+                borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer'
+              }}
+            >Set key</button>
+          </div>
+        </div>
+      ) : (
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:20,fontSize:12,color:'var(--green)'}}>
+          <span>✓</span><span>API key set</span>
+          <button onClick={()=>{setKeySet(false);setApiKey('')}} style={{background:'none',border:'none',cursor:'pointer',color:'var(--muted)',fontSize:11,textDecoration:'underline',marginLeft:4}}>change</button>
+        </div>
+      )}
+
+      {/* Input form */}
+      <div style={{...card(),marginBottom:16}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:12}}>
+          <div>
+            <label style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.07em',color:'var(--muted)',display:'block',marginBottom:5}}>Brand name</label>
+            <input
+              type="text"
+              placeholder="e.g. Maverik, Life Time Fitness, Casey's…"
+              value={brand}
+              onChange={e=>setBrand(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&brand.trim()&&keySet&&addToQueue()}
+              style={{
+                width:'100%',padding:'9px 14px',borderRadius:8,
+                border:'1px solid var(--border)',background:'var(--white)',
+                fontSize:13,outline:'none',fontFamily:'inherit'
+              }}
+            />
+          </div>
+          <div>
+            <label style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.07em',color:'var(--muted)',display:'block',marginBottom:5}}>Category</label>
+            <select
+              value={category}
+              onChange={e=>setCategory(e.target.value)}
+              style={{
+                width:'100%',padding:'9px 14px',borderRadius:8,
+                border:'1px solid var(--border)',background:'var(--white)',
+                fontSize:13,outline:'none',fontFamily:'inherit',cursor:'pointer'
+              }}
+            >
+              {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
+        <div style={{marginBottom:12}}>
+          <label style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.07em',color:'var(--muted)',display:'block',marginBottom:5}}>Additional context <span style={{fontWeight:400,textTransform:'none',letterSpacing:0}}>(optional — new location, promo, rebrand, etc.)</span></label>
+          <input
+            type="text"
+            placeholder="e.g. Just rebranded from Kum & Go in NWA, currently running Summer Nitro promo…"
+            value={context}
+            onChange={e=>setContext(e.target.value)}
+            style={{
+              width:'100%',padding:'9px 14px',borderRadius:8,
+              border:'1px solid var(--border)',background:'var(--white)',
+              fontSize:13,outline:'none',fontFamily:'inherit'
+            }}
+          />
+        </div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <button
+            onClick={addToQueue}
+            disabled={!brand.trim()||!keySet}
+            style={{
+              padding:'9px 20px',background:brand.trim()&&keySet?'var(--green)':'var(--off2)',
+              color:brand.trim()&&keySet?'#fff':'var(--muted)',border:'none',borderRadius:8,
+              fontSize:13,fontWeight:600,cursor:brand.trim()&&keySet?'pointer':'not-allowed',transition:'all 0.15s'
+            }}
+          >+ Add to queue</button>
+          {queue.some(x=>x.status==='pending') && !running && (
+            <button
+              onClick={runNext}
+              style={{
+                padding:'9px 20px',background:'var(--orange)',color:'#fff',border:'none',
+                borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer'
+              }}
+            >▶ Run next</button>
+          )}
+          {queue.some(x=>x.status==='pending') && (
+            <span style={{fontSize:12,color:'var(--muted)'}}>
+              {queue.filter(x=>x.status==='pending').length} pending
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Queue */}
+      {queue.length > 0 && (
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'var(--muted)',marginBottom:8}}>
+            Analysis queue — {queue.length} brand{queue.length!==1?'s':''}
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:6}}>
+            {queue.map(item => (
+              <div key={item.id} onClick={()=>item.status==='done'&&setActiveId(item.id)} style={{cursor:item.status==='done'?'pointer':'default'}}>
+                <QueueItem item={item} onRemove={removeFromQueue}/>
+              </div>
+            ))}
+          </div>
+          {running && (
+            <div style={{fontSize:12,color:'var(--gold)',marginTop:8,fontStyle:'italic'}}>
+              ⟳ Researching and analyzing — this takes 15–30 seconds per brand…
+            </div>
+          )}
+          {!running && queue.some(x=>x.status==='pending') && (
+            <button onClick={runNext} style={{
+              marginTop:10,padding:'9px 20px',background:'var(--orange)',color:'#fff',
+              border:'none',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer'
+            }}>▶ Run next analysis</button>
+          )}
+        </div>
+      )}
+
+      {/* Active result */}
+      {activeItem?.result && (
+        <div>
+          <div style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'var(--muted)',marginBottom:12}}>
+            Analysis — {activeItem.brand}
+          </div>
+          <ResultDeck result={activeItem.result}/>
+        </div>
+      )}
+
+      {activeItem?.error && (
+        <div style={{...card(),borderColor:'var(--red)',background:'var(--red-l)',color:'var(--red)'}}>
+          <div style={{fontWeight:700,marginBottom:4}}>Analysis failed</div>
+          <div style={{fontSize:12}}>{activeItem.error}</div>
+        </div>
+      )}
+
+      {queue.length === 0 && (
+        <div style={{
+          border:'1px dashed var(--border)',borderRadius:12,padding:'40px 24px',
+          textAlign:'center',color:'var(--muted)'
+        }}>
+          <div style={{fontFamily:'Fraunces,serif',fontSize:18,marginBottom:8}}>Ready to prospect</div>
+          <div style={{fontSize:13,lineHeight:1.7,maxWidth:400,margin:'0 auto'}}>
+            Add brands to the queue above. Try starting with: Maverik, Casey's, Life Time Fitness, or any NWA auto dealer.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
