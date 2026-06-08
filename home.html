@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NWAAds — Get Noticed in Northwest Arkansas</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>NWA Ads — The Easiest Way to Advertise Locally</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ─── OZARK PALETTE ───────────────────────────────────────────────────────
    Inspired by: Bentonville's clay mountain bike trails (terra cotta),
@@ -12,45 +12,24 @@
    the Ozark forest canopy (deep moss green), golden Walmart star energy
 ──────────────────────────────────────────────────────────────────────────── */
 :root {
-  /* Core surface */
-  --cream:    #f5f0e6;   /* Arkansas limestone */
-  --cream2:   #efe9d8;
-  --white:    #ffffff;
-
-  /* Primary ink */
-  --ink:      #1c1a12;
-  --ink2:     #433e30;
-  --muted:    #8c8574;
-  --border:   #ddd7c8;
-  --border2:  #cac4b4;
-
-  /* Ozark clay — primary accent */
-  --clay:     #c8430c;   /* trail dirt, warm and bold */
-  --clay-d:   #a3360a;
-  --clay-l:   #fdf0ea;
-  --clay-m:   rgba(200,67,12,0.12);
-
-  /* Crystal Blue — secondary */
-  --blue:     #1b6e8c;   /* Crystal Bridges water reflection */
-  --blue-l:   #e6f3f8;
-
-  /* Ozark Forest */
-  --forest:   #1e4028;
-  --forest-l: #e8f2ea;
-
-  /* Ozark Gold — Walmart energy */
-  --gold:     #e0a020;
-  --gold-l:   #fdf6e0;
-
-  /* Bentonville night */
-  --night:    #13110c;
-  --night2:   #1e1b14;
+  --ink:#0e1a0e; --ink2:#3a4a3a;
+  --green:#1f3d2a; --green-d:#163020; --green-m:#2d5a3d; --green-l:#eaf2ec;
+  --orange:#c8440a; --orange-d:#a03308; --orange-l:#fdf1eb; --orange-r:#f0905a;
+  --gold:#9a7b00; --gold-l:#fefbe8;
+  --muted:#7a7570; --border:#e2ddd6; --border2:#cac4b4;
+  --off:#f6f4ef; --off2:#ede9e3; --cream:#fffef9;
+  --blue:#1b6e8c; --blue-l:#e6f3f8;
+  /* aliases for legacy var names used in this file */
+  --clay:#c8440a; --clay-d:#a03308; --clay-l:#fdf1eb; --clay-m:rgba(200,68,10,0.12);
+  --forest:#1f3d2a; --forest-l:#eaf2ec;
+  --night:#0e1a0e; --night2:#163020;
+  --white:#fffef9; --cream2:#ede9e3;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   background: var(--cream);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
@@ -80,20 +59,20 @@ nav {
   height: 60px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 48px;
-  background: rgba(245,240,230,0.92);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  background: var(--green);
+  border-bottom: 1px solid var(--green-m);
 }
 .logo {
   font-family: 'Fraunces', serif;
-  font-size: 20px; font-weight: 800;
-  color: var(--ink); text-decoration: none;
+  font-size: 20px; font-weight: 700;
+  color: var(--cream); text-decoration: none;
   letter-spacing: -0.5px;
+  display:flex; align-items:center; gap:10px;
 }
-.logo span { color: var(--clay); }
+.logo span { color: var(--orange-r); }
 .nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-links a { font-size: 13px; color: var(--ink2); text-decoration: none; transition: color 0.15s; font-weight: 500; }
-.nav-links a:hover { color: var(--ink); }
+.nav-links a { font-size: 13px; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.15s; font-weight: 500; }
+.nav-links a:hover { color: rgba(255,255,255,0.9); }
 .nav-links a.btn-book,
 .nav-links a.btn-book:hover { color: #ffffff; }
 .btn-book {
@@ -146,14 +125,13 @@ h1 em { font-style: italic; color: var(--clay); }
 }
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 15px; font-weight: 600;
-  background: var(--clay); color: var(--white);
+  background: var(--green); color: var(--cream);
   padding: 15px 36px; border-radius: 8px;
   text-decoration: none; transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(200,67,12,0.2), 0 6px 18px rgba(200,67,12,0.18);
 }
-.btn-primary:hover { background: var(--clay-d); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(200,67,12,0.25), 0 12px 28px rgba(200,67,12,0.2); }
+.btn-primary:hover { background: var(--green-d); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(200,67,12,0.25), 0 12px 28px rgba(200,67,12,0.2); }
 .btn-primary svg { transition: transform 0.2s; }
 .btn-primary:hover svg { transform: translateX(3px); }
 .btn-text {
@@ -182,7 +160,7 @@ h1 em { font-style: italic; color: var(--clay); }
 /* Browser chrome */
 .browser-bar {
   display: flex; align-items: center; gap: 14px;
-  padding: 11px 18px; background: var(--cream2);
+  padding: 11px 18px; background: var(--off2);
   border-bottom: 1px solid var(--border);
 }
 .bdots { display: flex; gap: 6px; }
@@ -192,7 +170,7 @@ h1 em { font-style: italic; color: var(--clay); }
   flex: 1; background: var(--white); border: 1px solid var(--border);
   border-radius: 5px; padding: 4px 14px; font-size: 11px;
   color: var(--muted); max-width: 280px; margin: 0 auto;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
 }
 
 /* Main app grid: sidebar | map | photo-panel */
@@ -249,7 +227,7 @@ h1 em { font-style: italic; color: var(--clay); }
   font-family: 'Fraunces', serif;
   font-size: 13px; font-weight: 700; color: var(--clay); flex-shrink: 0;
 }
-.sr-price small { font-size: 8px; color: var(--muted); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; }
+.sr-price small { font-size: 8px; color: var(--muted); font-family: 'Instrument Sans', sans-serif; font-weight: 400; }
 
 /* MAP AREA */
 .map-area {
@@ -273,7 +251,7 @@ h1 em { font-style: italic; color: var(--clay); }
 .city-lbl {
   position: absolute; font-size: 9px; font-weight: 600;
   text-transform: uppercase; letter-spacing: 1.2px;
-  color: rgba(44,38,24,0.32); font-family: 'Plus Jakarta Sans', sans-serif;
+  color: rgba(44,38,24,0.32); font-family: 'Instrument Sans', sans-serif;
   pointer-events: none; user-select: none;
 }
 
@@ -282,7 +260,7 @@ h1 em { font-style: italic; color: var(--clay); }
 .pbub {
   padding: 4px 8px; border-radius: 14px;
   font-size: 10px; font-weight: 700; color: var(--white);
-  white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap; font-family: 'Instrument Sans', sans-serif;
   box-shadow: 0 2px 8px rgba(0,0,0,0.22);
   border: 1.5px solid rgba(255,255,255,0.85);
   transition: transform 0.15s; letter-spacing: 0.2px;
@@ -313,7 +291,7 @@ h1 em { font-style: italic; color: var(--clay); }
   background: rgba(0,0,0,0.6); color: var(--gold);
   font-size: 7.5px; font-weight: 700; padding: 2px 6px; border-radius: 3px;
   letter-spacing: 0.5px; white-space: nowrap;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
 }
 
 /* Proximity rings */
@@ -328,7 +306,7 @@ h1 em { font-style: italic; color: var(--clay); }
   position: absolute; bottom: 48px; right: 10px;
   background: rgba(255,255,255,0.93); backdrop-filter: blur(8px);
   border: 1px solid var(--border); border-radius: 8px;
-  padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 9px 12px; font-family: 'Instrument Sans', sans-serif;
 }
 .ml-title { font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 7px; }
 .ml-row { display: flex; align-items: center; gap: 7px; font-size: 10px; color: var(--ink2); margin-bottom: 4px; }
@@ -397,7 +375,7 @@ h1 em { font-style: italic; color: var(--clay); }
   display: block; width: 100%; margin-top: 8px;
   padding: 8px; background: var(--clay); color: var(--white);
   border: none; border-radius: 5px; font-size: 11px; font-weight: 600;
-  font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
+  font-family: 'Instrument Sans', sans-serif; cursor: pointer;
   text-align: center; transition: background 0.15s;
 }
 .pm-add:hover { background: var(--clay-d); }
@@ -411,7 +389,7 @@ h1 em { font-style: italic; color: var(--clay); }
   display: grid; grid-template-columns: repeat(3,1fr); gap: 18px;
 }
 .obj {
-  background: var(--white);
+  background: var(--cream);
   border: 1px solid var(--border); border-radius: 12px;
   padding: 30px 26px;
   transition: all 0.2s;
@@ -428,13 +406,13 @@ h1 em { font-style: italic; color: var(--clay); }
 .obj.clay::before  { background: var(--clay); }
 .obj.forest::before{ background: var(--forest); }
 .obj-emoji { font-size: 30px; margin-bottom: 14px; display: block; }
-.obj-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; margin-bottom: 10px; line-height: 1.25; }
+.obj-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; margin-bottom: 10px; line-height: 1.25; color: var(--green); }
 .obj-desc  { font-size: 13px; color: var(--ink2); line-height: 1.72; font-weight: 400; }
 
 /* ─────────────────────────────────────────
    HOW IT WORKS
 ───────────────────────────────────────── */
-.how-outer { border-top: 1px solid var(--border); background: var(--white); }
+.how-outer { border-top: 1px solid var(--border); background: var(--off); }
 .how-inner { max-width: 1100px; margin: 0 auto; padding: 72px 48px; }
 .section-eyebrow {
   font-size: 11px; font-weight: 600; text-transform: uppercase;
@@ -470,7 +448,7 @@ h1 em { font-style: italic; color: var(--clay); }
    OOH EFFECTIVENESS BAR (replaces stat numbers)
 ───────────────────────────────────────── */
 .effectiveness {
-  background: var(--night); padding: 56px 48px;
+  background: var(--green); padding: 56px 48px;
 }
 .eff-inner {
   max-width: 1100px; margin: 0 auto;
@@ -530,12 +508,12 @@ h1 em { font-style: italic; color: var(--clay); }
    FOOTER
 ───────────────────────────────────────── */
 footer {
-  border-top: 1px solid var(--border); padding: 24px 48px;
+  background: var(--ink); border-top: 1px solid var(--green-m); padding: 24px 48px;
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 12px; color: var(--muted);
+  font-size: 12px; color: rgba(255,255,255,0.4);
 }
-footer a { color: var(--muted); text-decoration: none; }
-footer a:hover { color: var(--ink); }
+footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+footer a:hover { color: rgba(255,255,255,0.8); }
 
 /* ─────────────────────────────────────────
    RESPONSIVE
@@ -564,7 +542,7 @@ footer a:hover { color: var(--ink); }
 
 <!-- ── NAV ── -->
 <nav>
-  <a href="/" class="logo">NWA<span>Ads</span></a>
+  <a href="/" class="logo"><svg width="28" height="28" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="14" y1="26" x2="50" y2="26" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/><line x1="14" y1="32" x2="50" y2="32" stroke="#f0905a" stroke-width="3.5" stroke-linecap="round"/><line x1="14" y1="38" x2="50" y2="38" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/></svg><span style="color:var(--cream)">NWA <span style="color:#f0905a">Ads</span></span></a>
   <div class="nav-links">
     <a href="#how">How it works</a>
     <a href="#inventory">Inventory</a>
@@ -594,7 +572,7 @@ footer a:hover { color: var(--ink); }
     <!-- Browser bar -->
     <div class="browser-bar">
       <div class="bdots"><div class="bdot bd1"></div><div class="bdot bd2"></div><div class="bdot bd3"></div></div>
-      <div class="burl">nwaads.com/book</div>
+      <div class="burl">nwa-ads.com/book</div>
     </div>
 
     <!-- App grid: sidebar | map | photo panel -->
@@ -675,7 +653,7 @@ footer a:hover { color: var(--ink); }
         <!-- Legend -->
         <div class="mlegend">
           <div class="ml-title">Format</div>
-          <div class="ml-row"><div class="ml-dot" style="background:var(--clay)"></div>Billboard</div>
+          <div class="ml-row"><div class="ml-dot" style="background:var(--orange)"></div>Billboard</div>
           <div class="ml-row"><div class="ml-dot" style="background:#b45309"></div>Gas Station</div>
           <div class="ml-row"><div class="ml-dot" style="background:var(--blue)"></div>Airport</div>
           <div class="ml-row"><div class="ml-dot" style="background:#6b21a8"></div>Cinema</div>
@@ -816,10 +794,11 @@ footer a:hover { color: var(--ink); }
 
 <!-- ── FOOTER ── -->
 <footer>
-  <span style="font-family:'Fraunces',serif;font-size:17px;font-weight:800;color:var(--ink);">NWA<span style="color:var(--clay)">Ads</span></span>
+  <span style="font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--ink);">NWA <span style="color:var(--orange)">Ads</span></span>
   <span>Northwest Arkansas · Self-serve OOH · Beta</span>
   <a href="mailto:hello@nwaads.com">hello@nwaads.com</a>
 </footer>
 
 </body>
 </html>
+
