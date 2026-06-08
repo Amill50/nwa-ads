@@ -1295,7 +1295,7 @@ function importRatesCSV(input) {
   const reader = new FileReader();
   reader.onload = function(e) {
     // Strip BOM if present
-    let text = e.target.result.replace(/^\uFEFF/, '');
+    let text = e.target.result.replace(/^\uFEFF/, '').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
     const lines = text.split('\n');
 
     // ── Detect format ──────────────────────────────────────────
@@ -1372,6 +1372,10 @@ function importRatesCSV(input) {
         const wkly = parseFloat((wklyRaw||'').replace(/[$,]/g, ''));
         const mo   = parseFloat((moRaw||'').replace(/[$,]/g, ''));
 
+        // Derive CPM from 4-week rate + impressions if CPM column is blank (e.g. Lamar sends empty yellow cells)
+        if (isNaN(cpm) && !isNaN(mo) && !isNaN(impr) && impr > 0) {
+          cpm = Math.round((mo / (impr * 4)) * 1000 * 100) / 100;
+        }
         if (isNaN(cpm) && isNaN(wkly) && isNaN(mo)) { skipped++; return; }
 
         // Fuzzy match: find screen in INV_DATA by name similarity + city
