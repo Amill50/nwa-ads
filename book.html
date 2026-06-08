@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NWAAds — Book Real-World Advertising in Northwest Arkansas</title>
+<title>NWA Ads — Book Local OOH Advertising in Northwest Arkansas</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 :root {
-  --bg: #f7f4ef;
+  --bg: #f6f4ef;
   --ink: #1a1714;
   --ink2: #4a4540;
   --muted: #6b6560;
   --border: #e2ddd6;
-  --white: #ffffff;
+  --white: #fffef9;
   --accent: #c8440a;
   --accent-light: #fdf1eb;
   --accent2: #1f3d2a;
   --accent2-light: #eaf2ec;
-  --surface: #ffffff;
+  --surface: #fffef9;
   --pill-bg: #f0ece5;
   --r: 14px;
   --r-sm: 8px;
@@ -30,7 +30,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 /* ── NAV ── */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  background: var(--white); border-bottom: 1px solid var(--border);
+  background: #1f3d2a; border-bottom: 1px solid #2d5a3d;
   padding: 0 40px; height: 64px;
   display: flex; align-items: center; justify-content: space-between;
 }
@@ -83,15 +83,15 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 .step {
   display: flex; align-items: center; gap: 7px;
   padding: 5px 12px; font-size: 12px; font-weight: 500;
-  color: var(--ink2); cursor: pointer;
+  color: rgba(255,255,255,0.6); cursor: pointer;
   transition: color 0.18s; user-select: none; white-space: nowrap;
 }
 .step:hover { color: var(--ink2); }
 /* done step — completed, clickable back */
-.step.done { color: var(--accent2); cursor: pointer; }
-.step.done:hover { color: #163320; }
+.step.done { color: #a8cdb5; cursor: pointer; }
+.step.done:hover { color: #fffef9; }
 /* active step — current */
-.step.active { color: var(--ink); font-weight: 600; }
+.step.active { color: #fffef9; font-weight: 600; }
 /* future step — not yet reachable */
 .step:not(.active):not(.done) { pointer-events: none; opacity: 0.55; }
 
@@ -115,7 +115,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 /* chevron separator */
 .step-sep {
   width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
-  color: var(--border); font-size: 11px; flex-shrink: 0; pointer-events: none;
+  color: rgba(255,255,255,0.25); font-size: 11px; flex-shrink: 0; pointer-events: none;
 }
 .step-sep::after { content: '›'; font-size: 14px; }
 
@@ -198,7 +198,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 
 .s2-top {
   flex-shrink: 0;
-  background: var(--white); border-bottom: 1px solid var(--border);
+  background: #1f3d2a; border-bottom: 1px solid #2d5a3d;
   padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
 .s2-top-left { display: flex; align-items: center; gap: 20px; }
@@ -1520,7 +1520,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 
 <!-- NAV -->
 <nav class="nav">
-  <a href="/" class="logo">NWA<em>Ads</em></a>
+  <a href="/" class="logo" style="display:flex;align-items:center;gap:10px;text-decoration:none"><svg width="28" height="28" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="14" y1="26" x2="50" y2="26" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/><line x1="14" y1="32" x2="50" y2="32" stroke="#f0905a" stroke-width="3.5" stroke-linecap="round"/><line x1="14" y1="38" x2="50" y2="38" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/></svg><span style="font-family:Fraunces,serif;font-size:18px;font-weight:700;color:#fffef9;letter-spacing:-0.3px">NWA <span style="color:#f0905a">Ads</span></span></a>
   <div class="steps">
     <div class="step active" id="nav-s1" onclick="goTo(1)"><div class="step-dot" id="dot-1">1</div> Goal</div>
     <div class="step-sep"></div>
@@ -7662,3 +7662,4 @@ window.addEventListener('orientationchange', () => {
 
 </body>
 </html>
+
