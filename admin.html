@@ -414,7 +414,7 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 
         <div class="notice info">
           <span>ℹ</span>
-          <div>Edit CPM fields inline and click <strong>Save</strong> to flag a rate as updated. Changes are stored in session — export to your booking tool when ready.</div>
+          <div>Edit CPM fields inline or import a CSV to update rates. Click <strong>Save rates to site</strong> to push changes live to the booking tool immediately.</div>
         </div>
 
         <div class="card">
@@ -423,8 +423,9 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
               <div class="card-title">All screens</div>
               <div class="card-sub" id="inv-count-label">82 screens</div>
             </div>
-            <button class="btn accent" onclick="exportRates()">↓ Export updated rates</button>
-            <label class="btn" style="cursor:pointer;margin-left:6px" title="Import a previously exported rates CSV">↑ Import rates CSV<input type="file" accept=".csv" style="display:none" onchange="importRatesCSV(this)"></label>
+            <button class="btn accent" onclick="saveRatesToSite()" id="btn-save-rates" style="background:var(--green);border-color:var(--green);color:#fff">✦ Save rates to site</button>
+            <button class="btn" onclick="exportRates()" style="margin-left:6px">↓ Export CSV</button>
+            <label class="btn" style="cursor:pointer;margin-left:6px" title="Import a Lamar Rate Package or admin export CSV">↑ Import CSV<input type="file" accept=".csv" style="display:none" onchange="importRatesCSV(this)"></label>
           </div>
           <div style="overflow-x:auto">
             <table class="tbl">
@@ -994,6 +995,129 @@ function saveCPM(id) {
   input.classList.remove('edited');
   input.style.borderColor = 'var(--green)';
   setTimeout(() => { if(input) input.style.borderColor = ''; }, 1500);
+}
+
+
+/* ══════════════ SAVE RATES TO SITE ══════════════ */
+async function saveRatesToSite() {
+  const changed = Object.keys(editedRates);
+  if (changed.length === 0) {
+    alert('No rate changes to save. Edit CPM fields or import a CSV first.');
+    return;
+  }
+
+  // Apply editedRates into INV_DATA in memory first
+  changed.forEach(id => {
+    const screen = INV_DATA.find(s => s.id === id);
+    if (screen) screen.cpm = editedRates[id];
+  });
+
+  const token = localStorage.getItem('nwaads_gh_token');
+  if (!token) {
+    const t = prompt('Enter your GitHub personal access token to push rate changes to book.html:');
+    if (!t) return;
+    localStorage.setItem('nwaads_gh_token', t);
+  }
+
+  const ghToken = localStorage.getItem('nwaads_gh_token');
+  const btn = document.getElementById('btn-save-rates');
+  btn.textContent = '⏳ Saving…';
+  btn.disabled = true;
+
+  try {
+    // 1. Fetch current book.html from GitHub
+    const metaRes = await fetch('https://api.github.com/repos/Amill50/nwa-ads/contents/book.html', {
+      headers: {
+        'Authorization': 'Bearer ' + ghToken,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+    if (!metaRes.ok) throw new Error('Failed to fetch book.html: ' + metaRes.status);
+    const meta = await metaRes.json();
+    let bookHtml = atob(meta.content.replace(/
+/g, ''));
+
+    // 2. Patch each changed screen's rate fields in the HTML
+    let patchCount = 0;
+    changed.forEach(id => {
+      const screen = INV_DATA.find(s => s.id === id);
+      if (!screen) return;
+      const cpm = editedRates[id];
+
+      // Regex: find the screen's JSON block and update cpm, daily_rate, wkly_rate, mo_rate
+      const idPattern = new RegExp('(\{[^{}]*?"id":\s*"' + id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '"[^{}]*?\})', 'gs');
+      bookHtml = bookHtml.replace(idPattern, block => {
+        // Only update if we have rate data
+        if (screen.mo_rate) block = block.replace(/"mo_rate":\s*[\d.]+/, '"mo_rate": ' + screen.mo_rate);
+        if (screen.wkly_rate) block = block.replace(/"wkly_rate":\s*[\d.]+/, '"wkly_rate": ' + screen.wkly_rate);
+        if (screen.wkly_impr) block = block.replace(/"wkly_impr":\s*[\d.]+/, '"wkly_impr": ' + screen.wkly_impr);
+        block = block.replace(/"cpm":\s*[\d.]+/, '"cpm": ' + cpm);
+        // Recalc daily_rate from wkly_rate
+        if (screen.wkly_rate) {
+          const daily = Math.round(screen.wkly_rate / 7);
+          block = block.replace(/"daily_rate":\s*[\d.]+/, '"daily_rate": ' + daily);
+        }
+        patchCount++;
+        return block;
+      });
+    });
+
+    if (patchCount === 0) throw new Error('No screens matched in book.html. Check screen IDs.');
+
+    // 3. Push updated book.html back to GitHub
+    const pushRes = await fetch('https://api.github.com/repos/Amill50/nwa-ads/contents/book.html', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + ghToken,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      },
+      body: JSON.stringify({
+        message: 'Admin: update ' + patchCount + ' screen rate(s) from admin console',
+        content: btoa(unescape(encodeURIComponent(bookHtml))),
+        sha: meta.sha,
+        branch: 'main'
+      })
+    });
+
+    if (!pushRes.ok) {
+      const err = await pushRes.json();
+      throw new Error('GitHub push failed: ' + (err.message || pushRes.status));
+    }
+
+    const result = await pushRes.json();
+    editedRates = {}; // clear pending changes
+    renderInventory();
+    log(patchCount + ' screen rate(s) saved to book.html — commit ' + result.commit.sha.slice(0,8));
+    btn.textContent = '✓ Saved to site';
+    btn.style.background = 'var(--green-dim)';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => {
+      btn.textContent = '✦ Save rates to site';
+      btn.style.background = 'var(--green)';
+      btn.style.color = '#fff';
+      btn.disabled = false;
+    }, 3000);
+    alert(patchCount + ' screen rate(s) pushed live to nwa-ads.com/book.html.
+
+Netlify will deploy in ~30 seconds.');
+
+  } catch(err) {
+    log('Save failed: ' + err.message);
+    btn.textContent = '✗ Save failed';
+    btn.style.background = 'var(--accent)';
+    btn.disabled = false;
+    alert('Save failed: ' + err.message + '
+
+Check your GitHub token or try again.');
+    setTimeout(() => {
+      btn.textContent = '✦ Save rates to site';
+      btn.style.background = 'var(--green)';
+      btn.style.color = '#fff';
+    }, 2000);
+  }
 }
 
 function exportRates() {
