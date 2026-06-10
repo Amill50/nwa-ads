@@ -1,0 +1,20 @@
+{
+  "name": "nwa-ads-tests",
+  "version": "1.0.0",
+  "description": "Test harness for nwa-ads.com — NWA OOH Advertising Marketplace",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/unit/*.test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:all": "npm test && npm run test:e2e",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
