@@ -1544,6 +1544,28 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   .screen-list-wrap {
     max-height: 280px;
     overflow-y: auto;
+    scroll-padding-top: 30px;
+  }
+
+  /* Fix sticky label z-index on mobile — prevent card overlap */
+  .screen-list-label {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--off-white);
+  }
+
+  /* Ensure screen cards don't overflow/clip on left edge */
+  .screen-list {
+    padding: 8px 12px;
+    overflow-x: hidden;
+  }
+
+  /* Fix in-cart card left border — no margin bleed */
+  .sc-row.in-cart {
+    border-left: 3px solid var(--accent);
+    padding-left: 11px;
+    margin-left: 0;
   }
 
   /* Cart summary: natural height, fully visible */
