@@ -12,9 +12,9 @@ const WRONG_PASS  = 'wrongpassword';
 async function login(page) {
   await page.goto(ADMIN_URL);
   await expect(page.locator('#gate')).toBeVisible();
-  await page.locator('#gate-input').fill(PASSPHRASE);
+  await page.locator('#gate-pw').fill(PASSPHRASE);
   await page.locator('button:has-text("Enter console")').click();
-  await expect(page.locator('#topbar')).toBeVisible({ timeout: 5000 });
+  await expect(page.locator('.topbar')).toBeVisible({ timeout: 5000 });
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -23,15 +23,15 @@ test.describe('Authentication', () => {
   test('Gate screen shown on load', async ({ page }) => {
     await page.goto(ADMIN_URL);
     await expect(page.locator('#gate')).toBeVisible();
-    await expect(page.locator('#topbar')).not.toBeVisible();
+    await expect(page.locator('.topbar')).not.toBeVisible();
   });
 
   test('Wrong passphrase does not unlock', async ({ page }) => {
     await page.goto(ADMIN_URL);
-    await page.locator('#gate-input').fill(WRONG_PASS);
+    await page.locator('#gate-pw').fill(WRONG_PASS);
     await page.locator('button:has-text("Enter console")').click();
     await expect(page.locator('#gate')).toBeVisible();
-    await expect(page.locator('#topbar')).not.toBeVisible();
+    await expect(page.locator('.topbar')).not.toBeVisible();
   });
 
   test('Correct passphrase unlocks console', async ({ page }) => {
@@ -60,7 +60,7 @@ test.describe('Campaign Queue', () => {
   });
 
   test('Empty queue shows zero counts', async ({ page }) => {
-    await expect(page.locator('#kpi-total')).toContainText('0');
+    await expect(page.locator('#kpi-campaigns')).toContainText('0');
   });
 
   test('"Clear test data" button is visible', async ({ page }) => {
