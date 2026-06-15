@@ -58,8 +58,7 @@ jobs:
 
       - name: Run E2E tests
         run: npx playwright test --project=${{ matrix.project }}
-        env:
-          TEST_URL: https://nwa-ads.com
+      
           
       - name: Write results to repo
         if: always()
