@@ -5,9 +5,11 @@ const PASS = 'nwaads2026';
 
 async function login(page) {
   await page.goto(ADMIN);
+  await expect(page.locator('#gate')).toBeVisible();
   await page.locator('#gate-pw').fill(PASS);
   await page.locator('.gate-btn').click();
-  await expect(page.locator('.topbar')).toBeVisible({ timeout: 8000 });
+  // App shell is in #app which starts display:none — wait for it to show
+  await expect(page.locator('#app')).toBeVisible({ timeout: 8000 });
 }
 
 test.describe('Auth', () => {
@@ -23,14 +25,17 @@ test.describe('Auth', () => {
     await expect(page.locator('#gate')).toBeVisible();
   });
 
-  test('correct pass unlocks', async ({ page }) => {
+  test('correct pass shows app', async ({ page }) => {
     await login(page);
     await expect(page.getByText('Campaign queue')).toBeVisible();
   });
 
   test('topbar is green (#1f3d2a)', async ({ page }) => {
     await login(page);
-    const bg = await page.locator('.topbar').evaluate(el => getComputedStyle(el).backgroundColor);
+    await expect(page.locator('.topbar')).toBeVisible();
+    const bg = await page.locator('.topbar').evaluate(
+      el => getComputedStyle(el).backgroundColor
+    );
     expect(bg).toMatch(/rgb\(31,\s*61,\s*42\)/);
   });
 });
