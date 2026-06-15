@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
         run: npm install
@@ -34,8 +34,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [desktop-chrome, mobile-safari, mobile-chrome]
-
+        include:
+          - project: desktop-chrome
+            browser: chromium
+          - project: mobile-chrome
+            browser: chromium
+          - project: mobile-safari
+            browser: webkit
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,13 +48,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
         run: npm install
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run E2E tests
         run: npx playwright test --project=${{ matrix.project }}
