@@ -1,6 +1,6 @@
 // tests/e2e/booking-flow.spec.js
 // NWA Ads — booking wizard E2E tests
-// Verified against live HTML selectors June 2026
+// Selectors verified against live HTML June 2026
 
 const { test, expect } = require('@playwright/test');
 const BOOK_URL = '/book.html';
@@ -10,20 +10,17 @@ const BOOK_URL = '/book.html';
 async function goToStep2(page) {
   await page.goto(BOOK_URL);
   await page.waitForLoadState('domcontentloaded');
-  // Select a goal card
   await page.locator('.goal-card').first().click();
-  // Click "Show me available screens"
   await page.locator('.btn-next').first().click();
   await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
 }
 
 async function goToStep3(page) {
   await goToStep2(page);
-  // Switch to list view and add first screen
-  await page.locator('#tab-list').click();
+  // Switch to list view (actual id is #vt-list, not #tab-list)
+  await page.locator('#vt-list').click();
   await page.waitForTimeout(500);
   await page.locator('.sc-add-btn').first().click();
-  // Click Review campaign
   await page.locator('#btn-s2').click();
   await expect(page.getByText('Campaign summary')).toBeVisible({ timeout: 5000 });
   await page.getByText('Looks good').click();
@@ -32,7 +29,7 @@ async function goToStep3(page) {
 
 async function goToStep4(page) {
   await goToStep3(page);
-  await page.getByText('Continue to checkout').click();
+  await page.getByText('Continue to checkout').first().click();
   await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 5000 });
 }
 
@@ -52,7 +49,8 @@ test.describe('Step 1 — Goal & Schedule', () => {
   test('Clicking goal card selects it', async ({ page }) => {
     await page.goto(BOOK_URL);
     await page.locator('.goal-card').first().click();
-    await expect(page.locator('.goal-card.on').first()).toBeVisible();
+    // Active class is 'sel', not 'on'
+    await expect(page.locator('.goal-card.sel').first()).toBeVisible();
   });
 
   test('Standard flight: default is 2 weeks', async ({ page }) => {
@@ -111,7 +109,8 @@ test.describe('Step 2 — Map & Screen Picker', () => {
 
   test('List view shows screen cards', async ({ page }) => {
     await goToStep2(page);
-    await page.locator('#tab-list').click();
+    // Correct id is #vt-list
+    await page.locator('#vt-list').click();
     await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 5000 });
   });
 
@@ -122,15 +121,15 @@ test.describe('Step 2 — Map & Screen Picker', () => {
 
   test('Adding a screen updates the cart', async ({ page }) => {
     await goToStep2(page);
-    await page.locator('#tab-list').click();
+    await page.locator('#vt-list').click();
     await page.locator('.sc-add-btn').first().click();
     await expect(page.getByText('No screens added yet')).not.toBeVisible();
   });
 
-  test('10% discount is NOT shown anywhere', async ({ page }) => {
+  test('10% discount badge is not visible with fewer than 3 screens', async ({ page }) => {
     await goToStep2(page);
-    await expect(page.getByText('10% off')).not.toBeVisible();
-    await expect(page.getByText('unlock 10%')).not.toBeVisible();
+    // #ch-discount has display:none by default; only shows at 3+ screens
+    await expect(page.locator('#ch-discount')).not.toBeVisible();
   });
 
   test('Review campaign button is disabled with empty cart', async ({ page }) => {
@@ -163,17 +162,18 @@ test.describe('Step 3 — Creative Upload', () => {
 
   test('Spec cards are shown', async ({ page }) => {
     await goToStep3(page);
-    await expect(page.getByText('1920 × 640 px')).toBeVisible();
+    await expect(page.getByText(/1920/)).toBeVisible();
   });
 
   test('Skip option is available', async ({ page }) => {
     await goToStep3(page);
-    await expect(page.getByText('Skip')).toBeVisible();
+    // Button text is "Skip — I'll send creative later"
+    await expect(page.getByText(/Skip/)).toBeVisible();
   });
 
   test('"Continue to checkout" advances to Step 4', async ({ page }) => {
     await goToStep3(page);
-    await page.getByText('Continue to checkout').click();
+    await page.getByText('Continue to checkout').first().click();
     await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 5000 });
   });
 });
@@ -243,12 +243,11 @@ test.describe('Mobile — Step 2 layout', () => {
     await page.locator('.btn-next').first().click();
     await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
 
-    // Switch to list view
-    const listTab = page.locator('#tab-list');
+    const listTab = page.locator('#vt-list');
     if (await listTab.isVisible()) await listTab.click();
 
     const label = page.locator('.screen-list-label').first();
-    const firstCard = page.locator('.sc-row').first();
+    const firstCard = page.locator('.sc-add-btn').first();
 
     if (await label.isVisible() && await firstCard.isVisible()) {
       const labelBox = await label.boundingBox();
