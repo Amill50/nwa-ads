@@ -1,5 +1,6 @@
 // tests/e2e/proposal.spec.js
 // NWA Ads — proposal link E2E tests
+// Selectors verified against live HTML June 2026
 
 const { test, expect } = require('@playwright/test');
 const BOOK_URL = '/book.html';
@@ -14,13 +15,14 @@ test.describe('Proposal Generation', () => {
     await page.locator('.goal-card').first().click();
     await page.locator('.btn-next').first().click();
     await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
-    await page.locator('#tab-list').click();
+    // Correct id is #vt-list
+    await page.locator('#vt-list').click();
     await page.waitForTimeout(500);
     await page.locator('.sc-add-btn').first().click();
     await page.locator('#btn-s2').click();
     await expect(page.getByText('Campaign summary')).toBeVisible({ timeout: 5000 });
     await page.getByText('Looks good').click();
-    await page.getByText('Continue to checkout').click();
+    await page.getByText('Continue to checkout').first().click();
     await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 5000 });
   }
 
