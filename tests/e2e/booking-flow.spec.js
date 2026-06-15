@@ -12,14 +12,13 @@ async function goToStep2(page) {
   await page.waitForLoadState('domcontentloaded');
   await page.locator('.goal-card').first().click();
   await page.locator('.btn-next').first().click();
+  // Wait for #map AND screen list to render (renderList() is called by goTo(2))
   await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 10000 });
 }
 
 async function goToStep3(page) {
   await goToStep2(page);
-  // Switch to list view (actual id is #vt-list, not #tab-list)
-  await page.locator('#vt-list').click();
-  await page.waitForTimeout(500);
   await page.locator('.sc-add-btn').first().click();
   await page.locator('#btn-s2').click();
   await expect(page.getByText('Campaign summary')).toBeVisible({ timeout: 5000 });
@@ -49,7 +48,7 @@ test.describe('Step 1 — Goal & Schedule', () => {
   test('Clicking goal card selects it', async ({ page }) => {
     await page.goto(BOOK_URL);
     await page.locator('.goal-card').first().click();
-    // Active class is 'sel', not 'on'
+    // Active class is 'sel'
     await expect(page.locator('.goal-card.sel').first()).toBeVisible();
   });
 
@@ -95,47 +94,62 @@ test.describe('Step 1 — Goal & Schedule', () => {
 
 test.describe('Step 2 — Map & Screen Picker', () => {
   test('Map loads with markers', async ({ page }) => {
-    await goToStep2(page);
+    await page.goto(BOOK_URL);
+    await page.locator('.goal-card').first().click();
+    await page.locator('.btn-next').first().click();
+    await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('.leaflet-marker-icon').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('Format filter chips are visible', async ({ page }) => {
-    await goToStep2(page);
+    await page.goto(BOOK_URL);
+    await page.locator('.goal-card').first().click();
+    await page.locator('.btn-next').first().click();
+    await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
     await expect(page.getByText('Billboard')).toBeVisible();
     await expect(page.getByText('Gas Station')).toBeVisible();
     await expect(page.getByText('Airport')).toBeVisible();
     await expect(page.getByText('Cinema')).toBeVisible();
   });
 
-  test('List view shows screen cards', async ({ page }) => {
-    await goToStep2(page);
-    // Correct id is #vt-list
-    await page.locator('#vt-list').click();
-    await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 5000 });
+  test('Screen list renders with add buttons', async ({ page }) => {
+    // Screen list is always visible in sidebar; renderList() called by goTo(2)
+    await page.goto(BOOK_URL);
+    await page.locator('.goal-card').first().click();
+    await page.locator('.btn-next').first().click();
+    await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('Cart starts empty', async ({ page }) => {
-    await goToStep2(page);
+    await page.goto(BOOK_URL);
+    await page.locator('.goal-card').first().click();
+    await page.locator('.btn-next').first().click();
+    await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
     await expect(page.getByText('No screens added yet')).toBeVisible();
   });
 
   test('Adding a screen updates the cart', async ({ page }) => {
     await goToStep2(page);
-    await page.locator('#vt-list').click();
     await page.locator('.sc-add-btn').first().click();
     await expect(page.getByText('No screens added yet')).not.toBeVisible();
   });
 
   test('10% discount badge is not visible with fewer than 3 screens', async ({ page }) => {
-    await goToStep2(page);
+    await page.goto(BOOK_URL);
+    await page.locator('.goal-card').first().click();
+    await page.locator('.btn-next').first().click();
+    await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
     // #ch-discount has display:none by default; only shows at 3+ screens
     await expect(page.locator('#ch-discount')).not.toBeVisible();
   });
 
   test('Review campaign button is disabled with empty cart', async ({ page }) => {
-    await goToStep2(page);
-    const btn = page.locator('#btn-s2');
-    await expect(btn).toBeDisabled();
+    await page.goto(BOOK_URL);
+    await page.locator('.goal-card').first().click();
+    await page.locator('.btn-next').first().click();
+    await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#btn-s2')).toBeDisabled();
   });
 
   test('Custom schedule duration shows in cart header', async ({ page }) => {
@@ -237,23 +251,21 @@ test.describe('Proposal Round-trip', () => {
 test.describe('Mobile — Step 2 layout', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('Screen cards do not overlap the available screens label', async ({ page }) => {
+  test('Screen list renders on mobile after navigating to step 2', async ({ page }) => {
     await page.goto(BOOK_URL);
     await page.locator('.goal-card').first().click();
     await page.locator('.btn-next').first().click();
     await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
-
-    const listTab = page.locator('#vt-list');
-    if (await listTab.isVisible()) await listTab.click();
+    await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 10000 });
 
     const label = page.locator('.screen-list-label').first();
-    const firstCard = page.locator('.sc-add-btn').first();
+    const firstBtn = page.locator('.sc-add-btn').first();
 
-    if (await label.isVisible() && await firstCard.isVisible()) {
+    if (await label.isVisible() && await firstBtn.isVisible()) {
       const labelBox = await label.boundingBox();
-      const cardBox  = await firstCard.boundingBox();
-      if (labelBox && cardBox) {
-        expect(cardBox.y).toBeGreaterThanOrEqual(labelBox.y + labelBox.height - 2);
+      const btnBox   = await firstBtn.boundingBox();
+      if (labelBox && btnBox) {
+        expect(btnBox.y).toBeGreaterThanOrEqual(labelBox.y + labelBox.height - 2);
       }
     }
   });
