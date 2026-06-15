@@ -60,17 +60,12 @@ jobs:
         run: npx playwright test --project=${{ matrix.project }}
       
           
-      - name: Write results to repo
+      - - name: Post results to Gist
         if: always()
         env:
           PROJECT: ${{ matrix.project }}
-        run: |
-          node scripts/write-results.js
-          git config user.email "ci@nwa-ads.com"
-          git config user.name "NWA Ads CI"
-          git add ci-results/
-          git diff --staged --quiet || git commit -m "ci: test results ${{ matrix.project }} [skip ci]"
-          git push
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/write-results.js
 
       - name: Upload test report
         if: failure()
