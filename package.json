@@ -1,7 +1,7 @@
 {
   "name": "nwa-ads-tests",
   "version": "1.0.0",
-  "description": "Test harness for nwa-ads.com — NWA OOH Advertising Marketplace",
+  "description": "Test harness for nwa-ads.com",
   "private": true,
   "scripts": {
     "test": "node --test tests/unit/*.test.js",
@@ -9,7 +9,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:all": "npm test && npm run test:e2e",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "test:summary": "node -e \"const r=require('./playwright-results.json');r.suites.forEach(s=>s.specs.forEach(sp=>sp.tests.forEach(t=>{if(t.results.some(r=>r.status!=='passed'))console.log('FAIL:',sp.title,'|',t.results[0].error?.message?.substring(0,200))})))\"  "
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0"
