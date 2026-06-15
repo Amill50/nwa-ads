@@ -6,9 +6,13 @@ const PASS = 'nwaads2026';
 async function login(page) {
   await page.goto(ADMIN);
   await expect(page.locator('#gate')).toBeVisible();
+  // Use fill + evaluate to ensure the value is set, then click
   await page.locator('#gate-pw').fill(PASS);
+  // Verify the value was set
+  const val = await page.locator('#gate-pw').inputValue();
+  console.log('Password input value:', val);
   await page.locator('.gate-btn').click();
-  // App shell is in #app which starts display:none — wait for it to show
+  // checkPw() sets #app display:flex on correct pass
   await expect(page.locator('#app')).toBeVisible({ timeout: 8000 });
 }
 
@@ -36,6 +40,7 @@ test.describe('Auth', () => {
     const bg = await page.locator('.topbar').evaluate(
       el => getComputedStyle(el).backgroundColor
     );
+    console.log('Topbar background:', bg);
     expect(bg).toMatch(/rgb\(31,\s*61,\s*42\)/);
   });
 });
