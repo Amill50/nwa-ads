@@ -15,9 +15,8 @@ test.describe('Proposal Generation', () => {
     await page.locator('.goal-card').first().click();
     await page.locator('.btn-next').first().click();
     await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
-    // Correct id is #vt-list
-    await page.locator('#vt-list').click();
-    await page.waitForTimeout(500);
+    // Screen list is rendered by goTo(2) — wait for add buttons to appear
+    await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 10000 });
     await page.locator('.sc-add-btn').first().click();
     await page.locator('#btn-s2').click();
     await expect(page.getByText('Campaign summary')).toBeVisible({ timeout: 5000 });
