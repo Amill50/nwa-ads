@@ -60,7 +60,7 @@ jobs:
         run: npx playwright test --project=${{ matrix.project }}
       
           
-      - - name: Post results to Gist
+      - name: Post results to Gist
         if: always()
         env:
           PROJECT: ${{ matrix.project }}
