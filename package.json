@@ -6,14 +6,13 @@
   "scripts": {
     "test": "node --test tests/unit/*.test.js",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:live": "TEST_URL=https://nwa-ads.com playwright test",
     "test:all": "npm test && npm run test:e2e",
-    "test:report": "playwright show-report",
-    "test:summary": "node -e \"const r=require('./playwright-results.json');r.suites.forEach(s=>s.specs.forEach(sp=>sp.tests.forEach(t=>{if(t.results.some(r=>r.status!=='passed'))console.log('FAIL:',sp.title,'|',t.results[0].error?.message?.substring(0,200))})))\"  "
+    "test:report": "playwright show-report"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0"
+    "@playwright/test": "^1.44.0",
+    "serve": "^14.2.0"
   },
   "engines": {
     "node": ">=18.0.0"
