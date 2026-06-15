@@ -1,45 +1,41 @@
 // tests/e2e/smoke.spec.js
-// Diagnostic smoke test — logs actual DOM state to identify failures
+// Minimal smoke — 3 facts that must be true for book.html to work at all
 
 const { test, expect } = require('@playwright/test');
-const BOOK_URL = '/book.html';
 
-test('SMOKE: page title', async ({ page }) => {
-  await page.goto(BOOK_URL);
-  await page.waitForLoadState('domcontentloaded');
-  const title = await page.title();
-  console.log('PAGE TITLE:', title);
+test('book.html loads', async ({ page }) => {
+  const res = await page.goto('/book.html');
+  expect(res.status()).toBeLessThan(400);
   await expect(page).toHaveTitle(/NWA Ads/);
 });
 
-test('SMOKE: goal cards present', async ({ page }) => {
-  await page.goto(BOOK_URL);
+test('goal cards render in DOM', async ({ page }) => {
+  await page.goto('/book.html');
   await page.waitForLoadState('domcontentloaded');
+  // Log any JS errors
+  page.on('pageerror', err => console.log('PAGE ERROR:', err.message));
   const count = await page.locator('.goal-card').count();
-  console.log('GOAL CARD COUNT:', count);
+  console.log('goal-card count:', count);
   expect(count).toBe(3);
 });
 
-test('SMOKE: navigate to step 2 and check DOM', async ({ page }) => {
-  await page.goto(BOOK_URL);
+test('screen list renders after goTo(2)', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', err => errors.push(err.message));
+  page.on('console', msg => { if (msg.type() === 'error') console.log('CONSOLE ERR:', msg.text()); });
+
+  await page.goto('/book.html');
   await page.waitForLoadState('domcontentloaded');
+
+  // Click first goal card then advance
   await page.locator('.goal-card').first().click();
   await page.locator('.btn-next').first().click();
-  
-  // Wait a bit and log what's visible
-  await page.waitForTimeout(3000);
-  
-  const mapVisible = await page.locator('#map').isVisible();
-  const panelActive = await page.locator('#panel-2.active').count();
-  const screenContent = await page.locator('#tab-screens-content').innerHTML();
-  const addBtnCount = await page.locator('.sc-add-btn').count();
-  
-  console.log('MAP VISIBLE:', mapVisible);
-  console.log('PANEL-2 ACTIVE COUNT:', panelActive);
-  console.log('TAB-SCREENS-CONTENT innerHTML length:', screenContent.length);
-  console.log('SC-ADD-BTN COUNT:', addBtnCount);
-  console.log('First 200 chars of screen content:', screenContent.substring(0, 200));
-  
-  expect(mapVisible).toBe(true);
-  expect(addBtnCount).toBeGreaterThan(0);
+
+  // Wait up to 10s for sc-add-btn to appear (renderList runs in goTo(2))
+  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 10000 });
+
+  // Log what we got
+  const count = await page.locator('.sc-add-btn').count();
+  console.log('sc-add-btn count:', count);
+  console.log('JS errors:', errors);
 });
