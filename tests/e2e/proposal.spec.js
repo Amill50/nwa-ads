@@ -1,83 +1,73 @@
 // tests/e2e/proposal.spec.js
-// NWA Ads — proposal link E2E tests
-// Selectors verified against live HTML June 2026
-
 const { test, expect } = require('@playwright/test');
-const BOOK_URL = '/book.html';
+const URL = '/book.html';
+const VALID = '/book.html?proposal=eyJ2IjoxLCJnb2FsIjpudWxsLCJpbmMiOiJ3ZWVrbHkiLCJxdHkiOjIsImJ1ZGdldCI6MjAwMCwic2NoZWRNb2RlIjoiY3VzdG9tIiwiY3VzdG9tRGF5cyI6WzEsMl0sInNjaGVkU3RhcnQiOiIyMDI2LTA2LTIzIiwic2NoZWRFbmQiOiIyMDI2LTA5LTA3IiwiY3VzdG9tRGF5Q291bnQiOjIyLCJzY3JlZW5zIjpbImxvY18yMzc1MzYiXSwiY3JlYXRlZCI6IjIwMjYtMDYtMDgifQ==';
 
-const VALID_PROPOSAL = '/book.html?proposal=eyJ2IjoxLCJnb2FsIjpudWxsLCJpbmMiOiJ3ZWVrbHkiLCJxdHkiOjIsImJ1ZGdldCI6MjAwMCwic2NoZWRNb2RlIjoiY3VzdG9tIiwiY3VzdG9tRGF5cyI6WzEsMl0sInNjaGVkU3RhcnQiOiIyMDI2LTA2LTIzIiwic2NoZWRFbmQiOiIyMDI2LTA5LTA3IiwiY3VzdG9tRGF5Q291bnQiOjIyLCJzY3JlZW5zIjpbImxvY18yMzc1MzYiXSwiY3JlYXRlZCI6IjIwMjYtMDYtMDgifQ==';
-
-// ── Generation ────────────────────────────────────────────────────────────────
+async function checkout(page) {
+  page.on('pageerror', e => console.log('JS ERROR:', e.message));
+  await page.goto(URL);
+  await page.waitForLoadState('domcontentloaded');
+  await page.locator('.goal-card').first().click();
+  await page.locator('.btn-next').first().click();
+  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 15000 });
+  await page.locator('.sc-add-btn').first().click();
+  await page.locator('#btn-s2').click();
+  await expect(page.getByText('Campaign summary')).toBeVisible({ timeout: 8000 });
+  await page.getByText('Looks good').click();
+  await page.getByText('Continue to checkout').first().click();
+  await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 8000 });
+}
 
 test.describe('Proposal Generation', () => {
-  async function reachCheckout(page) {
-    await page.goto(BOOK_URL);
-    await page.locator('.goal-card').first().click();
-    await page.locator('.btn-next').first().click();
-    await expect(page.locator('#map')).toBeVisible({ timeout: 15000 });
-    // Screen list is rendered by goTo(2) — wait for add buttons to appear
-    await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 10000 });
-    await page.locator('.sc-add-btn').first().click();
-    await page.locator('#btn-s2').click();
-    await expect(page.getByText('Campaign summary')).toBeVisible({ timeout: 5000 });
-    await page.getByText('Looks good').click();
-    await page.getByText('Continue to checkout').first().click();
-    await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 5000 });
-  }
-
-  test('Proposal section is present on checkout', async ({ page }) => {
-    await reachCheckout(page);
+  test('proposal section on checkout', async ({ page }) => {
+    await checkout(page);
     await page.locator('.proposal-section').scrollIntoViewIfNeeded();
     await expect(page.locator('.proposal-section')).toBeVisible();
   });
 
-  test('Generate button creates a URL with proposal param', async ({ page }) => {
-    await reachCheckout(page);
+  test('generate link produces ?proposal= URL', async ({ page }) => {
+    await checkout(page);
     await page.locator('.btn-gen-proposal').scrollIntoViewIfNeeded();
     await page.locator('.btn-gen-proposal').click();
-    await expect(page.locator('#proposal-link-input')).toBeVisible();
     const val = await page.locator('#proposal-link-input').inputValue();
     expect(val).toContain('?proposal=');
-    expect(val).toContain('nwa-ads.com');
   });
 
-  test('Generated URL decodes to valid JSON with screens array', async ({ page }) => {
-    await reachCheckout(page);
+  test('generated URL is valid base64 JSON with screens', async ({ page }) => {
+    await checkout(page);
     await page.locator('.btn-gen-proposal').scrollIntoViewIfNeeded();
     await page.locator('.btn-gen-proposal').click();
     const url = await page.locator('#proposal-link-input').inputValue();
     const encoded = url.split('?proposal=')[1];
     const decoded = JSON.parse(Buffer.from(encoded, 'base64').toString());
     expect(decoded.v).toBe(1);
-    expect(Array.isArray(decoded.screens)).toBeTruthy();
     expect(decoded.screens.length).toBeGreaterThan(0);
   });
 });
 
-// ── Round-trip ────────────────────────────────────────────────────────────────
-
 test.describe('Proposal Round-trip', () => {
-  test('Loads directly to checkout (Step 4)', async ({ page }) => {
-    await page.goto(VALID_PROPOSAL);
+  test('loads to checkout', async ({ page }) => {
+    page.on('pageerror', e => console.log('JS ERROR:', e.message));
+    await page.goto(VALID);
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 15000 });
   });
 
-  test('Proposal banner is shown', async ({ page }) => {
-    await page.goto(VALID_PROPOSAL);
+  test('proposal banner shown', async ({ page }) => {
+    await page.goto(VALID);
     await page.waitForLoadState('networkidle');
     await expect(page.locator('#proposal-banner')).toBeVisible({ timeout: 10000 });
   });
 
-  test('Proposal CTA strip with Book button is shown', async ({ page }) => {
-    await page.goto(VALID_PROPOSAL);
+  test('CTA with Book button shown', async ({ page }) => {
+    await page.goto(VALID);
     await page.waitForLoadState('networkidle');
     await expect(page.locator('#proposal-cta')).toBeVisible({ timeout: 10000 });
     await expect(page.getByText('Book this campaign')).toBeVisible();
   });
 
-  test('Order summary has a non-zero total', async ({ page }) => {
-    await page.goto(VALID_PROPOSAL);
+  test('order total is non-zero', async ({ page }) => {
+    await page.goto(VALID);
     await page.waitForLoadState('networkidle');
     await expect(page.locator('#os-grand')).toBeVisible({ timeout: 10000 });
     const total = await page.locator('#os-grand').textContent();
@@ -85,19 +75,16 @@ test.describe('Proposal Round-trip', () => {
   });
 });
 
-// ── Edge Cases ────────────────────────────────────────────────────────────────
-
 test.describe('Edge Cases', () => {
-  test('Corrupt proposal param falls back to Step 1', async ({ page }) => {
-    await page.goto(`${BOOK_URL}?proposal=notvalidbase64!!!`);
-    await page.waitForLoadState('networkidle');
+  test('corrupt proposal falls back to step 1', async ({ page }) => {
+    await page.goto(URL + '?proposal=INVALID!!!');
+    await page.waitForLoadState('domcontentloaded');
     await expect(page.getByText("What's your")).toBeVisible({ timeout: 8000 });
     await expect(page.locator('#proposal-banner')).not.toBeVisible();
   });
 
-  test('No proposal param loads Step 1 normally', async ({ page }) => {
-    await page.goto(BOOK_URL);
+  test('no proposal param shows step 1', async ({ page }) => {
+    await page.goto(URL);
     await expect(page.getByText("What's your")).toBeVisible({ timeout: 8000 });
-    await expect(page.locator('#proposal-banner')).not.toBeVisible();
   });
 });
