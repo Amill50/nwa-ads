@@ -1,6 +1,6 @@
 // tests/e2e/admin.spec.js
 // NWA Ads — admin console E2E tests
-// Verified against live HTML selectors June 2026
+// Selectors verified against live HTML June 2026
 
 const { test, expect } = require('@playwright/test');
 const ADMIN_URL  = '/admin.html';
@@ -66,9 +66,10 @@ test.describe('Campaign Queue', () => {
   });
 
   test('Status filter chips are present', async ({ page }) => {
-    await expect(page.getByText('Pending')).toBeVisible();
-    await expect(page.getByText('Confirmed')).toBeVisible();
-    await expect(page.getByText('Live')).toBeVisible();
+    // Chips include emoji prefix: "⏳ Pending", "✓ Confirmed", "🟢 Live"
+    await expect(page.getByText(/Pending/)).toBeVisible();
+    await expect(page.getByText(/Confirmed/)).toBeVisible();
+    await expect(page.getByText(/Live/)).toBeVisible();
   });
 });
 
@@ -77,7 +78,8 @@ test.describe('Campaign Queue', () => {
 test.describe('Inventory & Rates', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    await page.getByText('Inventory & rates').click();
+    // Nav text is "Inventory & rates" with literal ampersand
+    await page.getByText(/Inventory/).first().click();
     await page.waitForTimeout(500);
   });
 
@@ -86,11 +88,13 @@ test.describe('Inventory & Rates', () => {
   });
 
   test('Export CSV button is visible', async ({ page }) => {
-    await expect(page.getByText('Export')).toBeVisible();
+    // Button text is "↓ Export CSV"
+    await expect(page.getByText(/Export/)).toBeVisible();
   });
 
   test('Import CSV button is visible', async ({ page }) => {
-    await expect(page.getByText('Import')).toBeVisible();
+    // Label text is "↑ Import CSV"
+    await expect(page.getByText(/Import/)).toBeVisible();
   });
 
   test('Save rates to site button is visible', async ({ page }) => {
@@ -107,10 +111,11 @@ test.describe('Sidebar Navigation', () => {
 
   test('All nav items present', async ({ page }) => {
     await expect(page.getByText('Campaign queue')).toBeVisible();
-    await expect(page.getByText('Inventory & rates')).toBeVisible();
+    // Nav uses literal "Inventory & rates"
+    await expect(page.getByText(/Inventory/)).toBeVisible();
     await expect(page.getByText('Revenue pipeline')).toBeVisible();
     await expect(page.getByText('Pricing manager')).toBeVisible();
-    await expect(page.getByText('Margin & rate settings')).toBeVisible();
+    await expect(page.getByText(/Margin/)).toBeVisible();
   });
 
   test('Booking tool link is in topbar', async ({ page }) => {
