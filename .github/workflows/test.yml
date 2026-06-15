@@ -60,6 +60,10 @@ jobs:
         run: npx playwright test --project=${{ matrix.project }}
         env:
           TEST_URL: https://nwa-ads.com
+          
+      - name: Print test failures
+        if: always()
+        run: node scripts/summarize-results.js
 
       - name: Upload test report
         if: failure()
