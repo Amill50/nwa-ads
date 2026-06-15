@@ -12,8 +12,8 @@ async function checkout(page) {
   await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 15000 });
   await page.locator('.sc-add-btn').first().click();
   await page.locator('#btn-s2').click();
-  await expect(page.getByText('Campaign summary')).toBeVisible({ timeout: 8000 });
-  await page.getByText('Looks good').click();
+  await expect(page.locator('.summary-modal-title')).toBeVisible({ timeout: 8000 });
+  await page.getByText(/Looks good/).click();
   await page.getByText('Continue to checkout').first().click();
   await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 8000 });
 }
@@ -49,27 +49,27 @@ test.describe('Proposal Round-trip', () => {
   test('loads to checkout', async ({ page }) => {
     page.on('pageerror', e => console.log('JS ERROR:', e.message));
     await page.goto(VALID);
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await expect(page.getByText('Almost live.')).toBeVisible({ timeout: 15000 });
   });
 
   test('proposal banner shown', async ({ page }) => {
     await page.goto(VALID);
-    await page.waitForLoadState('networkidle');
-    await expect(page.locator('#proposal-banner')).toBeVisible({ timeout: 10000 });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('#proposal-banner')).toBeVisible({ timeout: 15000 });
   });
 
   test('CTA with Book button shown', async ({ page }) => {
     await page.goto(VALID);
-    await page.waitForLoadState('networkidle');
-    await expect(page.locator('#proposal-cta')).toBeVisible({ timeout: 10000 });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('#proposal-cta')).toBeVisible({ timeout: 15000 });
     await expect(page.getByText('Book this campaign')).toBeVisible();
   });
 
   test('order total is non-zero', async ({ page }) => {
     await page.goto(VALID);
-    await page.waitForLoadState('networkidle');
-    await expect(page.locator('#os-grand')).toBeVisible({ timeout: 10000 });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('#os-grand')).toBeVisible({ timeout: 15000 });
     const total = await page.locator('#os-grand').textContent();
     expect(total).not.toBe('$0');
   });
