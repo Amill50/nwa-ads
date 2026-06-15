@@ -61,9 +61,17 @@ jobs:
         env:
           TEST_URL: https://nwa-ads.com
           
-      - name: Print test failures
+      - name: Write results to repo
         if: always()
-        run: node scripts/summarize-results.js
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          node scripts/write-results.js
+          git config user.email "ci@nwa-ads.com"
+          git config user.name "NWA Ads CI"
+          git add ci-results/
+          git diff --staged --quiet || git commit -m "ci: test results ${{ matrix.project }} [skip ci]"
+          git push
 
       - name: Upload test report
         if: failure()
