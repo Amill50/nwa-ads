@@ -1,6 +1,8 @@
 // playwright.config.js
 const { defineConfig, devices } = require('@playwright/test');
 
+const isCI = !!process.env.CI;
+
 module.exports = defineConfig({
   testDir: './tests/e2e',
   timeout: 60000,
@@ -14,20 +16,22 @@ module.exports = defineConfig({
   ],
 
   use: {
-    baseURL: process.env.TEST_URL || 'http://localhost:3000',
+    // Locally: run against live site. In CI: use local server.
+    baseURL: process.env.TEST_URL || (isCI ? 'http://localhost:3000' : 'https://nwa-ads.com'),
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'off',
   },
 
-  ...(process.env.TEST_URL ? {} : {
+  // Only spin up local server in CI
+  ...(isCI ? {
     webServer: {
       command: 'node_modules/.bin/http-server . -p 3000 -c-1 --silent',
       url: 'http://localhost:3000',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 60000,
-    },
-  }),
+    }
+  } : {}),
 
   projects: [
     {
