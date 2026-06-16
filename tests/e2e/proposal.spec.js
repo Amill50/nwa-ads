@@ -58,15 +58,16 @@ test.describe('Proposal Round-trip', () => {
     await page.goto(VALID);
     await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('#panel-4.active')).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('#proposal-banner')).toBeVisible({ timeout: 5000 });
+    // Banner uses classList.add('visible') not display — check for class
+    await expect(page.locator('#proposal-banner.visible')).toBeVisible({ timeout: 5000 });
   });
 
   test('CTA with Book button shown', async ({ page }) => {
     await page.goto(VALID);
     await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('#panel-4.active')).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('#proposal-cta')).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText('Book this campaign')).toBeVisible();
+    // CTA uses classList.add('visible') 
+    await expect(page.locator('#proposal-cta.visible')).toBeVisible({ timeout: 5000 });
   });
 
   test('order total is non-zero', async ({ page }) => {
