@@ -14,23 +14,17 @@ module.exports = defineConfig({
   ],
 
   use: {
-    // Use local static server — eliminates Netlify/CDN/network variables
     baseURL: process.env.TEST_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'off',
-    // Log browser console to test output
-    launchOptions: {
-      args: ['--disable-web-security']  // allow local file CORS
-    }
   },
 
-  // Start a local static server before tests
   webServer: {
-    command: 'npx serve . --listen 3000 --no-clipboard',
+    command: 'npx http-server . -p 3000 -c-1 --silent',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 30000,
+    timeout: 60000,
   },
 
   projects: [
