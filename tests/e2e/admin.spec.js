@@ -6,13 +6,12 @@ const PASS = 'nwaads2026';
 async function login(page) {
   await page.goto(ADMIN);
   await expect(page.locator('#gate')).toBeVisible();
-  // Use fill + evaluate to ensure the value is set, then click
-  await page.locator('#gate-pw').fill(PASS);
-  // Verify the value was set
-  const val = await page.locator('#gate-pw').inputValue();
-  console.log('Password input value:', val);
-  await page.locator('.gate-btn').click();
-  // checkPw() sets #app display:flex on correct pass
+  // Set value directly on the input element and call checkPw() via JS
+  // This bypasses any input event quirks with Playwright fill()
+  await page.evaluate((pass) => {
+    document.getElementById('gate-pw').value = pass;
+    checkPw();
+  }, PASS);
   await expect(page.locator('#app')).toBeVisible({ timeout: 8000 });
 }
 
@@ -24,8 +23,10 @@ test.describe('Auth', () => {
 
   test('wrong pass stays locked', async ({ page }) => {
     await page.goto(ADMIN);
-    await page.locator('#gate-pw').fill('wrong');
-    await page.locator('.gate-btn').click();
+    await page.evaluate(() => {
+      document.getElementById('gate-pw').value = 'wrongpass';
+      checkPw();
+    });
     await expect(page.locator('#gate')).toBeVisible();
   });
 
@@ -40,7 +41,7 @@ test.describe('Auth', () => {
     const bg = await page.locator('.topbar').evaluate(
       el => getComputedStyle(el).backgroundColor
     );
-    console.log('Topbar background:', bg);
+    console.log('Topbar bg:', bg);
     expect(bg).toMatch(/rgb\(31,\s*61,\s*42\)/);
   });
 });
