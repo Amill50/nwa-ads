@@ -6,12 +6,10 @@ const PASS = 'nwaads2026';
 async function login(page) {
   await page.goto(ADMIN);
   await expect(page.locator('#gate')).toBeVisible();
-  // Set value directly on the input element and call checkPw() via JS
-  // This bypasses any input event quirks with Playwright fill()
   await page.evaluate((pass) => {
     document.getElementById('gate-pw').value = pass;
-    checkPw();
   }, PASS);
+  await page.locator('.gate-btn').click();
   await expect(page.locator('#app')).toBeVisible({ timeout: 8000 });
 }
 
@@ -25,14 +23,14 @@ test.describe('Auth', () => {
     await page.goto(ADMIN);
     await page.evaluate(() => {
       document.getElementById('gate-pw').value = 'wrongpass';
-      checkPw();
     });
+    await page.locator('.gate-btn').click();
     await expect(page.locator('#gate')).toBeVisible();
   });
 
   test('correct pass shows app', async ({ page }) => {
     await login(page);
-    await expect(page.getByText('Campaign queue')).toBeVisible();
+    await expect(page.locator('#nav-campaigns')).toBeVisible();
   });
 
   test('topbar is green (#1f3d2a)', async ({ page }) => {
@@ -54,16 +52,16 @@ test.describe('Campaign Queue', () => {
   });
 
   test('status filter chips present', async ({ page }) => {
-    await expect(page.getByText(/Pending/)).toBeVisible();
-    await expect(page.getByText(/Confirmed/)).toBeVisible();
-    await expect(page.getByText(/Live/)).toBeVisible();
+    await expect(page.locator('.filter-chip').filter({ hasText: /Pending/ })).toBeVisible();
+    await expect(page.locator('.filter-chip').filter({ hasText: /Confirmed/ })).toBeVisible();
+    await expect(page.locator('.filter-chip').filter({ hasText: /Live/ })).toBeVisible();
   });
 });
 
 test.describe('Inventory & Rates', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    await page.getByText(/Inventory/).first().click();
+    await page.locator('#nav-inventory').click();
     await page.waitForTimeout(300);
   });
 
@@ -72,11 +70,11 @@ test.describe('Inventory & Rates', () => {
   });
 
   test('export CSV button visible', async ({ page }) => {
-    await expect(page.getByText(/Export/)).toBeVisible();
+    await expect(page.locator('[onclick="exportRates()"]')).toBeVisible();
   });
 
   test('save rates button visible', async ({ page }) => {
-    await expect(page.getByText('Save rates to site')).toBeVisible();
+    await expect(page.locator('#btn-save-rates')).toBeVisible();
   });
 });
 
@@ -84,10 +82,10 @@ test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => { await login(page); });
 
   test('all nav items present', async ({ page }) => {
-    await expect(page.getByText('Campaign queue')).toBeVisible();
-    await expect(page.getByText(/Inventory/)).toBeVisible();
-    await expect(page.getByText('Revenue pipeline')).toBeVisible();
-    await expect(page.getByText('Pricing manager')).toBeVisible();
-    await expect(page.getByText('Sign out')).toBeVisible();
+    await expect(page.locator('#nav-campaigns')).toBeVisible();
+    await expect(page.locator('#nav-inventory')).toBeVisible();
+    await expect(page.locator('#nav-pipeline')).toBeVisible();
+    await expect(page.locator('#nav-pricing')).toBeVisible();
+    await expect(page.locator('.tb-logout')).toBeVisible();
   });
 });

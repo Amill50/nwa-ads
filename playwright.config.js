@@ -20,12 +20,14 @@ module.exports = defineConfig({
     video: 'off',
   },
 
-  webServer: {
-    command: 'npx http-server . -p 3000 -c-1 --silent',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 60000,
-  },
+  ...(process.env.TEST_URL ? {} : {
+    webServer: {
+      command: 'node_modules/.bin/http-server . -p 3000 -c-1 --silent',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 60000,
+    },
+  }),
 
   projects: [
     {

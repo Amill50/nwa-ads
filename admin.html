@@ -1035,8 +1035,7 @@ async function saveRatesToSite() {
     });
     if (!metaRes.ok) throw new Error('Failed to fetch book.html: ' + metaRes.status);
     const meta = await metaRes.json();
-    let bookHtml = atob(meta.content.replace(/
-/g, ''));
+    let bookHtml = atob(meta.content.replace(/\n/g, ''));
 
     // 2. Patch each changed screen's rate fields in the HTML
     let patchCount = 0;
@@ -1100,18 +1099,14 @@ async function saveRatesToSite() {
       btn.style.color = '#fff';
       btn.disabled = false;
     }, 3000);
-    alert(patchCount + ' screen rate(s) pushed live to nwa-ads.com/book.html.
-
-Netlify will deploy in ~30 seconds.');
+    alert(patchCount + ' screen rate(s) pushed live to nwa-ads.com/book.html.\n\nNetlify will deploy in ~30 seconds.');
 
   } catch(err) {
     log('Save failed: ' + err.message);
     btn.textContent = '✗ Save failed';
     btn.style.background = 'var(--accent)';
     btn.disabled = false;
-    alert('Save failed: ' + err.message + '
-
-Check your GitHub token or try again.');
+    alert('Save failed: ' + err.message + '\n\nCheck your GitHub token or try again.');
     setTimeout(() => {
       btn.textContent = '✦ Save rates to site';
       btn.style.background = 'var(--green)';
