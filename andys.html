@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Andy's Frozen Custard × NWA Ads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:    #1F3D2A;
+      --green-mid: #2d5a3d;
+      --green-light: #e8f0ea;
+      --orange:   #C8440A;
+      --orange-light: #fff0ea;
+      --cream:    #faf8f4;
+      --ink:      #111c14;
+      --muted:    #5a6b5e;
+      --rule:     #d4ddd6;
+      --ff-serif: 'Fraunces', Georgia, serif;
+      --ff-sans:  'Instrument Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--ff-sans);
+      background: var(--cream);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      background: var(--green);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      font-family: var(--ff-serif);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-brand span { color: var(--orange); }
+    .nav-link {
+      font-family: var(--ff-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.72);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: #fff; }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--green);
+      color: #fff;
+      padding: 5rem 2rem 4.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 110%, rgba(200,68,10,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--ff-sans);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 0.45em 1em 0.45em 0.6em;
+      border-radius: 3px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow img {
+      height: 28px;
+      width: auto;
+      display: block;
+      filter: brightness(0) invert(1);
+      opacity: 0.9;
+    }
+    .hero-eyebrow-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(255,255,255,0.25);
+    }
+    .hero h1 {
+      font-family: var(--ff-serif);
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      max-width: 780px;
+      margin: 0 auto 1.4rem;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--orange);
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.72);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.65;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: var(--orange);
+      color: #fff;
+      font-family: var(--ff-sans);
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      padding: 0.85em 2.2em;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .hero-cta:hover { background: #a83608; transform: translateY(-1px); }
+
+    /* ── CPM COMPARISON ── */
+    .section { padding: 5rem 2rem; }
+    .section-inner { max-width: 900px; margin: 0 auto; }
+
+    .section-label {
+      font-family: var(--ff-sans);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.75rem;
+    }
+    .section-heading {
+      font-family: var(--ff-serif);
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    .section-intro {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+
+    /* CPM bar chart */
+    .cpm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .cpm-card {
+      border-radius: 6px;
+      padding: 2rem 2rem 1.75rem;
+      position: relative;
+    }
+    .cpm-card.audacy {
+      background: #f0f0f0;
+      border: 1.5px solid #ddd;
+    }
+    .cpm-card.ooh {
+      background: var(--green);
+      color: #fff;
+    }
+    .cpm-card-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      opacity: 0.65;
+    }
+    .cpm-card.ooh .cpm-card-label { color: rgba(255,255,255,0.75); opacity: 1; }
+    .cpm-number {
+      font-family: var(--ff-serif);
+      font-size: clamp(2.8rem, 6vw, 4rem);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .cpm-card.audacy .cpm-number { color: #888; }
+    .cpm-card.ooh .cpm-number { color: #fff; }
+    .cpm-unit {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+    .cpm-card.audacy .cpm-unit { color: #999; }
+    .cpm-card.ooh .cpm-unit { color: rgba(255,255,255,0.6); }
+    .cpm-bar-track {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.1);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .cpm-card.ooh .cpm-bar-track { background: rgba(255,255,255,0.15); }
+    .cpm-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1.2s cubic-bezier(.16,1,.3,1);
+    }
+    .cpm-card.audacy .cpm-bar-fill { width: 100%; background: #bbb; }
+    .cpm-card.ooh .cpm-bar-fill { width: 28%; background: var(--orange); }
+    .cpm-note {
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    .cpm-card.audacy .cpm-note { color: #999; }
+    .cpm-card.ooh .cpm-note { color: rgba(255,255,255,0.6); }
+    .cpm-savings-badge {
+      display: inline-block;
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.3em 0.8em;
+      border-radius: 2px;
+      margin-top: 1rem;
+    }
+
+    /* ── PACKAGE ── */
+    .package-section {
+      background: var(--green-light);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+    .package-box {
+      background: var(--green);
+      color: #fff;
+      border-radius: 8px;
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .package-price-area .package-price {
+      font-family: var(--ff-serif);
+      font-size: clamp(2.6rem, 5vw, 3.6rem);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+    .package-price span { color: var(--orange); }
+    .package-price-label {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .package-tagline {
+      font-family: var(--ff-serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.4;
+    }
+    .package-details { list-style: none; }
+    .package-details li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.88);
+    }
+    .package-details li:last-child { border-bottom: none; }
+    .pkg-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      background: rgba(200,68,10,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+    .pkg-icon svg { width: 11px; height: 11px; fill: var(--orange); }
+    .pkg-detail-label { font-weight: 600; color: #fff; margin-right: 0.25rem; }
+
+    /* ── REASONS ── */
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+    .reason-card {
+      background: #fff;
+      border: 1.5px solid var(--rule);
+      border-radius: 6px;
+      padding: 2rem 1.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .reason-card:hover {
+      border-color: var(--green-mid);
+      box-shadow: 0 4px 20px rgba(31,61,42,0.08);
+    }
+    .reason-num {
+      font-family: var(--ff-serif);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      opacity: 0.4;
+    }
+    .reason-title {
+      font-family: var(--ff-serif);
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+    }
+    .reason-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── FORM ── */
+    .form-section {
+      background: var(--green);
+      color: #fff;
+    }
+    .form-section .section-heading { color: #fff; }
+    .form-section .section-label { color: var(--orange); }
+    .form-section .section-intro { color: rgba(255,255,255,0.65); }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+    }
+    .form-group input {
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      border-radius: 4px;
+      padding: 0.8rem 1rem;
+      font-family: var(--ff-sans);
+      font-size: 0.95rem;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-group input::placeholder { color: rgba(255,255,255,0.3); }
+    .form-group input:focus {
+      border-color: var(--orange);
+      background: rgba(255,255,255,0.12);
+    }
+    .form-submit {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .btn-submit {
+      background: var(--orange);
+      color: #fff;
+      font-family: var(--ff-sans);
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      padding: 0.9em 2.4em;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-submit:hover { background: #a83608; transform: translateY(-1px); }
+    .form-disclaimer {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: var(--ink);
+      padding: 1.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .footer-brand {
+      font-family: var(--ff-serif);
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-brand span { color: var(--orange); }
+    .footer-note {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .cpm-grid, .reasons-grid, .package-box, .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .section { padding: 3.5rem 1.25rem; }
+      .package-box { padding: 2rem 1.5rem; gap: 2rem; }
+      .footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="https://nwa-ads.com" class="nav-brand">NWA<span>Ads</span></a>
+    <a href="https://nwa-ads.com" class="nav-link">← Back to nwa-ads.com</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <img src="andys-logo.png" alt="Andy's Frozen Custard" />
+      <div class="hero-eyebrow-divider"></div>
+      A message for Andy's NWA
+    </div>
+    <h1>Your ad dollars work <em>harder</em> on a billboard.</h1>
+    <p class="hero-sub">You're already spending on audio. See what the same budget buys when every driver in Rogers and Bentonville can see your sign.</p>
+    <a href="#package" class="hero-cta">See the $1,500 package →</a>
+  </section>
+
+  <!-- CPM COMPARISON -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label">The numbers</p>
+      <h2 class="section-heading">Audacy audio vs. OOH<br>in Northwest Arkansas</h2>
+      <p class="section-intro">Cost per thousand impressions (CPM) is the standard yardstick for comparing media. Here's how your current audio spend stacks up against billboards on NWA Ads.</p>
+
+      <div class="cpm-grid">
+        <div class="cpm-card audacy">
+          <div class="cpm-card-label">Audacy audio (what you're paying now)</div>
+          <div class="cpm-number">$25–$40</div>
+          <div class="cpm-unit">CPM</div>
+          <div class="cpm-bar-track"><div class="cpm-bar-fill"></div></div>
+          <p class="cpm-note">Industry-standard audio streaming CPM in mid-size markets. You're paying for ears that may never buy custard today.</p>
+        </div>
+
+        <div class="cpm-card ooh">
+          <div class="cpm-card-label">NWA Ads billboards</div>
+          <div class="cpm-number">$3–$11</div>
+          <div class="cpm-unit">CPM</div>
+          <div class="cpm-bar-track"><div class="cpm-bar-fill"></div></div>
+          <p class="cpm-note">Verified drive-past impressions near your Rogers and Bentonville locations — people already in your trade area.</p>
+          <div class="cpm-savings-badge">Up to 8× cheaper per impression</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAMPLE PACKAGE -->
+  <section class="section package-section" id="package">
+    <div class="section-inner">
+      <p class="section-label">Sample package</p>
+      <h2 class="section-heading">What $1,500/mo gets Andy's</h2>
+      <p class="section-intro">A turnkey three-board buy geo-targeted near your two NWA locations. Buy in minutes on nwa-ads.com — no agency, no rep, no waiting.</p>
+
+      <div class="package-box">
+        <div class="package-price-area">
+          <div class="package-price"><span>$1,500</span></div>
+          <div class="package-price-label">per month</div>
+          <p class="package-tagline">"More people see your cone before dinner than hear your spot during it."</p>
+        </div>
+
+        <ul class="package-details">
+          <li>
+            <div class="pkg-icon"><svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3"/></svg></div>
+            <span><span class="pkg-detail-label">3 boards</span> geo-targeted within 2 miles of Rogers &amp; Bentonville locations</span>
+          </li>
+          <li>
+            <div class="pkg-icon"><svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3"/></svg></div>
+            <span><span class="pkg-detail-label">~600,000 impressions</span> verified monthly drive-past traffic</span>
+          </li>
+          <li>
+            <div class="pkg-icon"><svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3"/></svg></div>
+            <span><span class="pkg-detail-label">Effective CPM ~$2.50</span> — fraction of your current audio rate</span>
+          </li>
+          <li>
+            <div class="pkg-icon"><svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3"/></svg></div>
+            <span><span class="pkg-detail-label">No contracts.</span> Run by week, by month, or by season</span>
+          </li>
+          <li>
+            <div class="pkg-icon"><svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3"/></svg></div>
+            <span><span class="pkg-detail-label">Creative included.</span> We help you get art-ready at no extra charge</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE REASONS -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label">Why it works</p>
+      <h2 class="section-heading">Three reasons Andy's wins with OOH</h2>
+      <p class="section-intro">Frozen custard is an impulse buy. You win by being visible when the decision is made — not playing in the background five hours earlier.</p>
+
+      <div class="reasons-grid">
+        <div class="reason-card">
+          <div class="reason-num">01</div>
+          <div class="reason-title">Cheaper per impression</div>
+          <p class="reason-body">At $3–$11 CPM versus audio's $25–$40, OOH delivers the same reach for a fraction of your current spend. Redirect the savings to more boards, or pocket them.</p>
+        </div>
+        <div class="reason-card">
+          <div class="reason-num">02</div>
+          <div class="reason-title">Proven drive-time impact</div>
+          <p class="reason-body">Research consistently shows OOH overperforms for QSR and food brands — especially on arterials near the store. People make the turn when they see the sign.</p>
+        </div>
+        <div class="reason-card">
+          <div class="reason-num">03</div>
+          <div class="reason-title">Buy in minutes</div>
+          <p class="reason-body">No agency. No media rep. No two-week proposal cycle. Browse available boards, pick your dates, upload your artwork, and go live. Built for local operators like Andy's.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="section form-section">
+    <div class="section-inner">
+      <p class="section-label">Get started</p>
+      <h2 class="section-heading">Request access for Andy's</h2>
+      <p class="section-intro">Tell us a little about yourself and we'll get you set up with a custom board recommendation and first-month pricing.</p>
+
+      <form name="andys-request" netlify>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your full name" required />
+          </div>
+          <div class="form-group">
+            <label for="business">Business Name</label>
+            <input type="text" id="business" name="business" placeholder="Andy's Frozen Custard" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" placeholder="(479) 555-0100" />
+          </div>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn-submit">Request Access</button>
+          <span class="form-disclaimer">We'll follow up within one business day.</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-brand">NWA<span>Ads</span></div>
+    <span class="footer-note">© 2025 MillStreet Ventures LLC · Rogers, AR · <a href="https://nwa-ads.com" style="color:rgba(255,255,255,0.4);text-decoration:none;">nwa-ads.com</a></span>
+  </footer>
+
+</body>
+</html>
