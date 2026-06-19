@@ -296,8 +296,8 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
 .s2-top-left { display: flex; align-items: center; gap: 20px; }
-.s2-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
-.s2-count { font-size: 12px; color: var(--muted); }
+.s2-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: #fff; }
+.s2-count { font-size: 12px; color: rgba(255,255,255,0.72); }
 .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; }
 .f-chip {
   padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 500;
@@ -359,9 +359,9 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 /* Screen list */
 .screen-list-label {
   font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-  color: var(--ink2); padding: 7px 16px 6px;
+  color: var(--ink2); padding: 7px 16px 6px; min-height: 26px; box-sizing: border-box;
   background: var(--off-white); border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 1;
+  position: sticky; top: 0; z-index: 5;
 }
 .screen-list-wrap { flex: 1; overflow-y: auto; border-bottom: 1px solid var(--border); min-height: 0; }
 
@@ -2004,7 +2004,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
       <div>
         <div class="s2-title" id="s2-title-text">Pick your screens</div>
         <div class="s2-count" id="s2-count">82 screens across NWA</div>
-        <div id="s2-hint-text" style="font-size:12px;color:var(--accent2);font-weight:500;margin-top:3px;max-width:480px;"></div>
+        <div id="s2-hint-text" style="font-size:12px;color:rgba(255,255,255,0.85);font-weight:500;margin-top:3px;max-width:480px;"></div>
       </div>
       <div class="filter-bar">
         <div class="f-chip on" id="chip-all" onclick="doFilter(this,'all')">All formats</div>
