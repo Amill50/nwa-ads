@@ -13382,8 +13382,8 @@ function renderList() {
   visible.forEach(s => {
     const sel = !!ST.cart[s.id];
     const cls = pinClass(s.type);
-    const badgeLabels = { digital:'🛣 Billboard', cinema:'🎬 Cinema', gasstation:'⛽ Gas Station', airport:'✈ Airport' };
-    const badgeCss = { digital:'dig', cinema:'air', gasstation:'', airport:'air' };
+    const badgeLabels = { digital:'🪧 Billboard', billboard:'🪧 Billboard', cinema:'🎬 Cinema', gasstation:'⛽ Gas Station', airport:'✈️ Airport', healthcare:'🏥 Healthcare', dining:'🍽️ Dining', grocery:'🛒 Grocery', gym:'🏋️ Gym', rideshare:'🚗 Rideshare', residential:'🏢 Residential', sports:'🏟️ Sports', retail:'🏪 Retail', education:'🎓 Campus' };
+    const badgeCss = { digital:'dig', billboard:'dig', cinema:'air', gasstation:'', airport:'air', healthcare:'hlt', dining:'', grocery:'', gym:'', rideshare:'', residential:'', sports:'', retail:'', education:'' };
     const tagHtml = [
       `<span class="sc-tag ${badgeCss[s.type]||''}" style="${s.type==='cinema'?'background:#f3e8ff;color:#6b21a8':s.type==='gasstation'?'background:#fef3c7;color:#b45309':''}">${badgeLabels[s.type]||s.type}</span>`,
       s.tags.includes('walmart') ? '<span class="sc-tag wmt">Near Walmart HQ</span>' : '',
@@ -13406,7 +13406,7 @@ function renderList() {
         </div>
       </div>
       <div class="sc-tags">${tagHtml}</div>
-      <div class="sc-impr">${s.impr} · $${s.cpm.toFixed(2)} CPM · min $500</div>
+      <div class="sc-impr">${s.impr||(s.weekly_imp>=1000?Math.round(s.weekly_imp/1000)+'K weekly':s.weekly_imp+' weekly')||'—'} · $${s.cpm.toFixed(2)} CPM · min $${(s.min_spend||500).toLocaleString()}</div>
       ${(ST.goal==='Drive customers through your door')&&ST.proximityTarget
         ?`<div style="margin-top:5px"><span class="prox-badge ${proxClass(haversineMiles(ST.proximityTarget.lat,ST.proximityTarget.lng,s.lat,s.lng))}">📍 ${distLabel(haversineMiles(ST.proximityTarget.lat,ST.proximityTarget.lng,s.lat,s.lng))} from ${ST.proximityTarget.name.split('–')[0].trim()}</span></div>`
         :ST.goal==="Reach Walmart & Sam's Club buyers"
