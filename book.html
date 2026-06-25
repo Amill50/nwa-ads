@@ -1546,13 +1546,22 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     max-height: none;
     overflow-y: visible;
     overflow: visible;
+    padding-top: 4px; /* small breathing room between label and first card */
   }
 
   /* Disable sticky on mobile — causes overlap in natural-scroll layout */
   .screen-list-label {
+    /* On mobile: not sticky (no fixed-height scroll container) but
+       rendered as a solid block header that always sits above cards */
     position: relative;
     top: auto;
     z-index: 1;
+    background: var(--bg);
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 2px;
+    /* Ensure it never overlaps — cards start visually below this */
+    display: block;
+    width: 100%;
   }
 
   /* Clean up screen list padding on mobile */
