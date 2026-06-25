@@ -308,15 +308,21 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 .f-chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
 
 /* VIEW TOGGLE */
-.view-toggle { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+.view-toggle {
+  display: flex; border: 1.5px solid var(--border); border-radius: 10px;
+  overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
 .vt-btn {
-  padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer;
-  border: none; background: var(--white); color: var(--muted); transition: all 0.15s;
+  padding: 9px 20px; font-size: 13px; font-weight: 500; cursor: pointer;
+  border: none; background: var(--white); color: var(--ink2); transition: all 0.18s;
+  display: flex; align-items: center; gap: 4px;
 }
 .vt-btn.on { background: var(--ink); color: #fff; }
+.vt-btn:hover:not(.on) { background: var(--bg); }
 
 /* Main area */
-.s2-body { flex: 1; display: flex; flex-direction: row; overflow: hidden; min-height: 0; }
+.s2-body { flex: 1; display: flex; flex-direction: row; overflow: hidden; min-height: 0; position: relative; }
 
 /* MAP */
 #map { flex: 1; min-width: 0; }
@@ -498,6 +504,11 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 .sc-tag.dig { background: var(--accent-light); color: var(--accent); }
 .sc-tag.air { background: #e8eef5; color: #1a3d6a; }
 .sc-tag.wmt { background: var(--accent2-light); color: var(--accent2); }
+.sc-tag.hlt { background: #e0f0ff; color: #1a5276; }
+.sc-tag.din { background: #fef3e2; color: #b45309; }
+.sc-tag.gym { background: #f0fdf4; color: #166534; }
+.sc-tag.cin { background: #f3e8ff; color: #6b21a8; }
+.sc-tag.rid { background: #fef2f2; color: #991b1b; }
 .sc-impr { font-size: 11px; color: var(--ink2); font-weight: 500; }
 
 /* CART TAB */
@@ -1748,17 +1759,17 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
           <div class="insight-head">
             <span class="insight-icon">🎯</span>
             <div>
-              <div class="insight-title">I-49 corridor and/or XNA Airport digital screens are a great way to get awareness in front of influential Walmart or Sam's Club executives</div>
-              <div class="insight-sub">There is a high penetration of Walmart executives living in downtown Bentonville and near the Pinnacle Hills area in Rogers. Strategically placed digital billboards near the Home Office exit on I-49, in downtown Bentonville, and/or on the Southeast Walton Boulevard area are sure to garner attention in front of these influential executives. Time your flight to Q1 or Q3 for the highest concentration of decision-maker traffic.</div>
+              <div class="insight-title">Reach Walmart &amp; Sam&#39;s Club buyers where they live, work, and travel</div>
+              <div class="insight-sub">We geo-target three high-concentration buyer zones: the Walmart Home Office campus, the Scissortail executive residential enclave, and the Pinnacle Country Club corridor in Rogers. Screens are filtered to billboard, cinema, gym, and dining — the environments where decision-makers spend time outside the office. Time your flight to Q1 or Q3 for peak decision-maker traffic.</div>
             </div>
           </div>
           <div class="insight-tips">
-            <div class="insight-tip">🏢 <strong>Digital billboards near the I-49 Home Office exit</strong> put your brand directly in the daily commute of Walmart and Sam's Club executives</div>
-            <div class="insight-tip">🏙 <strong>Downtown Bentonville and SE Walton Boulevard screens</strong> reach executives where they live, dine, and spend time outside the office</div>
-            <div class="insight-tip">✈ <strong>XNA Airport screens</strong> catch merchants and retail executives in the midst of business and leisure travel — targeting them the moment they take off or land in a super high dwell time environment</div>
+            <div class="insight-tip">🏢 <strong>Walmart Home Office zone</strong> — Digital billboards on SE Walton Blvd and the I-49 Home Office exit put your brand directly in the daily commute of executives</div>
+            <div class="insight-tip">🏡 <strong>Scissortail &amp; Pinnacle Hills</strong> — Screens in the premier executive residential corridors reach buyers where they live, dine, and spend time away from the office</div>
+            <div class="insight-tip">✈️ <strong>XNA Airport screens</strong> catch merchants and retail executives mid-travel — high dwell time at the exact moment they are thinking about business</div>
           </div>
-          <div class="insight-walmart-badge">
-            <span style="font-size:13px;font-weight:600">🗺 Map pre-filtered to Walmart HQ proximity · Showing top screens only</span>
+          <div class="insight-walmart-badge" style="margin-top:14px;padding:10px 14px;background:linear-gradient(135deg,#eaf2ec,#f6f4ef);border-radius:8px;border-left:3px solid #1f3d2a">
+            <span style="font-size:12px;font-weight:600;color:#1f3d2a">🗺 Map shows 3 buyer concentration zones · Billboard, cinema, gym &amp; dining only</span>
           </div>
         </div>
         <div class="insight-subintent">
@@ -2038,15 +2049,38 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
         <div class="f-chip" id="chip-walmart-2mi" onclick="doFilter(this,'walmart_hq_2mi')" style="display:none">📍 Within 2mi of HQ</div>
       </div>
     </div>
-    <div class="view-toggle">
-      <div class="vt-btn on" id="vt-map" onclick="setView('map')">🗺 Map</div>
-      <div class="vt-btn" id="vt-list" onclick="setView('list')">☰ List</div>
+    <div class="view-toggle" id="view-toggle-bar">
+      <div class="vt-btn on" id="vt-map" onclick="setView('map')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><path d="M3 7l6-4 6 4 6-4v14l-6 4-6-4-6 4V7"/></svg>Map
+      </div>
+      <div class="vt-btn" id="vt-list" onclick="setView('list')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>List
+      </div>
     </div>
   </div>
 
   <!-- Body: map + sidebar -->
   <div class="s2-body">
     <div id="map"></div>
+    <!-- Walmart buyer zone legend — shown only when Walmart goal active -->
+    <div id="wmt-legend" style="display:none;position:absolute;bottom:24px;left:12px;z-index:500;background:rgba(255,255,255,0.95);border:1px solid #e2ddd6;border-radius:10px;padding:10px 14px;box-shadow:0 2px 12px rgba(0,0,0,0.12);min-width:200px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b6560;margin-bottom:8px">Buyer concentration zones</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;background:rgba(31,61,42,0.25);border:2px solid #1f3d2a;flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:500;color:#1a1714">Walmart Home Office</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;background:rgba(200,68,10,0.2);border:2px solid #c8440a;flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:500;color:#1a1714">Scissortail (residential)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;background:rgba(139,69,19,0.2);border:2px solid #8b4513;flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:500;color:#1a1714">Pinnacle Country Club</span>
+        </div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2ddd6;font-size:10px;color:#6b6560">Billboard · Cinema · Gym · Dining only</div>
+    </div>
 
     <div class="s2-side">
 
@@ -13436,7 +13470,7 @@ function renderList() {
     const sel = !!ST.cart[s.id];
     const cls = pinClass(s.type);
     const badgeLabels = { digital:'🪧 Billboard', billboard:'🪧 Billboard', cinema:'🎬 Cinema', gasstation:'⛽ Gas Station', airport:'✈️ Airport', healthcare:'🏥 Healthcare', dining:'🍽️ Dining', grocery:'🛒 Grocery', gym:'🏋️ Gym', rideshare:'🚗 Rideshare', residential:'🏢 Residential', sports:'🏟️ Sports', retail:'🏪 Retail', education:'🎓 Campus' };
-    const badgeCss = { digital:'dig', billboard:'dig', cinema:'air', gasstation:'', airport:'air', healthcare:'hlt', dining:'', grocery:'', gym:'', rideshare:'', residential:'', sports:'', retail:'', education:'' };
+    const badgeCss = { digital:'dig', billboard:'dig', cinema:'cin', gasstation:'', airport:'air', healthcare:'hlt', dining:'din', grocery:'', gym:'gym', rideshare:'rid', residential:'', sports:'', retail:'', education:'' };
     const tagHtml = [
       `<span class="sc-tag ${badgeCss[s.type]||''}" style="${s.type==='cinema'?'background:#f3e8ff;color:#6b21a8':s.type==='gasstation'?'background:#fef3c7;color:#b45309':''}">${badgeLabels[s.type]||s.type}</span>`,
       s.tags.includes('walmart') ? '<span class="sc-tag wmt">Near Walmart HQ</span>' : '',
@@ -13967,8 +14001,22 @@ function goTo(step) {
     showOptimizer();
     // Invalidate map size after layout settles on mobile
     setTimeout(() => { if (map) map.invalidateSize(true); }, 300);
-    // Render Walmart buyer heatmap zones if applicable
-    setTimeout(renderWmtHeatmap, 500);
+    // Render Walmart buyer heatmap zones + auto-suggest if applicable
+    setTimeout(() => {
+      renderWmtHeatmap();
+      // Auto-load default recommendation for Walmart goal
+      if (ST.goal === "Reach Walmart & Sam's Club buyers") {
+        const recs = fallbackRecommend();
+        if (recs.length > 0 && !optRecommended.length) {
+          optRecommended = recs.map(s => ({...s, _why: ''}));
+          document.getElementById('opt-reason').textContent =
+            'Top screens across the 3 buyer zones — anchored by a billboard on SE Walton Blvd, the daily commute route for Home Office executives.';
+          renderOptimizerBasket();
+          document.getElementById('opt-results').classList.add('visible');
+          document.getElementById('opt-thinking').classList.remove('visible');
+        }
+      }
+    }, 500);
 
     // Auto-draw proximity ring for foot traffic / event if target already set
     if ((ST.goal === 'Drive customers through your door') && ST.proximityTarget) {
@@ -14818,7 +14866,7 @@ Campaign goal: "${ST.goal || 'General advertising'}"
 Budget: $${ST.budget} per ${ST.inc}
 Duration: ${durLabel()}
 ${ST.proximityTarget ? `Target location: ${ST.proximityTarget.name}` : ''}
-${ST.goal === "Reach Walmart & Sam's Club buyers" ? 'IMPORTANT: Only recommend screens within 2 miles of Walmart HQ (Bentonville, AR).' : ''}
+${ST.goal === "Reach Walmart & Sam's Club buyers" ? 'IMPORTANT: Recommend screens within the 3 buyer zones (Home Office, Scissortail residential, Pinnacle CC corridor). MUST include at least 1 billboard. Prioritize billboard + gym or dining combinations. Exclude gas stations.' : ''}
 
 Available inventory (format: id|name|area|type|rate|impressions):
 ${invSummary}
@@ -14878,18 +14926,54 @@ Respond ONLY with valid JSON in this exact format, no markdown:
 }
 
 function fallbackRecommend() {
-  let pool = [...INV];
-  if (ST.goal === "Reach Walmart & Sam's Club buyers") {
-    pool = pool.filter(s => haversineMiles(WALMART_HQ.lat, WALMART_HQ.lng, s.lat, s.lng) <= 2.0);
-  } else if (ST.proximityTarget) {
-    pool = sortedByProximity(pool).slice(0, 15);
-  }
-  return pool
-    .sort((a, b) => b.wkly_impr - a.wkly_impr)
-    .slice(0, 4)
-    .map(s => ({ ...s, _why: 'High impressions for your goal' }));
-}
+  const goal = ST.goal;
+  const budget = ST.budget || 2000;
+  const isWmt = goal === "Reach Walmart & Sam's Club buyers";
 
+  let pool = INV.filter(s => isVisible(s));
+
+  if (isWmt) {
+    // Walmart goal: must anchor with at least 1 billboard
+    const billboards = pool.filter(s => s.type === 'billboard')
+      .sort((a,b) => (b.wkly_impr||0) - (a.wkly_impr||0));
+    const others = pool.filter(s => s.type !== 'billboard')
+      .sort((a,b) => (b.wkly_impr||0) - (a.wkly_impr||0));
+
+    const picks = [];
+    let spent = 0;
+
+    // Always include the top billboard first
+    if (billboards.length > 0) {
+      picks.push(billboards[0]);
+      spent += billboards[0].wkly_rate || 0;
+    }
+
+    // Fill remaining budget with highest-impression non-billboard screens
+    for (const s of others) {
+      const rate = s.wkly_rate || 0;
+      if (picks.length >= 5) break;
+      if (spent + rate <= budget * 1.1) {
+        picks.push(s);
+        spent += rate;
+      }
+    }
+
+    // If budget allows, add a second billboard
+    if (picks.length < 5 && billboards.length > 1) {
+      const second = billboards[1];
+      if (spent + (second.wkly_rate||0) <= budget * 1.15) {
+        picks.push(second);
+      }
+    }
+
+    return picks;
+  }
+
+  // Default: top screens by impressions
+  return pool
+    .sort((a,b) => (b.wkly_impr||0) - (a.wkly_impr||0))
+    .slice(0, 4);
+}
 function renderOptimizerBasket() {
   const container = document.getElementById('opt-basket');
   if (!container) return;
@@ -15225,7 +15309,12 @@ function renderWmtHeatmap() {
   }
   window._wmtHeatLayers = [];
 
-  if (ST.goal !== "Reach Walmart & Sam's Club buyers") return;
+  const legend = document.getElementById('wmt-legend');
+  if (ST.goal !== "Reach Walmart & Sam's Club buyers") {
+    if (legend) legend.style.display = 'none';
+    return;
+  }
+  if (legend) legend.style.display = 'block';
 
   WMT_ZONES.forEach(zone => {
     // Outer zone circle — dashed boundary
