@@ -13237,12 +13237,15 @@ const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
    Intentionally tight radii — demographic cluster targeting, not individual tracking.
    Excludes gas stations (employees use Walmart's own); focuses on billboard, cinema, gym, dining. */
 const WMT_ZONES = [
-  { name: 'Walmart Home Office',       lat: 36.3728, lng: -94.2088, radius: 2.2,
-    desc: 'Home Office campus & SE Walton corridor' },
-  { name: 'Downtown Bentonville',       lat: 36.3850, lng: -94.2090, radius: 1.8,
-    desc: 'Residential & retail core of downtown Bentonville' },
-  { name: 'Pinnacle Hills / Sycorail',  lat: 36.3780, lng: -94.1620, radius: 2.8,
-    desc: 'Pinnacle Hills & Sycorail — primary executive residential corridor' },
+  { name: 'Walmart Home Office',    lat: 36.3729, lng: -94.2192, radius: 2.0,
+    color: '#1f3d2a',
+    desc: 'Home Office campus & SE Walton Blvd corridor' },
+  { name: 'Scissortail',            lat: 36.2934, lng: -94.2400, radius: 3.2,
+    color: '#c8440a',
+    desc: 'Scissortail — premier executive residential enclave' },
+  { name: 'Pinnacle Country Club',  lat: 36.3355, lng: -94.1198, radius: 2.5,
+    color: '#8b4513',
+    desc: 'Pinnacle Hills & Country Club — high-income residential & retail' },
 ];
 const WMT_ALLOWED_TYPES = new Set(['billboard', 'cinema', 'gym', 'dining']);
 
@@ -13964,6 +13967,8 @@ function goTo(step) {
     showOptimizer();
     // Invalidate map size after layout settles on mobile
     setTimeout(() => { if (map) map.invalidateSize(true); }, 300);
+    // Render Walmart buyer heatmap zones if applicable
+    setTimeout(renderWmtHeatmap, 500);
 
     // Auto-draw proximity ring for foot traffic / event if target already set
     if ((ST.goal === 'Drive customers through your door') && ST.proximityTarget) {
@@ -15223,25 +15228,34 @@ function renderWmtHeatmap() {
   if (ST.goal !== "Reach Walmart & Sam's Club buyers") return;
 
   WMT_ZONES.forEach(zone => {
-    // Leaflet circle with gradient fill — simulates a heatmap zone
+    // Outer zone circle — dashed boundary
     const circle = L.circle([zone.lat, zone.lng], {
-      radius: zone.radius * 1609.34, // miles to meters
-      color: '#1f3d2a',
-      fillColor: '#1f3d2a',
-      fillOpacity: 0.08,
+      radius: zone.radius * 1609.34,
+      color: zone.color || '#1f3d2a',
+      fillColor: zone.color || '#1f3d2a',
+      fillOpacity: 0.07,
       weight: 1.5,
-      opacity: 0.25,
-      dashArray: '4 4',
+      opacity: 0.30,
+      dashArray: '6 4',
     }).addTo(map);
 
     // Inner hot-spot circle (denser concentration at center)
     const inner = L.circle([zone.lat, zone.lng], {
-      radius: zone.radius * 1609.34 * 0.4,
+      radius: zone.radius * 1609.34 * 0.35,
       color: 'transparent',
-      fillColor: '#1f3d2a',
-      fillOpacity: 0.12,
+      fillColor: zone.color || '#1f3d2a',
+      fillOpacity: 0.14,
       weight: 0,
     }).addTo(map);
+
+    // Zone label marker (always visible)
+    const labelIcon = L.divIcon({
+      className: '',
+      html: \`<div style="background:rgba(255,255,255,0.88);border:1px solid \${zone.color||'#1f3d2a'};border-radius:6px;padding:3px 7px;font-size:11px;font-weight:600;color:\${zone.color||'#1f3d2a'};white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.15)">\${zone.name}</div>\`,
+      iconAnchor: [0, 0],
+    });
+    const labelMarker = L.marker([zone.lat, zone.lng], { icon: labelIcon, interactive: false }).addTo(map);
+    window._wmtHeatLayers.push(labelMarker);
 
     // Zone label tooltip
     circle.bindTooltip(
