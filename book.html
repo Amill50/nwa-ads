@@ -13008,9 +13008,10 @@ const WMT_ZONES = [
 ];
 const WMT_ALLOWED_TYPES = new Set(['billboard', 'cinema', 'gym', 'dining']);
 
+let hiddenTypes = new Set(); // must be before isVisible
 function isVisible(s) {
   // Respect legend checkbox filters
-  if (hiddenTypes && hiddenTypes.has(s.type)) return false;
+  if (hiddenTypes.has(s.type)) return false;
   if (ST.filter === 'all') return true;
   if (ST.filter === 'walmart_hq_2mi' || ST.goal === "Reach Walmart & Sam's Club buyers") {
     // Walmart goal: ONLY digital billboards and airport screens
@@ -13030,7 +13031,6 @@ function isVisible(s) {
 
 
 /* Toggle a venue type on/off from the map legend checkboxes */
-let hiddenTypes = new Set();
 function toggleVenueType(checkbox) {
   const t = checkbox.dataset.type;
   if (checkbox.checked) {
