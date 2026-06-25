@@ -1640,6 +1640,14 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   .specs-grid { grid-template-columns: 1fr; }
 }
 
+
+/* Walmart buyer zone heatmap tooltip */
+.wmt-zone-tip {
+  font-size: 12px; padding: 6px 10px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.wmt-zone-tip::before { display: none; }
 </style>
 </head>
 <body>
@@ -13224,12 +13232,29 @@ INV.forEach(s => {
 /* ── Map & filter constants ── */
 const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
 
+/* ══ Walmart Buyer Target Zones ══
+   Three concentration areas where Walmart/Sam's Club buyers live & work.
+   Intentionally tight radii — demographic cluster targeting, not individual tracking.
+   Excludes gas stations (employees use Walmart's own); focuses on billboard, cinema, gym, dining. */
+const WMT_ZONES = [
+  { name: 'Walmart Home Office',       lat: 36.3728, lng: -94.2088, radius: 2.2,
+    desc: 'Home Office campus & SE Walton corridor' },
+  { name: 'Downtown Bentonville',       lat: 36.3850, lng: -94.2090, radius: 1.8,
+    desc: 'Residential & retail core of downtown Bentonville' },
+  { name: 'Pinnacle Hills / Sycorail',  lat: 36.3780, lng: -94.1620, radius: 2.8,
+    desc: 'Pinnacle Hills & Sycorail — primary executive residential corridor' },
+];
+const WMT_ALLOWED_TYPES = new Set(['billboard', 'cinema', 'gym', 'dining']);
+
 function isVisible(s) {
   if (ST.filter === 'all') return true;
-  if (ST.filter === 'walmart') return s.tags && s.tags.includes('walmart');
-  if (ST.filter === 'walmart_hq_2mi') {
-    return haversineMiles(WALMART_HQ.lat, WALMART_HQ.lng, s.lat, s.lng) <= 2.0;
+  if (ST.filter === 'walmart_hq_2mi' || ST.goal === "Reach Walmart & Sam's Club buyers") {
+    // Only show allowed types for this goal
+    if (!WMT_ALLOWED_TYPES.has(s.type)) return false;
+    // Screen must be within at least one of the three buyer zones
+    return WMT_ZONES.some(z => haversineMiles(z.lat, z.lng, s.lat, s.lng) <= z.radius);
   }
+  if (ST.filter === 'walmart') return s.tags && s.tags.includes('walmart');
   // 'digital' was the old billboard cat name — support both for backwards compat
   if (ST.filter === 'digital' || ST.filter === 'billboard') return s.type === 'billboard';
   return s.type === ST.filter;
@@ -13398,7 +13423,7 @@ function renderList() {
   }
 
   const countSuffix = ST.goal === "Reach Walmart & Sam's Club buyers"
-    ? ' · within 2 miles of Walmart HQ'
+    ? ' · in Walmart buyer zones'
     : hasProxTarget ? ' · sorted by proximity' : ' across NWA';
   document.getElementById('s2-count').textContent = visible.length + ' screens' + countSuffix;
   const sortNote = document.getElementById('prox-sort-note');
@@ -13917,7 +13942,7 @@ function goTo(step) {
     const s2hint  = document.getElementById('s2-hint-text');
     if (ST.goal === "Reach Walmart & Sam's Club buyers") {
       if (s2title) s2title.textContent = 'Screens near Walmart & Sam\'s Club HQ';
-      if (s2hint)  s2hint.textContent  = 'Showing screens within 2 miles of the Walmart Home Office — the highest-value locations for reaching buyers';
+      if (s2hint)  s2hint.textContent  = 'Screens filtered to 3 buyer zones: Home Office area, Downtown Bentonville, and Pinnacle Hills — billboard, cinema, gym & dining only';
       ST.filter = 'walmart_hq_2mi';
     } else if (ST.goal === 'Drive customers through your door') {
       if (s2title) s2title.textContent = 'Screens closest to your location';
@@ -15185,6 +15210,54 @@ window.addEventListener('orientationchange', () => {
   if (map) setTimeout(() => map.invalidateSize(true), 400);
 });
 
+
+/* ══ Walmart buyer heatmap overlay ══ */
+function renderWmtHeatmap() {
+  if (!map) return;
+  // Remove any existing heatmap layers
+  if (window._wmtHeatLayers) {
+    window._wmtHeatLayers.forEach(l => map.removeLayer(l));
+  }
+  window._wmtHeatLayers = [];
+
+  if (ST.goal !== "Reach Walmart & Sam's Club buyers") return;
+
+  WMT_ZONES.forEach(zone => {
+    // Leaflet circle with gradient fill — simulates a heatmap zone
+    const circle = L.circle([zone.lat, zone.lng], {
+      radius: zone.radius * 1609.34, // miles to meters
+      color: '#1f3d2a',
+      fillColor: '#1f3d2a',
+      fillOpacity: 0.08,
+      weight: 1.5,
+      opacity: 0.25,
+      dashArray: '4 4',
+    }).addTo(map);
+
+    // Inner hot-spot circle (denser concentration at center)
+    const inner = L.circle([zone.lat, zone.lng], {
+      radius: zone.radius * 1609.34 * 0.4,
+      color: 'transparent',
+      fillColor: '#1f3d2a',
+      fillOpacity: 0.12,
+      weight: 0,
+    }).addTo(map);
+
+    // Zone label tooltip
+    circle.bindTooltip(
+      `<strong>${zone.name}</strong><br><span style="font-size:11px;color:#555">${zone.desc}</span>`,
+      { permanent: false, direction: 'top', className: 'wmt-zone-tip' }
+    );
+
+    window._wmtHeatLayers.push(circle, inner);
+  });
+
+  // Fit map to show all zones
+  const bounds = L.latLngBounds(
+    WMT_ZONES.map(z => [z.lat, z.lng])
+  ).pad(0.3);
+  map.fitBounds(bounds);
+}
 </script>
 
 <!-- ── DETAIL DRAWER ── -->
