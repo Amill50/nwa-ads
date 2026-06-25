@@ -13197,6 +13197,20 @@ const INV = [
   }
 ];
 
+/* ── Normalize INV fields for backwards compat with booking engine ── */
+/* New CSV-sourced inventory uses weekly_imp + cpm; engine needs mo_rate, wkly_impr, impr */
+INV.forEach(s => {
+  const wkly_imp = s.weekly_imp || s.wkly_impr || 0;
+  // Derived rates from platform CPM (already has 20% margin baked in)
+  if (!s.wkly_rate) s.wkly_rate = Math.round(s.cpm * wkly_imp / 1000);
+  if (!s.mo_rate)   s.mo_rate   = Math.round(s.wkly_rate * 4.33);
+  if (!s.wkly_impr) s.wkly_impr = wkly_imp;
+  // impr: human-readable impression string for UI display
+  if (!s.impr) s.impr = wkly_imp >= 1000 ? Math.round(wkly_imp/1000)+'K+/wk' : wkly_imp+'/wk';
+  // area: city, state abbreviation (new data has full state name)
+  if (!s.area) s.area = s.city + (s.state ? ', ' + (s.state.length > 2 ? s.state.slice(0,2).toUpperCase() : s.state) : '');
+});
+
 /* ── Map & filter constants ── */
 const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
 
@@ -13254,6 +13268,7 @@ function initMap() {
 function pinClass(type) {
   if (type === 'airport')    return 'airport';
   if (type === 'digital')    return 'digital';
+  if (type === 'billboard')  return 'digital';   // new inventory uses 'billboard'
   if (type === 'cinema')     return 'cinema';
   if (type === 'gasstation') return 'gasstation';
   return 'digital';
