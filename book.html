@@ -15249,9 +15249,10 @@ function renderWmtHeatmap() {
     }).addTo(map);
 
     // Zone label marker (always visible)
+    const labelColor = zone.color || '#1f3d2a';
     const labelIcon = L.divIcon({
       className: '',
-      html: \`<div style="background:rgba(255,255,255,0.88);border:1px solid \${zone.color||'#1f3d2a'};border-radius:6px;padding:3px 7px;font-size:11px;font-weight:600;color:\${zone.color||'#1f3d2a'};white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.15)">\${zone.name}</div>\`,
+      html: '<div style="background:rgba(255,255,255,0.88);border:1px solid ' + labelColor + ';border-radius:6px;padding:3px 7px;font-size:11px;font-weight:600;color:' + labelColor + ';white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.15)">' + zone.name + '</div>',
       iconAnchor: [0, 0],
     });
     const labelMarker = L.marker([zone.lat, zone.lng], { icon: labelIcon, interactive: false }).addTo(map);
