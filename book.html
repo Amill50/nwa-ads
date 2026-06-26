@@ -13301,13 +13301,18 @@ const INV = [
 INV.forEach(s => {
   const wkly_imp = s.weekly_imp || s.wkly_impr || 0;
   // Derived rates from platform CPM (already has 20% margin baked in)
-  if (!s.wkly_rate) s.wkly_rate = Math.round(s.cpm * wkly_imp / 1000);
-  if (!s.mo_rate)   s.mo_rate   = Math.round(s.wkly_rate * 4.33);
-  if (!s.wkly_impr) s.wkly_impr = wkly_imp;
+  if (!s.wkly_rate)  s.wkly_rate  = Math.round(s.cpm * wkly_imp / 1000);
+  if (!s.mo_rate)    s.mo_rate    = Math.round(s.wkly_rate * 4.33);
+  if (!s.daily_rate) s.daily_rate = Math.round(s.wkly_rate / 7 * RATE_CONFIG.daily_premium);
+  if (!s.wkly_impr)  s.wkly_impr  = wkly_imp;
+  if (!s.daily_impr) s.daily_impr = Math.round(wkly_imp / 7);
   // impr: human-readable impression string for UI display
   if (!s.impr) s.impr = wkly_imp >= 1000 ? Math.round(wkly_imp/1000)+'K+/wk' : wkly_imp+'/wk';
   // area: city, state abbreviation (new data has full state name)
   if (!s.area) s.area = s.city + (s.state ? ', ' + (s.state.length > 2 ? s.state.slice(0,2).toUpperCase() : s.state) : '');
+  // Google Maps / Street View URLs from lat/lng
+  if (!s.maps_url) s.maps_url = `https://www.google.com/maps?q=${s.lat},${s.lng}`;
+  if (!s.sv_url)   s.sv_url   = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${s.lat},${s.lng}`;
 });
 
 /* ── Map & filter constants ── */
@@ -13565,12 +13570,12 @@ function openPopup(s, m) {
       <div class="popup-inner">
         <span class="popup-badge ${cls}">${badgeTxt}</span>
         <div class="popup-name">${s.name}</div>
-        <div class="popup-area">${s.area} · ${s.desc}</div>
+        <div class="popup-area">${s.area} · ${s.venue_type || s.label || ''}</div>
       </div>
       <div class="popup-stats">
         <div class="popup-stat"><span class="ps-val">${s.impr}</span><span class="ps-lbl">Impressions</span></div>
         <div class="popup-stat"><span class="ps-val">$${s.cpm.toFixed(2)}</span><span class="ps-lbl">CPM</span></div>
-        <div class="popup-stat"><span class="ps-val">${s.video==='Y'?'Video':'Static'}</span><span class="ps-lbl">Format</span></div>
+        <div class="popup-stat"><span class="ps-val">${(s.video===true||s.video==='Y')?'Video':'Static'}</span><span class="ps-lbl">Format</span></div>
       </div>
       <div class="popup-footer" style="flex-direction:column;gap:8px">
         <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
@@ -14273,10 +14278,10 @@ function renderDrawer(s) {
   // Photo
   const img = document.getElementById('dd-photo');
   const fallback = document.getElementById('dd-photo-fallback');
-  if (s.image_url) {
+  if (s.image_url || s.img) {
     img.style.display = 'block';
     fallback.style.display = 'none';
-    img.src = s.image_url;
+    img.src = s.image_url || s.img;
     img.alt = s.name;
   } else {
     img.style.display = 'none';
@@ -14310,8 +14315,8 @@ function renderDrawer(s) {
     <a class="dd-link" href="${s.maps_url}" target="_blank" rel="noopener">
       🗺 Google Maps
     </a>
-    ${s.video === 'Y' ? '<span class="dd-link">▶ Video supported</span>' : ''}
-    ${s.audio === 'Y' ? '<span class="dd-link">🔊 Audio supported</span>' : ''}
+    ${(s.video === true || s.video === 'Y') ? '<span class="dd-link">▶ Video supported</span>' : ''}
+    ${(s.audio === true || s.audio === 'Y') ? '<span class="dd-link">🔊 Audio supported</span>' : ''}
   `;
 
   // Stats
@@ -14367,12 +14372,12 @@ function renderDrawer(s) {
   // Specs
   const specsEl = document.getElementById('dd-specs');
   specsEl.innerHTML = `
-    <div class="dd-spec"><div class="dsk">Resolution</div><div class="dsv2">${s.spec_res || '—'}</div></div>
-    <div class="dd-spec"><div class="dsk">Ad duration</div><div class="dsv2">${s.spec_dur || s.ad_duration + 's'}</div></div>
+    <div class="dd-spec"><div class="dsk">Resolution</div><div class="dsv2">${s.spec_res || (s.w && s.h ? s.w + '×' + s.h + 'px' : '—')}</div></div>
+    <div class="dd-spec"><div class="dsk">Ad duration</div><div class="dsv2">${s.spec_dur || (s.ad_duration ? s.ad_duration + 's' : (s.duration ? s.duration + 's' : '—'))}</div></div>
     <div class="dd-spec"><div class="dsk">Loop frequency</div><div class="dsv2">${s.spec_loop || '—'}</div></div>
-    <div class="dd-spec"><div class="dsk">Screens / faces</div><div class="dsv2">${s.faces} ${s.faces > 1 ? 'screens' : 'face'}</div></div>
-    <div class="dd-spec"><div class="dsk">Video</div><div class="dsv2">${s.video === 'Y' ? '✓ Supported' : '✗ Static only'}</div></div>
-    <div class="dd-spec"><div class="dsk">Audio</div><div class="dsv2">${s.audio === 'Y' ? '✓ Supported' : '✗ No audio'}</div></div>
+    <div class="dd-spec"><div class="dsk">Screens / faces</div><div class="dsv2">${s.faces || 1} ${(s.faces || 1) > 1 ? 'screens' : 'face'}</div></div>
+    <div class="dd-spec"><div class="dsk">Video</div><div class="dsv2">${(s.video === true || s.video === 'Y') ? '✓ Supported' : '✗ Static only'}</div></div>
+    <div class="dd-spec"><div class="dsk">Audio</div><div class="dsv2">${(s.audio === true || s.audio === 'Y') ? '✓ Supported' : '✗ No audio'}</div></div>
   `;
 
   // CTA button
