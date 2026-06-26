@@ -1746,11 +1746,11 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
         <div class="gc-desc">Get in front of retail decision makers out and about in Northwest Arkansas</div>
       </div>
 
-      <div class="goal-card" onclick="selGoal(this,'Build your brand across NWA')">
+      <div class="goal-card" onclick="selGoal(this,'Reach the NWA Tech &amp; Startup Scene')">
         <div class="gc-check">✓</div>
-        <div class="gc-icon">📣</div>
-        <div class="gc-title">Build your brand across NWA</div>
-        <div class="gc-desc">General awareness, product launch, or establishing your presence in the market</div>
+        <div class="gc-icon">💡</div>
+        <div class="gc-title">Reach the NWA Tech &amp; Startup Scene</div>
+        <div class="gc-desc">Hit the innovation corridor — Bentonville, Walmart campus, and startup hubs across Rogers and Fayetteville</div>
       </div>
 
     </div>
@@ -1818,21 +1818,331 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
       <div id="insight-brand" style="display:none">
         <div class="insight-card">
           <div class="insight-head">
-            <span class="insight-icon">💡</span>
+            <span class="insight-icon">📣</span>
             <div>
-              <div class="insight-title">Broad NWA reach optimized for the tech &amp; innovation corridor</div>
-              <div class="insight-sub">The NWA tech scene clusters around the Walmart Home Office campus, the Bentonville downtown innovation district, and startup hubs across Rogers and Fayetteville. We lead with high-reach digital billboards on the key corridors, then layer in supporting formats based on your budget. Every plan anchors with at least one billboard unit.</div>
+              <div class="insight-title">Multi-market mix: 1 highway anchor + 2 supporting formats, running 4–8 weeks</div>
+              <div class="insight-sub">Brand building requires reach and frequency across NWA. A highway anchor screen delivers scale — 150K+ impressions per week — while supporting gas station or cinema screens reinforce your message in different moments and contexts. Running 4–8 weeks builds the repetition needed to move brand recall metrics and make your name stick in the market.</div>
             </div>
           </div>
           <div class="insight-tips">
-            <div class="insight-tip">🪧 <strong>Billboard-first</strong> — High-reach billboard units on I-49, SE Walton Blvd, and the Rogers/Fayetteville corridor get priority allocation</div>
-            <div class="insight-tip">🏋️ <strong>Gym &amp; dining</strong> — Reach the startup community where they spend time outside work — Planet Fitness, local dining spots near the Home Office</div>
-            <div class="insight-tip">📍 <strong>Budget scales the plan</strong> — At $2K/wk you get 1–2 billboards. At $5K+ we add airport and dining screens for full corridor coverage</div>
-          </div>
-          <div class="insight-walmart-badge" style="margin-top:14px;padding:10px 14px;background:linear-gradient(135deg,#e0f0ff,#f6f4ef);border-radius:8px;border-left:3px solid #1a3d6a">
-            <span style="font-size:12px;font-weight:600;color:#1a3d6a">💡 Filtered to billboards, gym &amp; dining · Scales from 1 billboard to full corridor mix</span>
+            <div class="insight-tip">🛣 <strong>Highway anchors</strong> deliver the scale needed to build market-wide name recognition quickly</div>
+            <div class="insight-tip">🔁 <strong>Supporting formats</strong> in different contexts increase frequency without repetition fatigue</div>
+            <div class="insight-tip">📅 <strong>4–8 week flights</strong> are the minimum effective duration for measurable brand recall lift</div>
           </div>
         </div>
+        <div class="insight-subintent">
+          <div class="insight-subintent-label">What are you building awareness for?</div>
+          <div class="ft-status-row">
+            <div class="ft-status-pill on" onclick="selSubIntent(this,'brand')">General brand awareness</div>
+            <div class="ft-status-pill" onclick="selSubIntent(this,'brand')">Product or service launch</div>
+            <div class="ft-status-pill" onclick="selSubIntent(this,'brand')">Event or activation</div>
+            <div class="ft-status-pill" onclick="selSubIntent(this,'brand')">Hiring or recruiting</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- CONTEXTUAL PANEL — shown for Drive foot traffic OR Promote an event -->
+    <div class="ft-panel" id="ft-panel">
+      <div class="ft-panel-inner">
+
+        <!-- PANEL HEAD — swaps copy based on goal -->
+        <div class="ft-panel-head" id="ft-panel-head">
+          <div class="ft-panel-head-icon" id="ft-head-icon">📍</div>
+          <div class="ft-panel-head-text">
+            <h4 id="ft-head-title">Where are you driving traffic to?</h4>
+            <p id="ft-head-sub">Enter your address below and we'll sort every screen by distance.</p>
+          </div>
+        </div>
+
+        <!-- ── FOOT TRAFFIC: custom business pin (primary) ── -->
+        <div id="ft-traffic-section">
+          <div class="ft-custom-primary">
+            <div class="ft-custom-row">
+              <label class="ft-custom-label">Business name</label>
+              <input class="ft-custom-input" id="ft-custom-name" type="text"
+                placeholder="e.g. PJ's Coffee Rogers — Coming Soon"
+                oninput="ftLivePreview()">
+            </div>
+            <div class="ft-custom-row">
+              <label class="ft-custom-label">Address</label>
+              <input class="ft-custom-input" id="ft-custom-addr" type="text"
+                placeholder="e.g. 1803 S 46th St, Rogers, AR 72758"
+                oninput="ftCustomAddrChanged()">
+            </div>
+            <div class="ft-custom-label" style="margin-bottom:6px">Status</div>
+            <div class="ft-status-row" id="ft-status-row">
+              <div class="ft-status-pill on"  onclick="ftSetStatus(this,'open')">🟢 Open</div>
+              <div class="ft-status-pill" onclick="ftSetStatus(this,'coming_soon')">🔜 Coming soon</div>
+              <div class="ft-status-pill" onclick="ftSetStatus(this,'pre_launch')">🚀 Pre-launch</div>
+              <div class="ft-status-pill" onclick="ftSetStatus(this,'soft_open')">🌅 Soft open</div>
+            </div>
+            <div class="ft-geocode-status" id="ft-geocode-status"></div>
+            <button class="btn-ft-custom" id="btn-ft-custom" onclick="ftPinCustom()">
+              📌 Pin this location &amp; find nearby screens
+            </button>
+          </div>
+        </div>
+
+        <!-- ── EVENT: custom event pin (primary) ── -->
+        <div id="ft-event-section" style="display:none">
+          <div class="ft-custom-primary">
+            <div class="ft-custom-row">
+              <label class="ft-custom-label">Event name</label>
+              <input class="ft-custom-input" id="ft-event-name" type="text"
+                placeholder="e.g. Bentonville Film Festival After-Party"
+                oninput="ftLivePreview()">
+            </div>
+            <div class="ft-2col">
+              <div class="ft-custom-row">
+                <label class="ft-custom-label">Event date</label>
+                <input class="ft-custom-input" id="ft-event-date" type="date">
+              </div>
+              <div class="ft-custom-row">
+                <label class="ft-custom-label">Expected attendance</label>
+                <select class="ft-custom-input" id="ft-event-size">
+                  <option value="intimate">Under 50</option>
+                  <option value="small" selected>50–200</option>
+                  <option value="medium">200–1,000</option>
+                  <option value="large">1,000–5,000</option>
+                  <option value="major">5,000+</option>
+                </select>
+              </div>
+            </div>
+            <div class="ft-custom-row">
+              <label class="ft-custom-label">Venue or address</label>
+              <input class="ft-custom-input" id="ft-event-addr" type="text"
+                placeholder="e.g. Walmart AMP, Rogers AR — or any address"
+                oninput="ftEventAddrChanged()">
+            </div>
+            <div class="ft-custom-label" style="margin-bottom:6px">Event type</div>
+            <div class="ft-status-row" id="ft-event-type-row">
+              <div class="ft-status-pill on"  onclick="ftSetEventType(this,'public')">🌐 Public</div>
+              <div class="ft-status-pill" onclick="ftSetEventType(this,'private')">🔒 Private / invite-only</div>
+              <div class="ft-status-pill" onclick="ftSetEventType(this,'popup')">⚡ Pop-up</div>
+              <div class="ft-status-pill" onclick="ftSetEventType(this,'recurring')">🔁 Recurring</div>
+            </div>
+            <div class="ft-geocode-status" id="ft-event-geocode-status"></div>
+            <button class="btn-ft-custom" id="btn-ft-event" onclick="ftPinEvent()">
+              📍 Find screens near this event
+            </button>
+          </div>
+        </div>
+
+        <!-- ── SHARED: search + AI + database ── -->
+        <div class="ft-divider" id="ft-or-divider">Or search our location database</div>
+
+        <div class="ft-search-wrap">
+          <span class="ft-search-icon">🔍</span>
+          <input class="ft-search" id="ft-search" type="text"
+            placeholder="Search any NWA business or landmark…"
+            oninput="ftFilter(this.value)">
+        </div>
+
+        <div class="ft-ai-strip">
+          <div class="ft-ai-loading" id="ft-ai-loading">
+            <div class="ft-ai-dot"></div><div class="ft-ai-dot"></div><div class="ft-ai-dot"></div>
+            <span id="ft-ai-loading-text">Finding locations in NWA…</span>
+          </div>
+          <div class="ft-ai-results" id="ft-ai-results">
+            <div class="ft-ai-result-label">✦ AI suggestions</div>
+            <div id="ft-ai-cards"></div>
+          </div>
+        </div>
+
+        <div class="ft-divider" id="ft-divider" style="display:none">From our database</div>
+        <div class="ft-cats" id="ft-cats"></div>
+        <div class="ft-poi-grid" id="ft-poi-grid"></div>
+
+        <!-- SELECTED BAR -->
+        <div class="ft-selected-bar" id="ft-selected-bar">
+          <span class="ft-sel-icon" id="ft-sel-icon"></span>
+          <div style="flex:1;min-width:0">
+            <div class="ft-sel-name" id="ft-sel-name">No location selected</div>
+            <div class="ft-sel-meta" id="ft-sel-meta"></div>
+          </div>
+          <button class="ft-sel-clear" onclick="ftClearTarget()" title="Clear">×</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="budget-row">
+      <span id="budget-label">Monthly budget</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <strong id="bdisp">$2,000</strong>
+        <input type="number" id="b-custom" min="500" step="100" value="2000"
+          style="width:90px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);outline:none"
+          oninput="updBudgetCustom(this)"
+          placeholder="Custom">
+      </div>
+    </div>
+    <input type="range" class="budget-slider" id="bslider" min="500" max="50000" step="500" value="2000" oninput="updBudget(this)">
+    <div class="budget-hints"><span>$500 min</span><span>$2K starter</span><span>$10K recommended</span><span>No maximum</span></div>
+
+    <div style="margin-bottom:10px;font-size:13px;font-weight:500;color:var(--ink2)">Campaign duration</div>
+
+    <!-- Schedule type toggle -->
+    <div class="schedule-toggle">
+      <div class="sched-tab on" id="sched-standard" onclick="setSchedMode('standard')">Standard flight</div>
+      <div class="sched-tab" id="sched-custom" onclick="setSchedMode('custom')">Custom days ✦</div>
+    </div>
+
+    <!-- Standard flight (existing) -->
+    <div id="standard-sched-wrap">
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Increment</div>
+          <div class="dur-pills" id="inc-pills" style="margin-bottom:0">
+            <div class="dur-pill" onclick="selInc(this,'daily')">Daily</div>
+            <div class="dur-pill on" onclick="selInc(this,'weekly')">Weekly</div>
+            <div class="dur-pill" onclick="selInc(this,'monthly')">Monthly</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">How many?</div>
+          <div class="dur-pills" id="qty-pills" style="margin-bottom:0">
+            <div class="dur-pill" onclick="selQty(this,1)">1</div>
+            <div class="dur-pill on" onclick="selQty(this,2)">2</div>
+            <div class="dur-pill" onclick="selQty(this,4)">4</div>
+            <div class="dur-pill" onclick="selQty(this,8)">8</div>
+            <div class="dur-pill" onclick="selQty(this,12)">12</div>
+          </div>
+        </div>
+        <div style="background:var(--pill-bg);border-radius:var(--r-sm);padding:12px 18px;align-self:flex-end">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Campaign length</div>
+          <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--accent)" id="dur-summary">2 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom schedule (day-of-week + date range) -->
+    <div class="custom-schedule-wrap" id="custom-sched-wrap">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">
+        Choose which days of the week to run your campaign — ideal for promotions tied to specific days (e.g. every Monday, or Mon + Tue for a weekly special).
+      </div>
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Run on these days</div>
+      <div class="day-picker">
+        <div class="day-btn" data-day="0" onclick="toggleDay(this)">Su</div>
+        <div class="day-btn" data-day="1" onclick="toggleDay(this)">Mo</div>
+        <div class="day-btn" data-day="2" onclick="toggleDay(this)">Tu</div>
+        <div class="day-btn" data-day="3" onclick="toggleDay(this)">We</div>
+        <div class="day-btn" data-day="4" onclick="toggleDay(this)">Th</div>
+        <div class="day-btn" data-day="5" onclick="toggleDay(this)">Fr</div>
+        <div class="day-btn" data-day="6" onclick="toggleDay(this)">Sa</div>
+      </div>
+      <div class="date-range-row">
+        <div class="form-group">
+          <label>Start date</label>
+          <input type="date" id="sched-start" onchange="updateCustomSched()">
+        </div>
+        <div class="form-group">
+          <label>End date</label>
+          <input type="date" id="sched-end" onchange="updateCustomSched()">
+        </div>
+        <div style="background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;align-self:flex-end;min-width:120px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Total days</div>
+          <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--accent)" id="custom-day-count">—</div>
+        </div>
+      </div>
+      <div class="sched-summary" id="sched-summary-text"></div>
+    </div>
+
+    <div style="margin-bottom:44px"></div>
+
+    <button class="btn-next" onclick="goTo(2)">Show me available screens <span class="arr">→</span></button>
+  </div>
+</div>
+
+<!-- ═══ STEP 2 ═══ -->
+<div class="panel" id="panel-2">
+  <!-- Top bar -->
+  <div class="s2-top">
+    <div class="s2-top-left">
+      <div>
+        <div class="s2-title" id="s2-title-text">Pick your screens</div>
+        <div class="s2-count" id="s2-count">82 screens across NWA</div>
+        <div id="s2-hint-text" style="font-size:12px;color:rgba(255,255,255,0.85);font-weight:500;margin-top:3px;max-width:480px;"></div>
+      </div>
+      <div class="filter-bar">
+        <div class="f-chip on" id="chip-all" onclick="doFilter(this,'all')">All formats</div>
+        <div class="f-chip" onclick="doFilter(this,'billboard')">🪧 Billboard</div>
+        <div class="f-chip" onclick="doFilter(this,'gasstation')">⛽ Gas Station</div>
+        <div class="f-chip" onclick="doFilter(this,'healthcare')">🏥 Healthcare</div>
+        <div class="f-chip" onclick="doFilter(this,'dining')">🍽️ Dining</div>
+        <div class="f-chip" onclick="doFilter(this,'grocery')">🛒 Grocery</div>
+        <div class="f-chip" onclick="doFilter(this,'gym')">🏋️ Gym</div>
+        <div class="f-chip" onclick="doFilter(this,'cinema')">🎬 Cinema</div>
+        <div class="f-chip" onclick="doFilter(this,'rideshare')">🚗 Rideshare</div>
+        <div class="f-chip" onclick="doFilter(this,'airport')">✈️ Airport</div>
+        <div class="f-chip" id="chip-walmart-2mi" onclick="doFilter(this,'walmart_hq_2mi')" style="display:none">📍 Within 2mi of HQ</div>
+      </div>
+    </div>
+    <div class="view-toggle" id="view-toggle-bar">
+      <div class="vt-btn on" id="vt-map" onclick="setView('map')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><path d="M3 7l6-4 6 4 6-4v14l-6 4-6-4-6 4V7"/></svg>Map
+      </div>
+      <div class="vt-btn" id="vt-list" onclick="setView('list')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>List
+      </div>
+    </div>
+  </div>
+
+  <!-- Body: map + sidebar -->
+  <div class="s2-body">
+    <div id="map"></div>
+    <!-- Walmart buyer zone legend — shown only when Walmart goal active -->
+    <div id="wmt-legend" style="display:none;position:absolute;bottom:24px;right:12px;z-index:500;background:rgba(255,255,255,0.95);border:1px solid #e2ddd6;border-radius:10px;padding:10px 14px;box-shadow:0 2px 12px rgba(0,0,0,0.12);min-width:200px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b6560;margin-bottom:8px">Buyer concentration zones</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;background:rgba(31,61,42,0.25);border:2px solid #1f3d2a;flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:500;color:#1a1714">Walmart Home Office</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;background:rgba(200,68,10,0.2);border:2px solid #c8440a;flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:500;color:#1a1714">Scissortail (residential)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;background:rgba(139,69,19,0.2);border:2px solid #8b4513;flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:500;color:#1a1714">Pinnacle Country Club</span>
+        </div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2ddd6;font-size:10px;color:#6b6560">Billboard · Cinema · Gym · Dining only</div>
+    </div>
+
+    <div class="s2-side">
+
+      <!-- Campaign bar -->
+      <div class="campaign-bar">
+        <div class="cb-item"><div class="cbl">Goal</div><div class="cbv" id="cb-goal">—</div></div>
+        <div class="cb-item"><div class="cbl">Budget</div><div class="cbv" id="cb-bud">—</div></div>
+        <div class="cb-item"><div class="cbl">Duration</div><div class="cbv" id="cb-dur">—</div></div>
+      </div>
+
+      <!-- Optimizer (injected by showOptimizer()) -->
+      <div class="opt-panel" id="opt-panel">
+        <div class="opt-header">
+          <div>
+            <div class="opt-title">✦ Smart Optimizer</div>
+            <div class="opt-sub">Let us pick the best screens for your goal</div>
+          </div>
+          <button class="btn-optimize" id="btn-optimize" onclick="runOptimizer()">✦ Recommend screens</button>
+        </div>
+        <div class="opt-thinking" id="opt-thinking">
+          <div class="opt-dot"></div><div class="opt-dot"></div><div class="opt-dot"></div>
+          <span id="opt-thinking-text">Analyzing your goal and budget…</span>
+        </div>
+        <div class="opt-results" id="opt-results">
+          <div class="opt-reason" id="opt-reason"></div>
+          <div class="opt-result-label">✓ Recommended screens</div>
+          <div class="opt-basket" id="opt-basket"></div>
+          <button class="opt-add-btn" onclick="addOptimizedToCart()">Add all recommended to campaign →</button>
+        </div>
+      </div>
+
       <!-- Cart header with shopping cart icon + badge -->
       <div class="cart-header-bar">
         <div class="cart-icon-wrap">
@@ -13008,19 +13318,16 @@ const WMT_ZONES = [
 ];
 const WMT_ALLOWED_TYPES = new Set(['billboard', 'cinema', 'gym', 'dining']);
 
-let hiddenTypes = new Set(); // must be before isVisible
+let hiddenTypes = new Set();
 function isVisible(s) {
   // Respect legend checkbox filters
-  if (hiddenTypes.has(s.type)) return false;
+  if (hiddenTypes && hiddenTypes.has(s.type)) return false;
   if (ST.filter === 'all') return true;
   if (ST.filter === 'walmart_hq_2mi' || ST.goal === "Reach Walmart & Sam's Club buyers") {
-    // Walmart goal: ONLY digital billboards and airport screens
     if (s.type !== 'billboard' && s.type !== 'airport') return false;
-    // Billboards must be within the buyer zone corridor (<=5mi of HQ)
     if (s.type === 'billboard') {
       return haversineMiles(WALMART_HQ.lat, WALMART_HQ.lng, s.lat, s.lng) <= 5.0;
     }
-    // Airport screens always shown for this goal
     return true;
   }
   if (ST.filter === 'walmart') return s.tags && s.tags.includes('walmart');
@@ -13769,7 +14076,7 @@ function updateNavSel() {
   const goal  = ST.goal;
   const goalIcons = {
     'Drive customers through your door': '🏪',
-    'Build your brand across NWA': '📣',
+    'Reach the NWA Tech & Startup Scene': '💡',
     "Reach Walmart & Sam's Club buyers": '🎯',
   };
 
@@ -13836,9 +14143,9 @@ function goTo(step) {
       if (s2title) s2title.textContent = 'Screens closest to your location';
       if (s2hint)  s2hint.textContent  = 'Sorted by proximity to your business — nearest screens first';
       ST.filter = 'all';
-    } else if (ST.goal === 'Build your brand across NWA') {
-      if (s2title) s2title.textContent = 'High-reach screens across NWA';
-      if (s2hint)  s2hint.textContent  = 'Maximum impressions across Rogers, Bentonville, and Fayetteville for broad market presence';
+    } else if (ST.goal === 'Reach the NWA Tech & Startup Scene') {
+      if (s2title) s2title.textContent = 'NWA Tech & Innovation Corridor';
+      if (s2hint)  s2hint.textContent  = 'Billboard-first plan across Bentonville, Rogers & Fayetteville — gym & dining screens fill remaining budget';
       ST.filter = 'all';
     } else {
       if (s2title) s2title.textContent = 'Pick your screens';
@@ -13861,7 +14168,7 @@ function goTo(step) {
         if (recs.length > 0 && !optRecommended.length) {
           optRecommended = recs.map(s => ({...s, _why: ''}));
           document.getElementById('opt-reason').textContent =
-            'Starting with SE Walton Blvd digital billboards — the highest-reach units closest to Walmart HQ. XNA Airport added if your budget allows for full executive travel coverage.';
+            'Top screens across the 3 buyer zones — anchored by a billboard on SE Walton Blvd, the daily commute route for Home Office executives.';
           renderOptimizerBasket();
           document.getElementById('opt-results').classList.add('visible');
           document.getElementById('opt-thinking').classList.remove('visible');
@@ -14717,13 +15024,7 @@ Campaign goal: "${ST.goal || 'General advertising'}"
 Budget: $${ST.budget} per ${ST.inc}
 Duration: ${durLabel()}
 ${ST.proximityTarget ? `Target location: ${ST.proximityTarget.name}` : ''}
-${ST.goal === "Reach Walmart & Sam's Club buyers"
-    ? 'IMPORTANT: ONLY recommend digital billboards within 5 miles of Walmart HQ (Bentonville, AR) and XNA Airport screens. NO other formats. Start with 2-3 billboards closest to HQ, then add 1 airport screen if budget allows. Priority billboard IDs: loc_595409, loc_595434, loc_595435.'
-    : ST.goal === 'Reach the NWA Tech & Startup Scene'
-    ? 'IMPORTANT: Billboard-first strategy across NWA. Must include at least 1 billboard. Then add gym or dining screens near the Home Office corridor. No gas stations or healthcare.'
-    : ST.goal === 'Drive customers through your door'
-    ? 'IMPORTANT: Focus on venue types near the target location. Sort by proximity. Mix of formats is fine — gas station, dining, billboard all work for foot traffic.'
-    : ''}
+${ST.goal === "Reach Walmart & Sam's Club buyers" ? 'IMPORTANT: Recommend screens within the 3 buyer zones (Home Office, Scissortail residential, Pinnacle CC corridor). MUST include at least 1 billboard. Prioritize billboard + gym or dining combinations. Exclude gas stations.' : ''}
 
 Available inventory (format: id|name|area|type|rate|impressions):
 ${invSummary}
@@ -14786,86 +15087,33 @@ function fallbackRecommend() {
   const goal = ST.goal;
   const budget = ST.budget || 2000;
 
-  // ── Helper: pick screens by priority types within budget ──────
-  function pickByPriority(pool, priorityTypes, maxPicks, budgetMultiplier) {
-    const picks = [];
-    let spent = 0;
-    const limit = budget * (budgetMultiplier || 1.1);
-
-    for (const type of priorityTypes) {
-      const candidates = pool
-        .filter(s => s.type === type)
-        .sort((a, b) => {
-          // Sort by distance to WMT HQ for Walmart goal, else by impressions
-          if (goal === "Reach Walmart & Sam's Club buyers") {
-            return (a.dist_wmt || 99) - (b.dist_wmt || 99);
-          }
-          return (b.wkly_impr || 0) - (a.wkly_impr || 0);
-        });
-
-      for (const s of candidates) {
-        if (picks.length >= maxPicks) break;
-        const rate = s.wkly_rate || 0;
-        if (rate > 0 && spent + rate > limit) continue;
-        picks.push(s);
-        spent += rate;
-      }
-    }
-    return picks;
-  }
-
-  // ── 1. WALMART GOAL: billboard-first (HQ proximity), then airport ─
+  // WALMART: priority billboards near HQ → airport if budget allows
   if (goal === "Reach Walmart & Sam's Club buyers") {
-    const pool = INV.filter(s => isVisible(s));
-
-    // Priority billboard IDs: closest Lamar units to WMT HQ
-    const PRIORITY_BILL_IDS = [
-      'loc_595409',  // Walton Blvd, 0.8mi — closest to HQ
-      'loc_595434',  // 14th & S. Walton N/F, 1.2mi
-      'loc_595435',  // 14th & S. Walton S/F, 1.2mi
-      'loc_595446',  // 1080 SE 14th St W/F, 1.6mi
-      'loc_595447',  // 1080 SE 14th St E/F, 1.6mi
-    ];
-    const AIRPORT_IDS = ['loc_2421754', 'loc_2422408', 'loc_2422857', 'loc_2423021'];
-
+    const PRIORITY_IDS = ['loc_595409','loc_595434','loc_595435','loc_595446','loc_595447'];
+    const AIRPORT_IDS  = ['loc_2421754','loc_2422408','loc_2422857','loc_2423021'];
     const picks = [];
     let spent = 0;
-
-    // Step 1: add priority billboards in order until budget ~60% used
-    const billBudget = budget * 0.65;
-    for (const id of PRIORITY_BILL_IDS) {
+    for (const id of PRIORITY_IDS) {
       if (picks.length >= 3) break;
       const s = INV.find(sc => sc.id === id);
       if (!s) continue;
       const rate = s.wkly_rate || 0;
-      if (spent + rate <= billBudget + 200) {
-        picks.push(s);
-        spent += rate;
-      }
+      if (spent + rate <= budget * 0.65 + 200) { picks.push(s); spent += rate; }
     }
-
-    // Step 2: if budget remains after at least 1 billboard, add airport screens
     if (picks.length >= 1 && spent < budget * 1.05) {
       for (const id of AIRPORT_IDS) {
-        if (picks.length >= 5) break;
         const s = INV.find(sc => sc.id === id);
         if (!s) continue;
         const rate = s.wkly_rate || 0;
-        if (spent + rate <= budget * 1.15) {
-          picks.push(s);
-          spent += rate;
-          break; // one airport screen is enough unless budget is large
-        }
+        if (spent + rate <= budget * 1.15) { picks.push(s); spent += rate; break; }
       }
     }
-
     return picks;
   }
 
-  // ── 2. POI / FOOT TRAFFIC: venue types near target location ──────
+  // POI / FOOT TRAFFIC: proximity sort
   if (goal === 'Drive customers through your door') {
     let pool = INV.filter(s => isVisible(s));
-    // Sort by proximity to target if set, else by impressions
     if (ST.proximityTarget) {
       pool = pool
         .map(s => ({ ...s, _dist: haversineMiles(ST.proximityTarget.lat, ST.proximityTarget.lng, s.lat, s.lng) }))
@@ -14876,18 +15124,24 @@ function fallbackRecommend() {
     return pool.slice(0, 4);
   }
 
-  // ── 3. TECH & STARTUP: billboard-first (broad NWA), then gym/dining ─
+  // TECH & STARTUP: billboard-first, then gym/dining
   if (goal === 'Reach the NWA Tech & Startup Scene') {
-    const pool = INV.filter(s =>
-      ['billboard', 'gym', 'dining'].includes(s.type)
-    ).sort((a, b) => (b.wkly_impr || 0) - (a.wkly_impr || 0));
-
-    return pickByPriority(pool, ['billboard', 'gym', 'dining'], 5, 1.1);
+    const pool = INV.filter(s => ['billboard','gym','dining'].includes(s.type))
+      .sort((a, b) => (b.wkly_impr || 0) - (a.wkly_impr || 0));
+    const picks = [];
+    let spent = 0;
+    for (const type of ['billboard','gym','dining']) {
+      for (const s of pool.filter(sc => sc.type === type)) {
+        if (picks.length >= 5) break;
+        const rate = s.wkly_rate || 0;
+        if (spent + rate <= budget * 1.1) { picks.push(s); spent += rate; }
+      }
+    }
+    return picks;
   }
 
-  // ── Default: top screens by impressions ───────────────────────
-  return INV
-    .filter(s => isVisible(s))
+  // DEFAULT: top by impressions
+  return INV.filter(s => isVisible(s))
     .sort((a, b) => (b.wkly_impr || 0) - (a.wkly_impr || 0))
     .slice(0, 4);
 }
@@ -14982,7 +15236,7 @@ function showSummary() {
   // ── Detail row (goal + timeframe) ──
   const goalIcon = {
     'Drive customers through your door': '🏪',
-    'Build your brand across NWA': '📣',
+    'Reach the NWA Tech & Startup Scene': '💡',
     "Reach Walmart & Sam's Club buyers": '🎯',
   }[ST.goal] || '📢';
 
