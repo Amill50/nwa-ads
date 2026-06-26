@@ -14206,6 +14206,28 @@ function goTo(step) {
   if (step===5) renderConfirm();
 }
 
+/* ══════════════ VIEW TOGGLE (map ↔ list) ══════════════ */
+function setView(v) {
+  document.getElementById('vt-map').classList.toggle('on', v === 'map');
+  document.getElementById('vt-list').classList.toggle('on', v === 'list');
+
+  // On desktop both map and sidebar are always visible side-by-side — just update chip.
+  // On mobile the s2-body is a vertical scroll container; scroll to the right section.
+  const s2body = document.querySelector('.s2-body');
+  if (!s2body) return;
+
+  if (v === 'list') {
+    // Scroll so the screen-list-label is at the top of the scroll container
+    const target = document.querySelector('.screen-list-label') || document.getElementById('tab-screens-content');
+    if (target) {
+      const offset = target.getBoundingClientRect().top - s2body.getBoundingClientRect().top + s2body.scrollTop;
+      s2body.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  } else {
+    s2body.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
 /* ══════════════ INIT ══════════════ */
 renderList();
 
