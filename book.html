@@ -2205,6 +2205,18 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     <h2 class="step-heading">Upload your creative</h2>
     <p class="step-sub">Upload your artwork below — our team reviews every creative before it goes live. Not ready yet? Skip and send it later.</p>
 
+    <!-- Selected screens recap -->
+    <div id="s3-campaign-recap" style="display:none;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:18px">📍</span>
+      <div style="flex:1;min-width:0">
+        <span id="s3-screen-count" style="font-weight:600;color:var(--ink)">0 screens</span>
+        <span style="color:var(--muted);font-size:13px"> selected · </span>
+        <span id="s3-total" style="font-weight:700;color:var(--accent)">$0</span>
+        <span style="color:var(--muted);font-size:13px"> est. total</span>
+      </div>
+      <button onclick="goTo(2)" style="font-size:11px;font-weight:600;color:var(--accent2);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer">← Edit screens</button>
+    </div>
+
     <!-- Spec cards -->
     <div class="specs-grid" id="specs-grid">
       <div class="spec-card"><div class="sc-lbl">Roadside digital</div><div class="sc-val">1920 × 640 px</div><div class="sc-note">JPEG or PNG · max 2MB · 8-sec loop</div></div>
@@ -14189,6 +14201,7 @@ function goTo(step) {
       }, 400);
     }
   }
+  if (step===3) updateCreativeSummary();
   if (step===4) renderSummary();
   if (step===5) renderConfirm();
 }
@@ -15285,6 +15298,21 @@ function showSummary() {
 function closeSummary() {
   document.getElementById('summary-overlay').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+function updateCreativeSummary() {
+  const keys = Object.keys(ST.cart);
+  const recap = document.getElementById('s3-campaign-recap');
+  if (!recap) return;
+  if (!keys.length) { recap.style.display = 'none'; return; }
+  const subUnit = keys.reduce((a, id) => a + unitRate(ST.cart[id]), 0);
+  const effQty = (ST.schedMode === 'custom' && ST.customDayCount > 0) ? 1 : ST.qty;
+  const grand = Math.round(subUnit * effQty);
+  const countEl = document.getElementById('s3-screen-count');
+  const totalEl = document.getElementById('s3-total');
+  if (countEl) countEl.textContent = keys.length + ' screen' + (keys.length !== 1 ? 's' : '');
+  if (totalEl) totalEl.textContent = '$' + grand.toLocaleString();
+  recap.style.display = 'flex';
 }
 
 // Close on overlay click
