@@ -109,6 +109,74 @@ test.describe('Step 2 — Screen Picker', () => {
     await expect(page.locator('#btn-s2')).not.toBeDisabled();
   });
 
+  // ── Bug 1 fix proof: + button visual update ──────────────────────────────────
+  test('+ button changes to ✓ and gains .added class when clicked', async ({ page }) => {
+    await step2(page);
+    const btn = page.locator('.sc-add-btn').first();
+
+    // Before: no .added class, text is +
+    await expect(btn).not.toHaveClass(/added/);
+    const beforeText = (await btn.textContent()).trim();
+    expect(beforeText).toBe('+');
+
+    // Click — should update immediately without full list re-render
+    await btn.click();
+
+    // After: .added class present, text is ✓
+    await expect(btn).toHaveClass(/added/);
+    const afterText = (await btn.textContent()).trim();
+    expect(afterText).toBe('✓');
+  });
+
+  // ── Bug 1 fix proof: clicking ✓ removes from cart ────────────────────────────
+  test('clicking ✓ button removes screen from cart and reverts to +', async ({ page }) => {
+    await step2(page);
+    const btn = page.locator('.sc-add-btn').first();
+
+    // Add
+    await btn.click();
+    await expect(btn).toHaveClass(/added/);
+
+    // Remove
+    await btn.click();
+    await expect(btn).not.toHaveClass(/added/);
+    const text = (await btn.textContent()).trim();
+    expect(text).toBe('+');
+
+    // Cart should be empty again
+    await expect(page.getByText('No screens added yet')).toBeVisible();
+  });
+
+  // ── Bug 2 fix proof: List tab collapses optimizer ─────────────────────────────
+  test('List tab hides optimizer panel so screen list is accessible', async ({ page }) => {
+    await step2(page);
+
+    // Default is Map view — optimizer may be visible (if Walmart goal triggered it)
+    // Switch to List view
+    await page.locator('#vt-list').click();
+
+    // Optimizer panel must be hidden on List view (it was squeezing screen-list-wrap to 0)
+    const optPanel = page.locator('#opt-panel');
+    await expect(optPanel).toBeHidden();
+
+    // Screen list cards must be visible and reachable
+    await expect(page.locator('.sc-add-btn').first()).toBeVisible();
+  });
+
+  // ── Bug 2 fix proof: Map tab restores optimizer ───────────────────────────────
+  test('Map tab restores optimizer panel visibility', async ({ page }) => {
+    await step2(page);
+
+    // Go to List, then back to Map
+    await page.locator('#vt-list').click();
+    await page.locator('#vt-map').click();
+
+    // Optimizer should be back (either hidden by CSS default or visible if it ran)
+    // Key check: opt-panel does NOT have inline display:none after Map tab
+    const display = await page.locator('#opt-panel').evaluate(el => el.style.display);
+    expect(display).not.toBe('none');
+  });
+
   test('discount badge hidden with < 3 screens', async ({ page }) => {
     await step2(page);
     await expect(page.locator('#ch-discount')).not.toBeVisible();
