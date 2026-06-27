@@ -13662,8 +13662,8 @@ function renderList() {
         <div class="sc-name">${s.icon} ${s.name}</div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
           <div class="sc-price">$${displayPrice.toLocaleString()} <small>${rateLabel()}</small></div>
-          <button class="sc-add-btn${!!ST.cart[s.id]?' added':''}" onclick="event.stopPropagation();toggleScreen('${s.id}')" title="${!!ST.cart[s.id]?'Remove from campaign':'Add to campaign'}">
-            ${!!ST.cart[s.id]?'✓':'＋'}
+          <button class="sc-add-btn${!!ST.cart[s.id]?' added':''}" data-id="${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')" title="${!!ST.cart[s.id]?'Remove from campaign':'Add to campaign'}">
+            ${!!ST.cart[s.id]?'✓':'+'}
           </button>
         </div>
       </div>
@@ -13686,15 +13686,38 @@ function renderList() {
 
 /* ══════════════ TOGGLE SCREEN ══════════════ */
 function toggleScreen(id) {
-  const s = INV.find(x=>x.id===id);
+  const s = INV.find(x => x.id === id);
   if (!s) return;
-  if (ST.cart[id]) delete ST.cart[id];
-  else ST.cart[id] = s;
-  renderList();
+
+  // Toggle cart state
+  if (ST.cart[id]) {
+    delete ST.cart[id];
+  } else {
+    ST.cart[id] = s;
+  }
+
+  // Update cart sidebar immediately
   renderCart();
-  refreshMarkers();
   updateNavSel();
-  if (drawerScreenId === id) updateDrawerAddBtn(s);
+
+  // Update only the specific button — no full list re-render needed
+  const btn = document.querySelector('.sc-add-btn[data-id="' + id + '"]');
+  if (btn) {
+    const inCart = !!ST.cart[id];
+    btn.classList.toggle('added', inCart);
+    btn.title = inCart ? 'Remove from campaign' : 'Add to campaign';
+    btn.textContent = inCart ? '✓' : '+';
+  }
+
+  // Update map marker for this screen only — no full cluster rebuild
+  if (markers[id] && map) {
+    markers[id].setIcon(makePinIcon(s));
+  }
+
+  // Update drawer add button if drawer is open on this screen
+  if (typeof drawerScreenId !== 'undefined' && drawerScreenId === id) {
+    if (typeof updateDrawerAddBtn === 'function') updateDrawerAddBtn(s);
+  }
 }
 
 /* ══════════════ RENDER CART (unified — tested) ══════════════ */
@@ -14173,6 +14196,7 @@ function goTo(step) {
     renderList();
     renderCart();
     initMap();
+    setView('map');
     showOptimizer();
     // Invalidate map size after layout settles on mobile
     setTimeout(() => { if (map) map.invalidateSize(true); }, 300);
@@ -14213,23 +14237,28 @@ function goTo(step) {
 
 /* ══════════════ VIEW TOGGLE (map ↔ list) ══════════════ */
 function setView(v) {
-  document.getElementById('vt-map').classList.toggle('on', v === 'map');
-  document.getElementById('vt-list').classList.toggle('on', v === 'list');
+  ST.view = v;
 
-  // On desktop both map and sidebar are always visible side-by-side — just update chip.
-  // On mobile the s2-body is a vertical scroll container; scroll to the right section.
-  const s2body = document.querySelector('.s2-body');
-  if (!s2body) return;
+  const mapBtn  = document.getElementById('vt-map');
+  const listBtn = document.getElementById('vt-list');
+  if (mapBtn)  mapBtn.classList.toggle('on',  v === 'map');
+  if (listBtn) listBtn.classList.toggle('on', v === 'list');
 
-  if (v === 'list') {
-    // Scroll so the screen-list-label is at the top of the scroll container
-    const target = document.querySelector('.screen-list-label') || document.getElementById('tab-screens-content');
-    if (target) {
-      const offset = target.getBoundingClientRect().top - s2body.getBoundingClientRect().top + s2body.scrollTop;
-      s2body.scrollTo({ top: offset, behavior: 'smooth' });
-    }
+  const sidebar = document.querySelector('.s2-side');
+  const mapWrap = document.getElementById('map');
+
+  const isMobile = window.innerWidth < 768;
+
+  if (isMobile) {
+    // Mobile: hide one panel, show the other
+    if (sidebar) sidebar.style.display = v === 'list' ? 'flex' : 'none';
+    if (mapWrap) mapWrap.style.display = v === 'map'  ? 'block' : 'none';
+    if (v === 'map' && map) setTimeout(() => map.invalidateSize(true), 50);
   } else {
-    s2body.scrollTo({ top: 0, behavior: 'smooth' });
+    // Desktop: both panels always visible — just highlight active tab
+    if (sidebar) sidebar.style.display = 'flex';
+    if (mapWrap) mapWrap.style.display = 'block';
+    if (map) setTimeout(() => map.invalidateSize(true), 50);
   }
 }
 
