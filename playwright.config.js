@@ -1,5 +1,15 @@
 // playwright.config.js
+const { execSync } = require('child_process');
 const { defineConfig, devices } = require('@playwright/test');
+
+// Playwright's bundled Chromium is not patchelf'd for NixOS — use the system Chromium instead.
+// Setting PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH is the most reliable override (takes priority
+// over executablePath in use/launchOptions, which Playwright 1.61 ignores for headless shell).
+let systemChromium;
+try { systemChromium = execSync('which chromium').toString().trim(); } catch { systemChromium = undefined; }
+if (systemChromium && !process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH) {
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = systemChromium;
+}
 
 const isCI = !!process.env.CI;
 
@@ -16,8 +26,7 @@ module.exports = defineConfig({
   ],
 
   use: {
-    // Locally: run against live site. In CI: use local server.
-    baseURL: process.env.TEST_URL || (isCI ? 'http://localhost:3000' : 'https://nwa-ads.com'),
+    baseURL: process.env.TEST_URL || process.env.REPLIT_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'off',
@@ -36,7 +45,10 @@ module.exports = defineConfig({
   projects: [
     {
       name: 'desktop-chrome',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        ...(systemChromium ? { executablePath: systemChromium } : {}),
+      },
     },
     {
       name: 'mobile-safari',
