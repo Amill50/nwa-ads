@@ -14246,6 +14246,7 @@ function setView(v) {
 
   const sidebar = document.querySelector('.s2-side');
   const mapWrap = document.getElementById('map');
+  const optPanel = document.getElementById('opt-panel');
 
   const isMobile = window.innerWidth < 768;
 
@@ -14255,9 +14256,14 @@ function setView(v) {
     if (mapWrap) mapWrap.style.display = v === 'map'  ? 'block' : 'none';
     if (v === 'map' && map) setTimeout(() => map.invalidateSize(true), 50);
   } else {
-    // Desktop: both panels always visible — just highlight active tab
+    // Desktop: both map and sidebar always visible side-by-side.
+    // BUT opt-panel is flex-shrink:0 — when it has results it consumes the
+    // entire sidebar height and squeezes screen-list-wrap to zero (min-height:0).
+    // Fix: collapse the optimizer on List so the screen list gets full height;
+    // restore it on Map so recommendations are visible there.
     if (sidebar) sidebar.style.display = 'flex';
     if (mapWrap) mapWrap.style.display = 'block';
+    if (optPanel) optPanel.style.display = v === 'list' ? 'none' : '';
     if (map) setTimeout(() => map.invalidateSize(true), 50);
   }
 }
