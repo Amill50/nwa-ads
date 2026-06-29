@@ -2340,9 +2340,6 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
             </div>
             <div class="cart-totals" id="cart-totals">
               <div class="tot-line"><span>Subtotal</span><span id="ct-sub">$0</span></div>
-              <div class="tot-line disc" id="ct-disc-row" style="display:none">
-                <span>Multi-screen discount (10%)</span><span id="ct-disc">—</span>
-              </div>
               <div class="tot-line grand">
                 <span>Total (<span id="ct-mo">—</span>)</span>
                 <span class="v" id="ct-grand">$0</span>
@@ -2365,7 +2362,6 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
           <div id="ch-sub" class="sbf-note">Add screens to continue</div>
         </div>
         <div class="sbf-right">
-          <div class="ch-discount" id="ch-discount">10% off</div>
           <button class="sbf-btn" id="btn-s2" disabled onclick="showState('cart')">Review campaign →</button>
         </div>
       </div>
@@ -2532,9 +2528,6 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
       <div id="os-items"></div>
       <div class="os-divider"></div>
       <div class="os-row"><span class="l">Rate (<span id="os-rate-label">weekly</span>)</span><span class="v" id="os-sub">$0</span></div>
-      <div class="os-row disc" id="os-disc-row" style="display:none">
-        <span class="l">Volume discount</span><span class="v" id="os-disc">—</span>
-      </div>
       <div class="os-divider"></div>
       <div class="os-grand">
         <span class="l">Estimated total</span>
@@ -13981,12 +13974,7 @@ function renderCart() {
   if (totalsEl)  totalsEl.style.display = 'block';
   if (clearEl)   clearEl.style.display  = 'inline';
   if (reviewBtn) reviewBtn.disabled     = false;
-  if (chDisc)    chDisc.style.display   = keys.length >= 3 ? 'inline-flex' : 'none';
-
-  const discRow = document.getElementById('ct-disc-row');
-  if (discRow) discRow.style.display = disc ? 'flex' : 'none';
-  const discEl = document.getElementById('ct-disc');
-  if (discEl && disc) discEl.textContent = '-$' + Math.round(disc*effQty).toLocaleString();
+  if (chDisc)    chDisc.style.display   = 'none';
   const subEl = document.getElementById('ct-sub');
   if (subEl) subEl.textContent = '$' + Math.round(subUnit).toLocaleString() + rateLabel();
   const moEl = document.getElementById('ct-mo');
@@ -13996,9 +13984,7 @@ function renderCart() {
 
   if (csTitle) csTitle.textContent = keys.length + ' screen' + (keys.length!==1?'s':'') +
     ' · ' + imprStr + ' wkly impr';
-  if (noteEl) noteEl.textContent = disc
-    ? '10% multi-screen discount applied — saving $' + Math.round(disc*effQty).toLocaleString()
-    : '';
+  if (noteEl) noteEl.textContent = '';
 
   updateCartHeader();
   updateNavSel();
@@ -14043,11 +14029,8 @@ function renderSummary() {
     const lineTotal = Math.round(uRate * ST.qty);
     return `<div class="os-item"><div><div class="name">${s.icon} ${s.name}</div><div class="meta">${s.area} · ${s.impr} · ${durLabel()}</div></div><div class="price">$${lineTotal.toLocaleString()}</div></div>`;
   }).join('');
-  const disc = keys.length>=3 ? Math.round(subUnit * 0.1) : 0;
   const effQty2 = (ST.schedMode === 'custom' && ST.customDayCount > 0) ? 1 : ST.qty;
-  const grand = (subUnit - disc) * effQty2;
-  document.getElementById('os-disc-row').style.display = disc>0?'flex':'none';
-  document.getElementById('os-disc').textContent = '-$' + Math.round(disc * effQty2).toLocaleString();
+  const grand = subUnit * effQty2;
   document.getElementById('os-grand').textContent = '$' + Math.round(grand).toLocaleString();
   // Update order summary sub-total and rate label
   document.getElementById('os-sub').textContent = '$' + Math.round(subUnit * effQty2).toLocaleString();
@@ -14069,8 +14052,7 @@ function renderConfirm() {
   document.getElementById('conf-screens').textContent = keys.length + ' screen' + (keys.length!==1?'s':'');
   document.getElementById('conf-dur').textContent = durLabel();
   let subUnit = keys.reduce((a,id)=>a+unitRate(ST.cart[id]),0);
-  const disc = keys.length>=3 ? Math.round(subUnit*0.1) : 0;
-  const grand = Math.round((subUnit - disc) * ST.qty);
+  const grand = Math.round(subUnit * ST.qty);
   document.getElementById('conf-total').textContent = '$' + grand.toLocaleString();
 
   // Show creative status in Step 4
@@ -15500,8 +15482,7 @@ function showSummary() {
     : totalWklyImpr.toLocaleString();
 
   let subUnit = keys.reduce((a, id) => a + unitRate(ST.cart[id]), 0);
-  const disc  = keys.length >= 3 ? Math.round(subUnit * 0.1) : 0;
-  const grand = Math.round((subUnit - disc) * ST.qty);
+  const grand = Math.round(subUnit * ST.qty);
 
   document.getElementById('sum-stats').innerHTML = [
     { val: keys.length,       lbl: 'Screens',            cls: '' },
@@ -15532,10 +15513,6 @@ function showSummary() {
     <div class="sum-detail-card">
       <div class="sum-detail-label">Budget</div>
       <div class="sum-detail-val">$${ST.budget.toLocaleString()} / ${ST.inc === 'daily' ? 'day' : ST.inc === 'weekly' ? 'week' : 'month'}</div>
-    </div>
-    <div class="sum-detail-card">
-      <div class="sum-detail-label">Multi-screen discount</div>
-      <div class="sum-detail-val">${disc > 0 ? '✓ 10% applied — saving $' + Math.round(disc * ST.qty).toLocaleString() : '—'}</div>
     </div>
   `;
 
