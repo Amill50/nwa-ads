@@ -6,293 +6,262 @@
 <title>NWA Ads — Build a Proposal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 :root {
-  --accent: #c8440a; --accent2: #1f3d2a; --accent-light: #fdf0ea;
-  --accent2-light: #edf5ef; --border: #e2ddd6; --white: #fffef9;
-  --bg: #f6f4ef; --ink: #1a1714; --ink2: #4a4540; --muted: #8c857e;
-  --pill-bg: #ede9e3; --r-sm: 10px;
+  --accent:#c8440a; --accent2:#1f3d2a; --accent-light:#fdf0ea;
+  --accent2-light:#edf5ef; --border:#e2ddd6; --white:#fffef9;
+  --bg:#f6f4ef; --ink:#1a1714; --ink2:#4a4540; --muted:#8c857e;
+  --pill-bg:#ede9e3; --r-sm:10px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
-button { font-family: inherit; cursor: pointer; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+button{font-family:inherit;cursor:pointer;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* ── NAV ── */
-.nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; height: 56px; background: var(--accent2);
-  position: sticky; top: 0; z-index: 100;
-}
-.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.logo-text { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--white); }
-.logo-text em { color: #f0905a; font-style: normal; }
-.nav-badge { font-size: 11px; font-weight: 600; color: #f0905a; border: 1px solid rgba(240,144,90,0.4); padding: 2px 8px; border-radius: 10px; }
-.steps { display: flex; align-items: center; }
-.step-item { display: flex; align-items: center; gap: 8px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.4); }
-.step-item.active { color: var(--white); }
-.step-item.done { color: rgba(255,255,255,0.65); }
-.step-dot { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
-.step-item.done .step-dot { background: rgba(255,255,255,0.18); }
-.step-item.active .step-dot { background: #f0905a; border-color: #f0905a; color: #fff; }
-.step-sep { width: 20px; height: 1px; background: rgba(255,255,255,0.15); }
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--accent2);position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-text{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--white);}
+.logo-text em{color:#f0905a;font-style:normal;}
+.nav-badge{font-size:11px;font-weight:600;color:#f0905a;border:1px solid rgba(240,144,90,.4);padding:2px 8px;border-radius:10px;}
+.steps{display:flex;align-items:center;}
+.step-item{display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,.4);}
+.step-item.active{color:var(--white);}
+.step-item.done{color:rgba(255,255,255,.65);}
+.step-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.step-item.done .step-dot{background:rgba(255,255,255,.18);}
+.step-item.active .step-dot{background:#f0905a;border-color:#f0905a;color:#fff;}
+.step-sep{width:20px;height:1px;background:rgba(255,255,255,.15);}
 
-/* ── PANELS ── */
-.panel { display: none; min-height: calc(100vh - 56px); }
-.panel.active { display: flex; flex-direction: column; }
+/* PANELS */
+.panel{display:none;min-height:calc(100vh - 56px);}
+.panel.active{display:flex;flex-direction:column;}
 
-/* ── STEP 1 ── */
-.p1-wrap { max-width: 760px; margin: 0 auto; padding: 44px 24px 60px; width: 100%; }
-.p1-head { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 6px; }
-.p1-sub { font-size: 14px; color: var(--ink2); margin-bottom: 32px; }
-.section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 12px; }
+/* ══ STEP 1 ══ */
+.p1-wrap{max-width:780px;margin:0 auto;padding:44px 24px 60px;width:100%;}
+.p1-head{font-family:'Fraunces',serif;font-size:30px;font-weight:700;line-height:1.2;margin-bottom:6px;}
+.p1-sub{font-size:14px;color:var(--ink2);margin-bottom:32px;}
+.section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:12px;}
 
 /* Goal grid */
-.goal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-.goal-card {
-  padding: 20px 18px; background: var(--white); border: 1.5px solid var(--border);
-  border-radius: 12px; cursor: pointer; transition: all 0.15s; text-align: left; position: relative;
-}
-.goal-card:hover { border-color: var(--accent2); transform: translateY(-1px); }
-.goal-card.sel { border-color: var(--accent); background: var(--accent-light); }
-.gc-check { position: absolute; top: 12px; right: 12px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
-.goal-card.sel .gc-check { opacity: 1; }
-.gc-icon { font-size: 26px; margin-bottom: 10px; }
-.gc-title { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
-.gc-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.goal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.goal-card{padding:20px 18px;background:var(--white);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;text-align:left;position:relative;}
+.goal-card:hover{border-color:var(--accent2);transform:translateY(-1px);}
+.goal-card.sel{border-color:var(--accent);background:var(--accent-light);}
+.gc-check{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.goal-card.sel .gc-check{opacity:1;}
+.gc-icon{font-size:26px;margin-bottom:10px;}
+.gc-title{font-family:'Fraunces',serif;font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3;}
+.gc-desc{font-size:11px;color:var(--muted);line-height:1.4;}
 
-/* Insight panel */
-.insight-wrap { display: none; margin-bottom: 24px; animation: fadeUp 0.2s ease; }
-.insight-card {
-  background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 12px;
-}
-.insight-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
-.insight-icon { font-size: 22px; flex-shrink: 0; }
-.insight-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.insight-sub { font-size: 12px; color: var(--ink2); line-height: 1.5; }
-.insight-tips { display: flex; flex-direction: column; gap: 7px; }
-.insight-tip { font-size: 12px; color: var(--ink2); line-height: 1.4; }
+/* Insight card */
+.insight-wrap{display:none;margin-bottom:24px;animation:fadeUp .2s ease;}
+.insight-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;}
+.insight-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;}
+.insight-icon{font-size:22px;flex-shrink:0;}
+.insight-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-bottom:4px;}
+.insight-sub{font-size:12px;color:var(--ink2);line-height:1.5;}
+.insight-tips{display:flex;flex-direction:column;gap:7px;}
+.insight-tip{font-size:12px;color:var(--ink2);line-height:1.4;}
 
 /* Sub-intent pills */
-.subintent-wrap { background: var(--pill-bg); border-radius: var(--r-sm); padding: 14px 16px; }
-.subintent-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
-.subintent-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.sub-pill {
-  padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  border: 1.5px solid var(--border); background: var(--white); color: var(--ink2);
-  cursor: pointer; transition: all 0.15s;
-}
-.sub-pill.on { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+.subintent-wrap{background:var(--pill-bg);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:16px;}
+.subintent-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;}
+.subintent-row{display:flex;gap:8px;flex-wrap:wrap;}
+.sub-pill{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--ink2);cursor:pointer;transition:all .15s;}
+.sub-pill.on{background:var(--accent2);color:#fff;border-color:var(--accent2);}
 
-/* Budget & schedule */
-.budget-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-.field-wrap { display: flex; flex-direction: column; gap: 6px; }
-.field-label { font-size: 11px; font-weight: 600; color: var(--muted); }
-.field-input {
-  padding: 10px 14px; background: var(--white); border: 1.5px solid var(--border);
-  border-radius: 8px; font-size: 14px; font-family: 'Instrument Sans', sans-serif;
-  color: var(--ink); outline: none; transition: border-color 0.15s;
-}
-.field-input:focus { border-color: var(--accent2); }
-select.field-input { cursor: pointer; }
+/* POI picker */
+.poi-picker{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+.poi-picker-head{font-family:'Fraunces',serif;font-size:14px;font-weight:600;margin-bottom:4px;}
+.poi-picker-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.4;}
+.poi-search{width:100%;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:12px;}
+.poi-search:focus{border-color:var(--accent2);}
+.poi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:240px;overflow-y:auto;margin-bottom:14px;}
+.poi-card{display:flex;align-items:center;gap:9px;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;background:var(--bg);transition:all .12s;font-size:12px;}
+.poi-card:hover{border-color:var(--accent2);background:var(--accent2-light);}
+.poi-card.sel{border-color:var(--accent);background:var(--accent-light);font-weight:600;}
+.poi-icon{font-size:16px;flex-shrink:0;}
+.poi-name{font-size:12px;font-weight:500;line-height:1.3;}
+.poi-cat{font-size:10px;color:var(--muted);}
 
-/* Schedule tabs */
-.sched-toggle-label { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 10px; }
-.schedule-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
-.sched-tab {
-  padding: 7px 18px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  border: 1.5px solid var(--border); background: var(--white); color: var(--ink2);
-  cursor: pointer; transition: all 0.15s;
-}
-.sched-tab.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+/* Selected POI bar */
+.poi-sel-bar{display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--accent-light);border:1.5px solid var(--accent);border-radius:9px;margin-bottom:12px;font-size:13px;}
+.poi-sel-bar.show{display:flex;}
+.poi-sel-icon{font-size:18px;flex-shrink:0;}
+.poi-sel-name{font-weight:600;flex:1;}
+.poi-clear{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;}
 
-/* Standard sched */
-.std-sched-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+/* Custom pin */
+.custom-pin-row{display:flex;gap:8px;align-items:stretch;}
+.custom-pin-input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;}
+.custom-pin-input:focus{border-color:var(--accent2);}
+.btn-pin{padding:9px 16px;background:var(--accent2);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;transition:background .15s;}
+.btn-pin:hover{background:#163320;}
+.btn-pin:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+.geocode-status{font-size:11px;margin-top:6px;min-height:16px;}
 
-/* Custom schedule */
-.custom-schedule-wrap { background: var(--pill-bg); border-radius: var(--r-sm); padding: 18px 20px; margin-bottom: 20px; display: none; }
-.custom-schedule-wrap.visible { display: block; }
-.day-picker { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.day-btn {
-  width: 38px; height: 38px; border-radius: 50%; font-size: 12px; font-weight: 700;
-  border: 1.5px solid var(--border); background: var(--white); color: var(--ink2);
-  cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
-}
-.day-btn.on { background: var(--accent); color: #fff; border-color: var(--accent); }
-.date-range-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-.drr-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 130px; }
-.drr-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
-.drr-group input[type=date] {
-  width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
-  border-radius: 8px; font-family: inherit; font-size: 13px;
-  background: var(--white); color: var(--ink); outline: none;
-}
-.drr-group input[type=date]:focus { border-color: var(--accent); }
-.day-count-box { background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 14px; text-align: center; min-width: 110px; align-self: flex-end; }
-.day-count-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-.day-count-val { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--accent); }
-.sched-summary { margin-top: 10px; font-size: 12px; color: var(--accent); font-weight: 600; min-height: 18px; }
+/* Budget section */
+.budget-sched{display:none;margin-top:28px;}
+.budget-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.field-wrap{display:flex;flex-direction:column;gap:6px;}
+.field-label{font-size:11px;font-weight:600;color:var(--muted);}
+.field-input{padding:10px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Instrument Sans',sans-serif;color:var(--ink);outline:none;transition:border-color .15s;}
+.field-input:focus{border-color:var(--accent2);}
+select.field-input{cursor:pointer;}
+.sched-toggle-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px;}
+.schedule-toggle{display:flex;gap:8px;margin-bottom:14px;}
+.sched-tab{padding:7px 18px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--ink2);cursor:pointer;transition:all .15s;}
+.sched-tab.on{background:var(--ink);color:var(--white);border-color:var(--ink);}
+.std-sched-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.custom-schedule-wrap{background:var(--pill-bg);border-radius:var(--r-sm);padding:18px 20px;margin-bottom:20px;display:none;}
+.custom-schedule-wrap.visible{display:block;}
+.day-picker{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.day-btn{width:38px;height:38px;border-radius:50%;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--white);color:var(--ink2);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.day-btn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.date-range-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
+.drr-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:130px;}
+.drr-group label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);}
+.drr-group input[type=date]{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--white);color:var(--ink);outline:none;}
+.drr-group input[type=date]:focus{border-color:var(--accent);}
+.day-count-box{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;text-align:center;min-width:110px;align-self:flex-end;}
+.day-count-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.day-count-val{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--accent);}
+.sched-summary{margin-top:10px;font-size:12px;color:var(--accent);font-weight:600;min-height:18px;}
 
-/* CTA */
-.btn-next {
-  padding: 13px 30px; background: var(--accent2); color: #fff; border: none;
-  border-radius: 9px; font-size: 15px; font-weight: 700; font-family: 'Fraunces', serif;
-  transition: background 0.15s;
-}
-.btn-next:hover { background: #163320; }
-.btn-next:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
-.btn-outline {
-  padding: 12px 20px; background: none; border: 1.5px solid var(--border);
-  border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--ink2); transition: all 0.15s;
-}
-.btn-outline:hover { border-color: var(--accent2); color: var(--accent2); }
+/* CTAs */
+.btn-next{padding:13px 30px;background:var(--accent2);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:700;font-family:'Fraunces',serif;transition:background .15s;}
+.btn-next:hover{background:#163320;}
+.btn-next:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+.btn-outline{padding:12px 20px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;color:var(--ink2);transition:all .15s;}
+.btn-outline:hover{border-color:var(--accent2);color:var(--accent2);}
 
-/* ── STEP 2 ── */
-.p2-layout { display: flex; height: calc(100vh - 56px); }
-.p2-left { flex: 1; overflow-y: auto; padding: 24px; min-width: 0; }
-.p2-right { width: 340px; border-left: 1.5px solid var(--border); background: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
+/* ══ STEP 2 ══ */
+.p2-layout{display:flex;height:calc(100vh - 56px);}
+.p2-main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.p2-right{width:320px;border-left:1.5px solid var(--border);background:var(--white);display:flex;flex-direction:column;flex-shrink:0;}
 
-/* Recommendations view */
-.rec-view-head { margin-bottom: 20px; }
-.rec-view-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.rec-view-reason { font-size: 13px; color: var(--ink2); line-height: 1.5; }
+/* Context bar */
+.ctx-bar{padding:10px 20px;background:var(--pill-bg);border-bottom:1px solid var(--border);font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.ctx-bar strong{color:var(--ink);}
+.ctx-poi-badge{background:var(--accent-light);border:1px solid var(--accent);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--accent);}
 
-.rec-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.rec-item {
-  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-  background: var(--white); border: 1.5px solid var(--border); border-radius: 11px;
-  cursor: pointer; transition: all 0.15s;
-}
-.rec-item:hover { border-color: var(--accent2); }
-.rec-item.sel { background: var(--accent-light); border-color: var(--accent); }
-.rec-check {
-  width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border);
-  display: flex; align-items: center; justify-content: center; font-size: 12px;
-  font-weight: 700; flex-shrink: 0; transition: all 0.15s; color: var(--muted);
-}
-.rec-item.sel .rec-check { background: var(--accent); border-color: var(--accent); color: #fff; }
-.rec-icon { font-size: 22px; flex-shrink: 0; }
-.rec-info { flex: 1; min-width: 0; }
-.rec-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-.rec-why { font-size: 11px; color: var(--muted); line-height: 1.3; }
-.rec-price { font-size: 14px; font-weight: 700; color: var(--accent); font-family: 'Fraunces', serif; flex-shrink: 0; }
-.rec-price-unit { font-size: 10px; color: var(--muted); font-family: 'Instrument Sans', sans-serif; font-weight: 400; }
+/* Map */
+#proposal-map{height:280px;width:100%;flex-shrink:0;}
+.leaflet-proximity-ring path{pointer-events:none;}
 
-.btn-add-all {
-  width: 100%; padding: 13px; background: var(--accent2); color: #fff; border: none;
-  border-radius: 9px; font-size: 14px; font-weight: 700; font-family: 'Fraunces', serif;
-  margin-bottom: 10px; transition: background 0.15s;
-}
-.btn-add-all:hover { background: #163320; }
-.btn-browse-own {
-  width: 100%; padding: 11px; background: none; border: 1.5px solid var(--border);
-  border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--ink2); transition: all 0.15s;
-}
-.btn-browse-own:hover { border-color: var(--accent2); color: var(--accent2); }
+/* Screens / rec panel */
+.p2-screens{flex:1;overflow-y:auto;padding:20px;}
+.p2-head{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+.p2-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
 
-/* Browse view */
-.browse-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.btn-back-rec {
-  font-size: 13px; font-weight: 600; color: var(--ink2); background: none; border: none;
-  padding: 0; cursor: pointer;
-}
-.btn-back-rec:hover { color: var(--accent2); }
-.browse-count { font-size: 12px; color: var(--muted); }
+/* Rec items */
+.rec-items{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.rec-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;}
+.rec-item:hover{border-color:var(--accent2);}
+.rec-item.sel{background:var(--accent-light);border-color:var(--accent);}
+.rec-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .15s;color:var(--muted);}
+.rec-item.sel .rec-check{background:var(--accent);border-color:var(--accent);color:#fff;}
+.rec-icon{font-size:20px;flex-shrink:0;}
+.rec-info{flex:1;min-width:0;}
+.rec-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.rec-why{font-size:11px;color:var(--muted);line-height:1.3;}
+.rec-dist{font-size:10px;color:var(--accent);font-weight:600;margin-top:2px;}
+.rec-price{text-align:right;flex-shrink:0;}
+.rec-price-val{font-size:14px;font-weight:700;color:var(--accent);font-family:'Fraunces',serif;}
+.rec-price-unit{font-size:10px;color:var(--muted);display:block;}
+
+.btn-add-all{width:100%;padding:12px;background:var(--accent2);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;font-family:'Fraunces',serif;margin-bottom:8px;transition:background .15s;}
+.btn-add-all:hover{background:#163320;}
+.btn-browse-own{width:100%;padding:10px;background:none;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink2);transition:all .15s;}
+.btn-browse-own:hover{border-color:var(--accent2);color:var(--accent2);}
+
+/* Browse */
+.browse-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.btn-back{font-size:12px;font-weight:600;color:var(--ink2);background:none;border:none;padding:0;cursor:pointer;}
+.btn-back:hover{color:var(--accent2);}
+.browse-count{font-size:11px;color:var(--muted);}
 
 /* Screen cards */
-.screen-grid { display: flex; flex-direction: column; gap: 8px; }
-.sc {
-  display: grid; grid-template-columns: 36px 1fr auto;
-  align-items: center; gap: 10px; padding: 11px 13px;
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: 11px; transition: border-color .12s, background .12s; cursor: pointer;
-}
-.sc:hover { border-color: var(--ink2); }
-.sc.added { background: #f0fdf4; border-color: #86efac; }
-.sc-ico { font-size: 20px; text-align: center; }
-.sc-body { min-width: 0; }
-.sc-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.sc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
-.sc-price { font-size: 14px; font-weight: 600; color: var(--accent); font-family: 'Fraunces', serif; }
-.sc-unit { font-size: 10px; color: var(--muted); font-weight: 400; }
-.sc-add {
-  border: 1.5px solid var(--accent); color: var(--accent); background: transparent;
-  border-radius: 14px; padding: 4px 11px; font-size: 11px; font-weight: 600;
-  cursor: pointer; white-space: nowrap; transition: all .12s;
-}
-.sc-add:hover { background: var(--accent-light); }
-.sc-add.added { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+.screen-grid{display:flex;flex-direction:column;gap:7px;}
+.sc{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:10px;padding:10px 12px;background:var(--white);border:1px solid var(--border);border-radius:10px;transition:border-color .12s,background .12s;cursor:pointer;}
+.sc:hover{border-color:var(--ink2);}
+.sc.added{background:#f0fdf4;border-color:#86efac;}
+.sc-ico{font-size:18px;text-align:center;}
+.sc-body{min-width:0;}
+.sc-name{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-meta{font-size:10px;color:var(--muted);margin-top:2px;}
+.sc-dist{font-size:10px;color:var(--accent);font-weight:600;}
+.sc-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.sc-price{font-size:13px;font-weight:600;color:var(--accent);font-family:'Fraunces',serif;}
+.sc-unit{font-size:9px;color:var(--muted);font-weight:400;}
+.sc-add{border:1.5px solid var(--accent);color:var(--accent);background:transparent;border-radius:14px;padding:3px 10px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .12s;}
+.sc-add:hover{background:var(--accent-light);}
+.sc-add.added{background:var(--accent2);border-color:var(--accent2);color:#fff;}
 
-/* Cart panel */
-.cart-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-.cart-head-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; }
-.cart-head-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
-.cart-items { flex: 1; overflow-y: auto; padding: 8px 0; }
-.cart-empty { padding: 24px 16px; text-align: center; color: var(--muted); font-size: 13px; }
-.cart-empty span { display: block; font-size: 28px; margin-bottom: 8px; }
-.ct-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
-.ct-icon { font-size: 18px; flex-shrink: 0; }
-.ct-info { flex: 1; min-width: 0; }
-.ct-name { font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ct-area { font-size: 11px; color: var(--muted); }
-.ct-price { font-size: 13px; font-weight: 700; color: var(--accent); font-family: 'Fraunces', serif; flex-shrink: 0; }
-.ct-rm { background: none; border: none; color: var(--muted); font-size: 16px; padding: 2px 4px; cursor: pointer; flex-shrink: 0; }
-.ct-rm:hover { color: #dc2626; }
-.cart-foot { padding: 12px 16px; border-top: 2px solid var(--border); flex-shrink: 0; }
-.ct-total-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
-.ct-total-label { color: var(--ink2); }
-.ct-total-val { color: var(--accent); font-family: 'Fraunces', serif; }
-.btn-cart-next {
-  width: 100%; padding: 12px; background: var(--accent2); color: #fff;
-  border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
-  font-family: 'Fraunces', serif; transition: background 0.15s;
-}
-.btn-cart-next:hover { background: #163320; }
-.btn-cart-next:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+/* Cart */
+.cart-head{padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cart-head-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;}
+.cart-head-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.cart-items{flex:1;overflow-y:auto;padding:6px 0;}
+.cart-empty{padding:20px 14px;text-align:center;color:var(--muted);font-size:12px;}
+.cart-empty span{display:block;font-size:26px;margin-bottom:7px;}
+.ct-row{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border);}
+.ct-icon{font-size:16px;flex-shrink:0;}
+.ct-info{flex:1;min-width:0;}
+.ct-name{font-size:11px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ct-area{font-size:10px;color:var(--muted);}
+.ct-price{font-size:12px;font-weight:700;color:var(--accent);font-family:'Fraunces',serif;flex-shrink:0;}
+.ct-rm{background:none;border:none;color:var(--muted);font-size:14px;padding:1px 3px;cursor:pointer;flex-shrink:0;}
+.ct-rm:hover{color:#dc2626;}
+.cart-foot{padding:12px 14px;border-top:2px solid var(--border);flex-shrink:0;}
+.ct-total-row{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:10px;}
+.ct-total-label{color:var(--ink2);}
+.ct-total-val{color:var(--accent);font-family:'Fraunces',serif;}
+.btn-cart-next{width:100%;padding:11px;background:var(--accent2);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:'Fraunces',serif;transition:background .15s;}
+.btn-cart-next:hover{background:#163320;}
+.btn-cart-next:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
 
-/* ── STEP 3 ── */
-.p3-wrap { max-width: 640px; margin: 0 auto; padding: 48px 24px; width: 100%; }
-.p3-head { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-.p3-sub { font-size: 14px; color: var(--ink2); margin-bottom: 32px; }
-.field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-.field-group label { font-size: 12px; font-weight: 700; color: var(--ink2); }
-textarea.field-input { resize: vertical; min-height: 100px; }
+/* ══ STEP 3 ══ */
+.p3-wrap{max-width:640px;margin:0 auto;padding:48px 24px;width:100%;}
+.p3-head{font-family:'Fraunces',serif;font-size:28px;font-weight:700;margin-bottom:8px;}
+.p3-sub{font-size:14px;color:var(--ink2);margin-bottom:32px;}
+.field-group{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
+.field-group label{font-size:12px;font-weight:700;color:var(--ink2);}
+textarea.field-input{resize:vertical;min-height:100px;}
 
-/* ── STEP 4 ── */
-.p4-wrap { max-width: 640px; margin: 0 auto; padding: 48px 24px; width: 100%; }
-.p4-head { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-.p4-sub { font-size: 14px; color: var(--ink2); margin-bottom: 32px; }
-.proposal-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
-.pc-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
-.pc-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.pc-goal { font-size: 13px; color: var(--ink2); margin-bottom: 16px; }
-.pc-screens { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.pc-screen-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-.pc-screen-icon { font-size: 16px; }
-.pc-screen-name { flex: 1; }
-.pc-screen-price { color: var(--accent); font-weight: 600; font-family: 'Fraunces', serif; }
-.pc-total-row { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); font-weight: 700; }
-.pc-total-val { color: var(--accent); font-family: 'Fraunces', serif; }
-.pc-note { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink2); font-style: italic; line-height: 1.6; }
-.link-wrap { display: flex; gap: 8px; margin-bottom: 24px; }
-.link-input {
-  flex: 1; padding: 11px 14px; background: var(--white); border: 1.5px solid var(--border);
-  border-radius: 8px; font-size: 12px; font-family: 'Instrument Sans', sans-serif;
-  color: var(--ink2); outline: none;
-}
-.btn-copy { padding: 10px 20px; background: var(--accent2); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; white-space: nowrap; transition: all 0.15s; }
-.btn-copy:hover { background: #163320; }
-.btn-copy.copied { background: #15803d; }
-.p4-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.validity-note { font-size: 11px; color: var(--muted); margin-top: 10px; }
+/* ══ STEP 4 ══ */
+.p4-wrap{max-width:640px;margin:0 auto;padding:48px 24px;width:100%;}
+.p4-head{font-family:'Fraunces',serif;font-size:28px;font-weight:700;margin-bottom:8px;}
+.p4-sub{font-size:14px;color:var(--ink2);margin-bottom:32px;}
+.proposal-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px;}
+.pc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;}
+.pc-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:4px;}
+.pc-goal{font-size:13px;color:var(--ink2);margin-bottom:16px;}
+.pc-screens{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.pc-screen-row{display:flex;align-items:center;gap:8px;font-size:13px;}
+.pc-screen-icon{font-size:16px;}
+.pc-screen-name{flex:1;}
+.pc-screen-price{color:var(--accent);font-weight:600;font-family:'Fraunces',serif;}
+.pc-total-row{display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);font-weight:700;}
+.pc-total-val{color:var(--accent);font-family:'Fraunces',serif;}
+.pc-note{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:13px;color:var(--ink2);font-style:italic;line-height:1.6;}
+.link-wrap{display:flex;gap:8px;margin-bottom:24px;}
+.link-input{flex:1;padding:11px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Instrument Sans',sans-serif;color:var(--ink2);outline:none;}
+.btn-copy{padding:10px 20px;background:var(--accent2);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;white-space:nowrap;transition:all .15s;}
+.btn-copy:hover{background:#163320;}
+.btn-copy.copied{background:#15803d;}
+.p4-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.validity-note{font-size:11px;color:var(--muted);margin-top:10px;}
 
-@media (max-width: 768px) {
-  .goal-grid { grid-template-columns: 1fr; }
-  .p2-layout { flex-direction: column; height: auto; }
-  .p2-right { width: 100%; border-left: none; border-top: 1.5px solid var(--border); }
-  .budget-row, .std-sched-row { grid-template-columns: 1fr 1fr; }
-  .steps { display: none; }
+@media(max-width:768px){
+  .goal-grid{grid-template-columns:1fr;}
+  .p2-layout{flex-direction:column;height:auto;}
+  .p2-right{width:100%;border-left:none;border-top:1.5px solid var(--border);}
+  .budget-row,.std-sched-row{grid-template-columns:1fr 1fr;}
+  .steps{display:none;}
+  #proposal-map{height:220px;}
 }
 </style>
 </head>
@@ -319,7 +288,7 @@ textarea.field-input { resize: vertical; min-height: 100px; }
 <div class="panel active" id="panel-1">
   <div class="p1-wrap">
     <div class="p1-head">Build a campaign proposal</div>
-    <div class="p1-sub">Choose a goal, set a budget, and pick screens — we'll generate a shareable link for your prospect.</div>
+    <div class="p1-sub">Choose a goal, configure targeting, and pick screens — we'll generate a shareable link for your prospect.</div>
 
     <div class="section-label">Campaign goal</div>
     <div class="goal-grid">
@@ -343,14 +312,14 @@ textarea.field-input { resize: vertical; min-height: 100px; }
       </div>
     </div>
 
-    <!-- ── Goal insight panels ── -->
+    <!-- FOOT TRAFFIC INSIGHT -->
     <div class="insight-wrap" id="insight-traffic">
       <div class="insight-card">
         <div class="insight-head">
           <span class="insight-icon">📍</span>
           <div>
             <div class="insight-title">Screens sorted closest to where you're driving traffic</div>
-            <div class="insight-sub">We'll recommend the highest-impact screens near your location — billboards on entry corridors, gas stations that catch in-car shoppers, and dining screens that reach people already in your neighborhood.</div>
+            <div class="insight-sub">Pin your business or target location below — coming-soon locations welcome. Screens will rank nearest-first so your ad runs closest to the people you're trying to reach.</div>
           </div>
         </div>
         <div class="insight-tips">
@@ -367,15 +336,40 @@ textarea.field-input { resize: vertical; min-height: 100px; }
           <div class="sub-pill" onclick="selSubPill(this)">Drive ongoing foot traffic</div>
         </div>
       </div>
+
+      <!-- POI picker -->
+      <div class="poi-picker">
+        <div class="poi-picker-head">📍 Target location</div>
+        <div class="poi-picker-sub">Search for your business or any NWA landmark — screens will be sorted by proximity to this pin.</div>
+
+        <!-- Selected bar -->
+        <div class="poi-sel-bar" id="poi-sel-bar">
+          <span class="poi-sel-icon" id="poi-sel-icon">📍</span>
+          <span class="poi-sel-name" id="poi-sel-name">No location selected</span>
+          <button class="poi-clear" onclick="clearTarget()">✕ Clear</button>
+        </div>
+
+        <input class="poi-search" id="poi-search" type="text" placeholder="Search NWA locations…" oninput="renderPoiGrid()">
+        <div class="poi-grid" id="poi-grid"></div>
+
+        <!-- Custom address pin -->
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">Or enter a custom address</div>
+        <div class="custom-pin-row">
+          <input class="custom-pin-input" id="custom-addr" type="text" placeholder="e.g. 123 Main St, Fayetteville AR">
+          <button class="btn-pin" id="btn-pin" onclick="geocodeAndPin()">Pin it</button>
+        </div>
+        <div class="geocode-status" id="geocode-status"></div>
+      </div>
     </div>
 
+    <!-- WALMART INSIGHT -->
     <div class="insight-wrap" id="insight-walmart">
       <div class="insight-card">
         <div class="insight-head">
           <span class="insight-icon">🎯</span>
           <div>
             <div class="insight-title">Reach Walmart &amp; Sam's Club buyers where they live, work, and travel</div>
-            <div class="insight-sub">We target three high-concentration buyer zones: the Walmart Home Office campus, the Scissortail executive residential enclave, and the Pinnacle Country Club corridor in Rogers. Screens filtered to billboard, cinema, gym, and dining — environments where decision-makers spend time outside the office.</div>
+            <div class="insight-sub">We target three high-concentration buyer zones: the Walmart Home Office campus, the Scissortail executive residential enclave, and the Pinnacle Country Club corridor in Rogers. Map will show all three zones with screen recommendations inside each.</div>
           </div>
         </div>
         <div class="insight-tips">
@@ -395,6 +389,7 @@ textarea.field-input { resize: vertical; min-height: 100px; }
       </div>
     </div>
 
+    <!-- TECH INSIGHT -->
     <div class="insight-wrap" id="insight-tech">
       <div class="insight-card">
         <div class="insight-head">
@@ -421,10 +416,9 @@ textarea.field-input { resize: vertical; min-height: 100px; }
       </div>
     </div>
 
-    <!-- ── Budget & Schedule ── -->
-    <div id="budget-sched-wrap" style="display:none;margin-top:28px">
+    <!-- Budget & schedule -->
+    <div class="budget-sched" id="budget-sched">
       <div class="section-label">Budget &amp; schedule</div>
-
       <div class="budget-row">
         <div class="field-wrap">
           <div class="field-label">Weekly budget</div>
@@ -437,14 +431,11 @@ textarea.field-input { resize: vertical; min-height: 100px; }
           </select>
         </div>
       </div>
-
       <div class="sched-toggle-label">Campaign duration</div>
       <div class="schedule-toggle">
         <div class="sched-tab on" id="sched-standard" onclick="setSchedMode('standard')">Standard flight</div>
         <div class="sched-tab" id="sched-custom" onclick="setSchedMode('custom')">Custom days ✦</div>
       </div>
-
-      <!-- Standard -->
       <div id="standard-sched-wrap">
         <div class="std-sched-row">
           <div class="field-wrap">
@@ -466,12 +457,8 @@ textarea.field-input { resize: vertical; min-height: 100px; }
           </div>
         </div>
       </div>
-
-      <!-- Custom -->
       <div class="custom-schedule-wrap" id="custom-sched-wrap">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">
-          Choose which days of the week to run — ideal for promotions tied to specific days (e.g. every Monday, or Mon + Fri for a weekly special).
-        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">Choose which days of the week to run — ideal for promotions tied to specific days (e.g. every Monday, or Mon + Fri for a weekly special).</div>
         <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Run on these days</div>
         <div class="day-picker">
           <div class="day-btn" data-day="0" onclick="toggleDay(this)">Su</div>
@@ -485,49 +472,47 @@ textarea.field-input { resize: vertical; min-height: 100px; }
         <div class="date-range-row">
           <div class="drr-group"><label>Start date</label><input type="date" id="sched-start" onchange="updateCustomSched()"></div>
           <div class="drr-group"><label>End date</label><input type="date" id="sched-end" onchange="updateCustomSched()"></div>
-          <div class="day-count-box">
-            <div class="day-count-label">Total days</div>
-            <div class="day-count-val" id="custom-day-count">—</div>
-          </div>
+          <div class="day-count-box"><div class="day-count-label">Total days</div><div class="day-count-val" id="custom-day-count">—</div></div>
         </div>
         <div class="sched-summary" id="sched-summary-text"></div>
       </div>
-
       <button class="btn-next" id="btn-next-1" onclick="goTo(2)">Choose screens →</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════ STEP 2: Pick Screens ══════════ -->
+<!-- ══════════ STEP 2: Map + Screens ══════════ -->
 <div class="panel" id="panel-2">
   <div class="p2-layout">
-
-    <!-- Left: rec / browse views -->
-    <div class="p2-left">
-
-      <!-- Recommendations view -->
-      <div id="view-rec">
-        <div class="rec-view-head">
-          <div class="rec-view-title" id="rec-view-title">✦ Recommended screens</div>
-          <div class="rec-view-reason" id="rec-view-reason"></div>
-        </div>
-        <div class="rec-items" id="rec-items"></div>
-        <button class="btn-add-all" id="btn-add-all" onclick="addAllRecommended()">Add all recommended to campaign →</button>
-        <button class="btn-browse-own" onclick="showView('browse')">＋ Choose your own screens instead</button>
+    <div class="p2-main">
+      <!-- Context bar -->
+      <div class="ctx-bar" id="ctx-bar">
+        <strong id="ctx-goal-text">Goal</strong>
+        <span id="ctx-poi-badge" class="ctx-poi-badge" style="display:none"></span>
       </div>
-
-      <!-- Browse view -->
-      <div id="view-browse" style="display:none">
-        <div class="browse-head">
-          <button class="btn-back-rec" onclick="showView('rec')">← Back to recommendations</button>
-          <span class="browse-count" id="browse-count">15 screens available</span>
+      <!-- Map -->
+      <div id="proposal-map"></div>
+      <!-- Screen list / rec -->
+      <div class="p2-screens">
+        <!-- Recommendations view -->
+        <div id="view-rec">
+          <div class="p2-head" id="rec-view-title">✦ Recommended screens</div>
+          <div class="p2-sub" id="rec-view-reason"></div>
+          <div class="rec-items" id="rec-items"></div>
+          <button class="btn-add-all" onclick="addAllRecommended()">Add all recommended to campaign →</button>
+          <button class="btn-browse-own" onclick="showView('browse')">＋ Choose your own screens instead</button>
         </div>
-        <div class="screen-grid" id="screen-grid"></div>
+        <!-- Browse view -->
+        <div id="view-browse" style="display:none">
+          <div class="browse-bar">
+            <button class="btn-back" onclick="showView('rec')">← Back to recommendations</button>
+            <span class="browse-count" id="browse-count"></span>
+          </div>
+          <div class="screen-grid" id="screen-grid"></div>
+        </div>
       </div>
-
     </div>
-
-    <!-- Right: cart -->
+    <!-- Cart -->
     <div class="p2-right">
       <div class="cart-head">
         <div class="cart-head-title">Campaign screens</div>
@@ -547,25 +532,14 @@ textarea.field-input { resize: vertical; min-height: 100px; }
   </div>
 </div>
 
-<!-- ══════════ STEP 3: Prospect Details ══════════ -->
+<!-- ══════════ STEP 3: Details ══════════ -->
 <div class="panel" id="panel-3">
   <div class="p3-wrap">
     <div class="p3-head">Prospect details</div>
     <div class="p3-sub">These details personalize your proposal. Only the note will be visible to the prospect.</div>
-
-    <div class="field-group">
-      <label for="f-prospect-name">Prospect / company name</label>
-      <input type="text" class="field-input" id="f-prospect-name" placeholder="e.g. Acme Coffee Co.">
-    </div>
-    <div class="field-group">
-      <label for="f-contact-name">Your name</label>
-      <input type="text" class="field-input" id="f-contact-name" placeholder="e.g. Sarah from NWA Ads">
-    </div>
-    <div class="field-group">
-      <label for="f-note">Personal note to prospect <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-      <textarea class="field-input" id="f-note" placeholder="e.g. Based on your target audience near Dickson Street, I've selected screens with the highest reach in your area."></textarea>
-    </div>
-
+    <div class="field-group"><label for="f-prospect-name">Prospect / company name</label><input type="text" class="field-input" id="f-prospect-name" placeholder="e.g. Acme Coffee Co."></div>
+    <div class="field-group"><label for="f-contact-name">Your name</label><input type="text" class="field-input" id="f-contact-name" placeholder="e.g. Sarah from NWA Ads"></div>
+    <div class="field-group"><label for="f-note">Personal note <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea class="field-input" id="f-note" placeholder="e.g. Based on your target audience near Dickson Street, I've selected screens with the highest reach in your area."></textarea></div>
     <div style="display:flex;gap:12px;margin-top:8px">
       <button class="btn-outline" onclick="goTo(2)">← Back</button>
       <button class="btn-next" onclick="goTo(4)">Generate proposal link →</button>
@@ -573,30 +547,24 @@ textarea.field-input { resize: vertical; min-height: 100px; }
   </div>
 </div>
 
-<!-- ══════════ STEP 4: Generated Link ══════════ -->
+<!-- ══════════ STEP 4: Link ══════════ -->
 <div class="panel" id="panel-4">
   <div class="p4-wrap">
     <div class="p4-head">Your proposal is ready ✓</div>
     <div class="p4-sub">Share this link with your prospect. It opens a pre-loaded campaign view in NWA Ads.</div>
-
-    <div class="proposal-card" id="preview-card">
+    <div class="proposal-card">
       <div class="pc-label">Campaign proposal</div>
       <div class="pc-title" id="pc-title">Campaign proposal</div>
       <div class="pc-goal" id="pc-goal"></div>
       <div class="pc-screens" id="pc-screens"></div>
-      <div class="pc-total-row">
-        <span id="pc-total-label">Estimated total</span>
-        <span class="pc-total-val" id="pc-total">$0</span>
-      </div>
+      <div class="pc-total-row"><span id="pc-total-label">Estimated total</span><span class="pc-total-val" id="pc-total">$0</span></div>
       <div class="pc-note" id="pc-note" style="display:none"></div>
     </div>
-
     <div class="link-wrap">
       <input class="link-input" id="proposal-link" readonly placeholder="Generating link…">
       <button class="btn-copy" id="btn-copy" onclick="copyLink()">Copy link</button>
     </div>
     <div class="validity-note">Link is valid for 7 days. Prospects can book directly from the link.</div>
-
     <div class="p4-actions" style="margin-top:24px">
       <button class="btn-outline" onclick="goTo(3)">← Edit details</button>
       <button class="btn-outline" onclick="window.open(document.getElementById('proposal-link').value,'_blank')">Preview link →</button>
@@ -605,67 +573,96 @@ textarea.field-input { resize: vertical; min-height: 100px; }
   </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-/* ── STATE ── */
+/* ══ STATE ══ */
 const ST = {
-  goalKey: null,       // 'traffic' | 'walmart' | 'tech'
-  goalLabel: null,
-  subIntent: null,
-  budget: 2000,
-  qty: 4,
-  inc: 'weekly',
-  cart: {},
-  schedMode: 'standard',
-  customDays: [],
-  customDayCount: 0,
-  schedStart: null,
-  schedEnd: null,
+  goalKey: null, goalLabel: null, subIntent: null,
+  budget: 2000, qty: 4, inc: 'weekly', cart: {},
+  schedMode: 'standard', customDays: [], customDayCount: 0,
+  schedStart: null, schedEnd: null,
+  proximityTarget: null,
 };
-
 const DAILY_PREMIUM = 1.25;
 
-/* ── INVENTORY ── */
+/* ══ INVENTORY (with lat/lng) ══ */
 const INV = [
-  { id:'bill-i49-b',   icon:'🪧', name:'I-49 & MLK Billboard South',                 type:'billboard',   area:'Fayetteville', weekly_imp:38000, wkly_rate:1590 },
-  { id:'bill-i49-n',   icon:'🪧', name:'I-49 & Joyce Blvd Billboard North',           type:'billboard',   area:'Fayetteville', weekly_imp:42000, wkly_rate:1720 },
-  { id:'bill-walton',  icon:'🪧', name:'SE Walton Blvd Billboard (Walmart Corridor)', type:'billboard',   area:'Bentonville',  weekly_imp:31000, wkly_rate:1580 },
-  { id:'bill-bus',     icon:'🪧', name:'Rogers Business Loop Billboard',              type:'billboard',   area:'Rogers',       weekly_imp:29000, wkly_rate:1305 },
-  { id:'cin-malco-f',  icon:'🎬', name:'Malco Razorback Cinema',                      type:'cinema',      area:'Fayetteville', weekly_imp:9200,  wkly_rate:1050 },
-  { id:'cin-malco-r',  icon:'🎬', name:'Malco Rogers Cinema',                         type:'cinema',      area:'Rogers',       weekly_imp:8800,  wkly_rate:1030 },
-  { id:'gas-murphy',   icon:'⛽', name:'Murphy Oil — Walmart Supercenter',            type:'gasstation',  area:'Bentonville',  weekly_imp:19400, wkly_rate:1200 },
-  { id:'gas-shell',    icon:'⛽', name:'Shell — I-49 at Wedington Dr',               type:'gasstation',  area:'Fayetteville', weekly_imp:21000, wkly_rate:1240 },
-  { id:'air-xna',      icon:'✈️', name:'XNA Airport — Concourse A',                  type:'airport',     area:'Bentonville',  weekly_imp:14500, wkly_rate:1350 },
-  { id:'gym-golds',    icon:'🏋️', name:"Gold's Gym Fayetteville",                    type:'gym',         area:'Fayetteville', weekly_imp:7800,  wkly_rate:700  },
-  { id:'gym-life',     icon:'🏋️', name:'Life Time Fitness Bentonville',              type:'gym',         area:'Bentonville',  weekly_imp:8400,  wkly_rate:800  },
-  { id:'din-dickson',  icon:'🍽️', name:'Dickson Street Restaurant Row',              type:'dining',      area:'Fayetteville', weekly_imp:11200, wkly_rate:875  },
-  { id:'ret-pinnacle', icon:'🏪', name:'Pinnacle Hills Promenade',                   type:'retail',      area:'Rogers',       weekly_imp:24000, wkly_rate:1560 },
-  { id:'ret-market',   icon:'🏪', name:'8th Street Market',                          type:'retail',      area:'Bentonville',  weekly_imp:15500, wkly_rate:1100 },
-  { id:'hlt-mercy',    icon:'🏥', name:'Mercy Hospital NWA Lobby',                   type:'healthcare',  area:'Rogers',       weekly_imp:9600,  wkly_rate:980  },
+  { id:'bill-i49-b',   icon:'🪧', name:'I-49 & MLK Billboard South',                 type:'billboard',  area:'Fayetteville', weekly_imp:38000, wkly_rate:1590, lat:36.0671, lng:-94.1767 },
+  { id:'bill-i49-n',   icon:'🪧', name:'I-49 & Joyce Blvd Billboard North',           type:'billboard',  area:'Fayetteville', weekly_imp:42000, wkly_rate:1720, lat:36.1200, lng:-94.1580 },
+  { id:'bill-walton',  icon:'🪧', name:'SE Walton Blvd Billboard (Walmart Corridor)', type:'billboard',  area:'Bentonville',  weekly_imp:31000, wkly_rate:1580, lat:36.3700, lng:-94.2150 },
+  { id:'bill-bus',     icon:'🪧', name:'Rogers Business Loop Billboard',              type:'billboard',  area:'Rogers',       weekly_imp:29000, wkly_rate:1305, lat:36.3350, lng:-94.1100 },
+  { id:'cin-malco-f',  icon:'🎬', name:'Malco Razorback Cinema',                      type:'cinema',     area:'Fayetteville', weekly_imp:9200,  wkly_rate:1050, lat:36.0840, lng:-94.1700 },
+  { id:'cin-malco-r',  icon:'🎬', name:'Malco Rogers Cinema',                         type:'cinema',     area:'Rogers',       weekly_imp:8800,  wkly_rate:1030, lat:36.3200, lng:-94.1200 },
+  { id:'gas-murphy',   icon:'⛽', name:'Murphy Oil — Walmart Supercenter',            type:'gasstation', area:'Bentonville',  weekly_imp:19400, wkly_rate:1200, lat:36.3729, lng:-94.2192 },
+  { id:'gas-shell',    icon:'⛽', name:'Shell — I-49 at Wedington Dr',               type:'gasstation', area:'Fayetteville', weekly_imp:21000, wkly_rate:1240, lat:36.0826, lng:-94.2020 },
+  { id:'air-xna',      icon:'✈️', name:'XNA Airport — Concourse A',                  type:'airport',    area:'Bentonville',  weekly_imp:14500, wkly_rate:1350, lat:36.2815, lng:-94.3067 },
+  { id:'gym-golds',    icon:'🏋️', name:"Gold's Gym Fayetteville",                    type:'gym',        area:'Fayetteville', weekly_imp:7800,  wkly_rate:700,  lat:36.0600, lng:-94.1700 },
+  { id:'gym-life',     icon:'🏋️', name:'Life Time Fitness Bentonville',              type:'gym',        area:'Bentonville',  weekly_imp:8400,  wkly_rate:800,  lat:36.3089, lng:-94.1812 },
+  { id:'din-dickson',  icon:'🍽️', name:'Dickson Street Restaurant Row',              type:'dining',     area:'Fayetteville', weekly_imp:11200, wkly_rate:875,  lat:36.0674, lng:-94.1587 },
+  { id:'ret-pinnacle', icon:'🏪', name:'Pinnacle Hills Promenade',                   type:'retail',     area:'Rogers',       weekly_imp:24000, wkly_rate:1560, lat:36.3355, lng:-94.1198 },
+  { id:'ret-market',   icon:'🏪', name:'8th Street Market',                          type:'retail',     area:'Bentonville',  weekly_imp:15500, wkly_rate:1100, lat:36.3742, lng:-94.2100 },
+  { id:'hlt-mercy',    icon:'🏥', name:'Mercy Hospital NWA Lobby',                   type:'healthcare', area:'Rogers',       weekly_imp:9600,  wkly_rate:980,  lat:36.3200, lng:-94.1300 },
 ];
 
-/* ── RECOMMENDED PACKS per goal ── */
+/* ══ NWA POIs for foot-traffic targeting ══ */
+const NWA_POIS = [
+  { id:'wmt-hq',    icon:'🏢', name:'Walmart Home Office',              cat:'Corporate',     lat:36.3729, lng:-94.2192 },
+  { id:'sams-hq',   icon:'🏢', name:"Sam's Club HQ",                   cat:'Corporate',     lat:36.3600, lng:-94.2050 },
+  { id:'xna',       icon:'✈️', name:'XNA Airport',                      cat:'Travel',        lat:36.2815, lng:-94.3067 },
+  { id:'crys-b',    icon:'🎨', name:'Crystal Bridges Museum',           cat:'Arts & Culture',lat:36.3857, lng:-94.2100 },
+  { id:'8th-mkt',   icon:'🛒', name:'8th Street Market Bentonville',    cat:'Retail',        lat:36.3742, lng:-94.2100 },
+  { id:'pinn-r',    icon:'🏪', name:'Pinnacle Hills Promenade',         cat:'Retail',        lat:36.3355, lng:-94.1198 },
+  { id:'uofa',      icon:'🎓', name:'University of Arkansas',            cat:'Education',     lat:36.0686, lng:-94.1740 },
+  { id:'dicks-f',   icon:'🍽️', name:'Dickson Street Fayetteville',     cat:'Dining',        lat:36.0674, lng:-94.1587 },
+  { id:'mercy-r',   icon:'🏥', name:'Mercy Hospital Rogers',            cat:'Healthcare',    lat:36.3200, lng:-94.1300 },
+  { id:'mercy-f',   icon:'🏥', name:'Mercy Hospital Fayetteville',      cat:'Healthcare',    lat:36.0980, lng:-94.1600 },
+  { id:'lt-r',      icon:'💪', name:'Life Time Fitness Rogers/Pinnacle',cat:'Fitness',       lat:36.3089, lng:-94.1812 },
+  { id:'golds-f',   icon:'💪', name:"Gold's Gym Fayetteville",          cat:'Fitness',       lat:36.0600, lng:-94.1700 },
+  { id:'mlko-f',    icon:'🎬', name:'Malco Razorback Cinema',           cat:'Entertainment', lat:36.0840, lng:-94.1700 },
+  { id:'mlko-r',    icon:'🎬', name:'Malco Rogers Cinema',              cat:'Entertainment', lat:36.3200, lng:-94.1200 },
+  { id:'21c',       icon:'🏨', name:'21c Museum Hotel Bentonville',     cat:'Hotel',         lat:36.3714, lng:-94.2085 },
+  { id:'amp',       icon:'🎶', name:'Walmart AMP (Amphitheater)',        cat:'Entertainment', lat:36.3456, lng:-94.1654 },
+  { id:'onyx-b',    icon:'☕', name:'Onyx Coffee Lab Bentonville',      cat:'Food & Drink',  lat:36.3742, lng:-94.2089 },
+  { id:'razb-st',   icon:'🏟️', name:'Razorback Stadium',               cat:'Sports',        lat:36.0681, lng:-94.1754 },
+  { id:'bike-theron',icon:'🚴',name:'Theron Wray (Slaughter Pen) Trail',cat:'Outdoors',     lat:36.3500, lng:-94.2300 },
+  { id:'bobs-dairy', icon:'🍦',name:"Braum's Ice Cream (Rogers)",       cat:'Food & Drink',  lat:36.3300, lng:-94.1200 },
+  { id:'wholefoods', icon:'🥦',name:'Whole Foods Market Rogers',        cat:'Grocery',       lat:36.3300, lng:-94.1250 },
+  { id:'nw-ar-mall', icon:'🏬',name:'Northwest Arkansas Mall',          cat:'Retail',        lat:36.3100, lng:-94.1350 },
+  { id:'hunt-bike',  icon:'🚲',name:'Hunt Cycling — Bentonville',       cat:'Fitness',       lat:36.3720, lng:-94.2080 },
+  { id:'cove-spg',   icon:'🌳',name:'Coler MTB Preserve',               cat:'Outdoors',      lat:36.3650, lng:-94.2200 },
+];
+
+/* ══ Walmart buyer zones ══ */
+const WMT_ZONES = [
+  { name:'Walmart Home Office', lat:36.3729, lng:-94.2192, radius:2.0 },
+  { name:'Scissortail',         lat:36.2934, lng:-94.2400, radius:3.2 },
+  { name:'Pinnacle CC',         lat:36.3355, lng:-94.1198, radius:2.5 },
+];
+const WALMART_HQ = { lat:36.3729, lng:-94.2192 };
+
+/* ══ Recommended packs ══ */
 const PACKS = {
   traffic: {
-    reason: 'Billboard on the I-49 corridor for mass reach, gas station screen to catch in-car shoppers, and a dining/retail screen close to your area for neighborhood-level frequency.',
-    screens: [
-      { id:'bill-i49-b',  why:'High-traffic highway exposure — max impressions per dollar' },
-      { id:'gas-shell',   why:'Catches drivers already in the car near your door' },
-      { id:'din-dickson', why:'Neighborhood dining screens — strong local frequency' },
+    reason: 'Billboard on the I-49 corridor for mass reach, gas station screen to catch in-car shoppers, and a dining/retail screen for neighborhood-level frequency. Sorted nearest to your target pin.',
+    screens:[
+      { id:'bill-i49-b',  why:'High-traffic highway — max impressions per dollar' },
+      { id:'gas-shell',   why:'In-car shoppers near Fayetteville/Rogers corridor' },
+      { id:'din-dickson', why:'Local dining audience — strong repeat frequency' },
       { id:'ret-pinnacle',why:'Shopping-mode audiences, weekend peak traffic' },
     ],
   },
   walmart: {
-    reason: 'Screens concentrated in the three Walmart buyer zones: Home Office corridor, XNA airport, and premium Bentonville venues where decision-makers spend time outside the office.',
-    screens: [
+    reason: 'Screens concentrated in three Walmart buyer zones: Home Office corridor, XNA airport, and premium Bentonville venues where decision-makers spend time outside the office.',
+    screens:[
       { id:'bill-walton', why:'Daily commute route for Walmart HQ executives' },
-      { id:'air-xna',     why:'Merchants and buyers mid-travel — high dwell time' },
+      { id:'air-xna',     why:'Merchants & buyers mid-travel — high dwell time' },
       { id:'gym-life',    why:'Premium Bentonville gym — executive audience' },
       { id:'ret-market',  why:'8th Street Market, steps from Walmart HQ' },
     ],
   },
   tech: {
-    reason: 'Billboard anchor for scale across NWA, backed by gym and dining screens in Bentonville and Fayetteville where engineers, founders, and startup professionals spend their time.',
-    screens: [
+    reason: 'Billboard anchor for NWA-wide scale, backed by gym and retail screens in Bentonville and Fayetteville where engineers, founders, and startup professionals spend their time.',
+    screens:[
       { id:'bill-i49-n',  why:'High-reach anchor — 42K impressions/wk across NWA' },
       { id:'bill-walton', why:'Bentonville innovation corridor' },
       { id:'gym-golds',   why:'Fayetteville gym — engineers and tech founders' },
@@ -675,27 +672,109 @@ const PACKS = {
 };
 
 const GOAL_LABELS = {
-  traffic: "Drive customers through your door",
-  walmart: "Reach Walmart & Sam's Club buyers",
-  tech:    "Reach the NWA Tech & Startup Scene",
+  traffic:"Drive customers through your door",
+  walmart:"Reach Walmart & Sam's Club buyers",
+  tech:"Reach the NWA Tech & Startup Scene",
 };
 
-/* ── STEP 1: GOAL ── */
+/* ══ MAP ══ */
+let map = null, screenMarkers = {}, proximityRing = null, proximityMarker = null;
+
+function initMap() {
+  if (map) { setTimeout(() => map.invalidateSize(), 100); return; }
+  map = L.map('proposal-map', { center:[36.22, -94.20], zoom:10, zoomControl:true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; <a href="https://carto.com/">CARTO</a>', maxZoom:19
+  }).addTo(map);
+  placeScreenMarkers();
+}
+
+const TYPE_COLORS = { billboard:'#c8440a', gasstation:'#b45309', dining:'#b91c1c',
+  cinema:'#6b21a8', gym:'#1d4ed8', airport:'#0e7490', retail:'#15803d',
+  healthcare:'#0e7490', default:'#4a4540' };
+
+function placeScreenMarkers() {
+  INV.forEach(s => {
+    const color = TYPE_COLORS[s.type] || TYPE_COLORS.default;
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="width:28px;height:28px;border-radius:50%;background:${color};border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.25)">${s.icon}</div>`,
+      iconSize:[28,28], iconAnchor:[14,14],
+    });
+    const m = L.marker([s.lat, s.lng], { icon })
+      .bindPopup(`<div style="font-family:'Instrument Sans',sans-serif;padding:4px 0"><strong style="font-size:13px">${s.name}</strong><div style="font-size:11px;color:#8c857e;margin-top:3px">${s.area} · $${s.wkly_rate.toLocaleString()}/wk</div></div>`)
+      .addTo(map);
+    screenMarkers[s.id] = m;
+  });
+}
+
+function renderWalmartZones() {
+  if (!map) return;
+  if (window._wmtLayers) { window._wmtLayers.forEach(l => map.removeLayer(l)); }
+  window._wmtLayers = [];
+  if (ST.goalKey !== 'walmart') return;
+  WMT_ZONES.forEach((z, i) => {
+    const outer = L.circle([z.lat, z.lng], { radius: z.radius * 1609.34, color:'#374151', fillColor:'#374151', fillOpacity: i===0 ? 0.09 : 0.06, weight:1.5, opacity:0.3, dashArray:'5 4' }).addTo(map);
+    const inner = L.circle([z.lat, z.lng], { radius: z.radius * 1609.34 * 0.35, color:'transparent', fillColor:'#374151', fillOpacity:0.11, weight:0 }).addTo(map);
+    outer.bindTooltip(z.name, { permanent:false, direction:'top', offset:[0,-8] });
+    window._wmtLayers.push(outer, inner);
+  });
+  const bounds = L.latLngBounds(WMT_ZONES.map(z => [z.lat, z.lng])).pad(0.35);
+  map.fitBounds(bounds);
+}
+
+function drawProximityRing(poi) {
+  if (!map) return;
+  if (proximityRing) { map.removeLayer(proximityRing); proximityRing = null; }
+  if (proximityMarker) { map.removeLayer(proximityMarker); proximityMarker = null; }
+  proximityRing = L.circle([poi.lat, poi.lng], {
+    radius:4828, color:'#c8440a', fillColor:'#c8440a', fillOpacity:0.05,
+    weight:2, dashArray:'6 4',
+  }).addTo(map);
+  const icon = L.divIcon({
+    className:'',
+    html:`<div style="background:#c8440a;color:#fff;padding:4px 10px;border-radius:20px;font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25);border:2px solid #fff">${poi.icon || '📍'} ${poi.name}</div>`,
+    iconAnchor:[0,0],
+  });
+  proximityMarker = L.marker([poi.lat, poi.lng], { icon, zIndexOffset:1000 }).addTo(map);
+  map.flyTo([poi.lat, poi.lng], 12, { duration:0.8 });
+}
+
+function clearProximityLayers() {
+  if (!map) return;
+  if (proximityRing) { map.removeLayer(proximityRing); proximityRing = null; }
+  if (proximityMarker) { map.removeLayer(proximityMarker); proximityMarker = null; }
+}
+
+/* ══ HAVERSINE ══ */
+function haversineKm(lat1,lng1,lat2,lng2) {
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function haversineMiles(lat1,lng1,lat2,lng2) { return haversineKm(lat1,lng1,lat2,lng2)*0.621371; }
+function distLabel(mi) { return mi<0.1?'< 0.1 mi':mi<10?mi.toFixed(1)+' mi':Math.round(mi)+' mi'; }
+
+/* ══ GOAL SELECTION ══ */
 function selectGoal(el, key) {
   document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('sel'));
   el.classList.add('sel');
   ST.goalKey   = key;
   ST.goalLabel = GOAL_LABELS[key];
+  ST.proximityTarget = null;
 
   ['insight-traffic','insight-walmart','insight-tech'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
   document.getElementById('insight-' + key).style.display = 'block';
-  document.getElementById('budget-sched-wrap').style.display = 'block';
+  document.getElementById('budget-sched').style.display   = 'block';
 
-  // Set first sub-pill as default
+  // Set first sub-pill as default selected
   const firstPill = document.querySelector('#insight-' + key + ' .sub-pill');
   if (firstPill) ST.subIntent = firstPill.textContent.trim();
+
+  // Init POI grid for traffic
+  if (key === 'traffic') renderPoiGrid();
 }
 
 function selSubPill(el) {
@@ -704,349 +783,392 @@ function selSubPill(el) {
   ST.subIntent = el.textContent.trim();
 }
 
-/* ── STEP 1: SCHEDULE ── */
-function setSchedMode(mode) {
-  ST.schedMode = mode;
-  document.getElementById('sched-standard').classList.toggle('on', mode === 'standard');
-  document.getElementById('sched-custom').classList.toggle('on', mode === 'custom');
-  document.getElementById('standard-sched-wrap').style.display = mode === 'standard' ? '' : 'none';
-  document.getElementById('custom-sched-wrap').classList.toggle('visible', mode === 'custom');
-  updateCustomSched();
+/* ══ POI PICKER ══ */
+function renderPoiGrid() {
+  const q = (document.getElementById('poi-search')?.value || '').toLowerCase();
+  const filtered = NWA_POIS.filter(p => !q || p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+  const selId = ST.proximityTarget?.id;
+  const grid = document.getElementById('poi-grid');
+  if (!grid) return;
+  grid.innerHTML = filtered.map(p => `
+    <div class="poi-card${p.id===selId?' sel':''}" onclick="selectPOI('${p.id}')">
+      <span class="poi-icon">${p.icon}</span>
+      <div><div class="poi-name">${p.name}</div><div class="poi-cat">${p.cat}</div></div>
+    </div>`).join('');
 }
 
+function selectPOI(id) {
+  const poi = NWA_POIS.find(p => p.id === id);
+  if (!poi) return;
+  setProximityTarget(poi);
+  renderPoiGrid();
+}
+
+function setProximityTarget(poi) {
+  ST.proximityTarget = poi;
+  const bar  = document.getElementById('poi-sel-bar');
+  const icon = document.getElementById('poi-sel-icon');
+  const name = document.getElementById('poi-sel-name');
+  if (bar)  bar.classList.add('show');
+  if (icon) icon.textContent = poi.icon || '📍';
+  if (name) name.textContent = poi.name;
+  // If already on Step 2, update map
+  if (map) { drawProximityRing(poi); updateContextBar(); renderRecommendations(); renderScreens(); }
+}
+
+function clearTarget() {
+  ST.proximityTarget = null;
+  const bar = document.getElementById('poi-sel-bar');
+  if (bar) bar.classList.remove('show');
+  clearProximityLayers();
+  renderPoiGrid();
+  if (map) { updateContextBar(); renderRecommendations(); renderScreens(); }
+  const gcEl = document.getElementById('geocode-status');
+  if (gcEl) gcEl.textContent = '';
+}
+
+/* ══ GEOCODE custom address ══ */
+let _geocodedCoords = null;
+async function geocodeAndPin() {
+  const addr = document.getElementById('custom-addr')?.value?.trim();
+  if (!addr) return;
+  const btn = document.getElementById('btn-pin');
+  const statusEl = document.getElementById('geocode-status');
+  btn.disabled = true;
+  btn.textContent = '…';
+  if (statusEl) statusEl.style.color = 'var(--muted)';
+  if (statusEl) statusEl.textContent = 'Looking up address…';
+  try {
+    const url = `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=${encodeURIComponent(addr)}&benchmark=2020&format=json`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const match = data.result?.addressMatches?.[0];
+    if (!match) throw new Error('No match');
+    const lat = match.coordinates.y;
+    const lng = match.coordinates.x;
+    // Sanity check — NWA region
+    if (lat < 35.8 || lat > 36.6 || lng < -94.7 || lng > -93.5) throw new Error('Out of NWA region');
+    const poi = { id:'custom', icon:'📍', name: match.matchedAddress.split(',').slice(0,2).join(','), lat, lng };
+    setProximityTarget(poi);
+    if (statusEl) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '✓ Pinned: ' + poi.name; }
+  } catch(e) {
+    if (statusEl) { statusEl.style.color = 'var(--accent)'; statusEl.textContent = 'Address not found — try a full street address in NWA.'; }
+  }
+  btn.disabled = false;
+  btn.textContent = 'Pin it';
+}
+
+/* ══ SCHEDULE ══ */
+function setSchedMode(mode) {
+  ST.schedMode = mode;
+  document.getElementById('sched-standard').classList.toggle('on', mode==='standard');
+  document.getElementById('sched-custom').classList.toggle('on', mode==='custom');
+  document.getElementById('standard-sched-wrap').style.display = mode==='standard' ? '' : 'none';
+  document.getElementById('custom-sched-wrap').classList.toggle('visible', mode==='custom');
+  updateCustomSched();
+}
 function toggleDay(el) {
   el.classList.toggle('on');
   ST.customDays = [...document.querySelectorAll('.day-btn.on')].map(b => parseInt(b.dataset.day));
   updateCustomSched();
 }
-
 function updateCustomSched() {
   const start = document.getElementById('sched-start')?.value;
   const end   = document.getElementById('sched-end')?.value;
-  ST.schedStart = start || null;
-  ST.schedEnd   = end   || null;
-
-  const countEl   = document.getElementById('custom-day-count');
-  const summaryEl = document.getElementById('sched-summary-text');
-
-  if (!start || !end || ST.customDays.length === 0) {
-    if (countEl) countEl.textContent = '—';
-    if (summaryEl) summaryEl.textContent = '';
-    ST.customDayCount = 0;
-    return;
+  ST.schedStart = start || null; ST.schedEnd = end || null;
+  const cEl = document.getElementById('custom-day-count');
+  const sEl = document.getElementById('sched-summary-text');
+  if (!start || !end || !ST.customDays.length) {
+    if (cEl) cEl.textContent='—'; if (sEl) sEl.textContent=''; ST.customDayCount=0; return;
   }
-
-  const s = new Date(start + 'T00:00:00');
-  const e = new Date(end   + 'T00:00:00');
-  if (e < s) { if (summaryEl) summaryEl.textContent = 'End date must be after start date'; return; }
-
-  let count = 0;
-  const cur = new Date(s);
-  while (cur <= e) { if (ST.customDays.includes(cur.getDay())) count++; cur.setDate(cur.getDate() + 1); }
-
-  ST.customDayCount = count;
-  if (countEl) countEl.textContent = count;
-
-  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const selected = ST.customDays.map(d => dayNames[d]).join(' + ');
-  const weeks = Math.ceil((e - s) / (7 * 24 * 60 * 60 * 1000));
-  if (summaryEl) summaryEl.textContent = `${selected} · ${weeks} week window · ${count} total ad days`;
+  const s=new Date(start+'T00:00:00'), e=new Date(end+'T00:00:00');
+  if (e<s) { if (sEl) sEl.textContent='End date must be after start date'; return; }
+  let count=0; const cur=new Date(s);
+  while (cur<=e) { if (ST.customDays.includes(cur.getDay())) count++; cur.setDate(cur.getDate()+1); }
+  ST.customDayCount=count; if (cEl) cEl.textContent=count;
+  const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const sel=ST.customDays.map(d=>dn[d]).join(' + ');
+  const wks=Math.ceil((e-s)/(7*24*60*60*1000));
+  if (sEl) sEl.textContent=`${sel} · ${wks} week window · ${count} total ad days`;
 }
 
-/* ── STEP 2: VIEWS ── */
-function showView(v) {
-  document.getElementById('view-rec').style.display   = v === 'rec'    ? '' : 'none';
-  document.getElementById('view-browse').style.display = v === 'browse' ? '' : 'none';
+/* ══ STEP 2 INIT ══ */
+function updateContextBar() {
+  const goalEl = document.getElementById('ctx-goal-text');
+  const badgeEl = document.getElementById('ctx-poi-badge');
+  if (goalEl) goalEl.textContent = ST.goalLabel || 'Goal';
+  if (badgeEl) {
+    if (ST.goalKey === 'traffic' && ST.proximityTarget) {
+      badgeEl.textContent = '📍 ' + ST.proximityTarget.name;
+      badgeEl.style.display = 'inline';
+    } else if (ST.goalKey === 'walmart') {
+      badgeEl.textContent = '🗺 3 buyer concentration zones';
+      badgeEl.style.display = 'inline';
+    } else {
+      badgeEl.style.display = 'none';
+    }
+  }
 }
 
-/* ── STEP 2: RENDER RECOMMENDATIONS ── */
-function renderRecommendations() {
+/* ══ RECOMMENDATIONS ══ */
+function getSortedPack() {
   const pack = PACKS[ST.goalKey] || PACKS.traffic;
+  let screens = pack.screens.map(r => {
+    const s = INV.find(x => x.id === r.id);
+    return s ? { ...s, _why: r.why } : null;
+  }).filter(Boolean);
+
+  // For foot traffic with POI: sort ALL inv by proximity, pull best 4
+  if (ST.goalKey === 'traffic' && ST.proximityTarget) {
+    const { lat, lng } = ST.proximityTarget;
+    const sorted = [...INV].sort((a,b) => haversineMiles(lat,lng,a.lat,a.lng) - haversineMiles(lat,lng,b.lat,b.lng));
+    screens = sorted.slice(0, 4).map(s => ({
+      ...s,
+      _why: distLabel(haversineMiles(lat,lng,s.lat,s.lng)) + ' from your target',
+    }));
+  }
+  return { reason: ST.goalKey==='traffic' && ST.proximityTarget
+    ? 'Screens sorted nearest to your pinned location — ' + ST.proximityTarget.name
+    : pack.reason, screens };
+}
+
+function renderRecommendations() {
+  const { reason, screens } = getSortedPack();
   const titleEl  = document.getElementById('rec-view-title');
   const reasonEl = document.getElementById('rec-view-reason');
   const itemsEl  = document.getElementById('rec-items');
-
-  if (titleEl)  titleEl.textContent  = '✦ Recommended for: ' + ST.goalLabel;
-  if (reasonEl) reasonEl.textContent = pack.reason;
-
-  if (itemsEl) {
-    itemsEl.innerHTML = pack.screens.map(r => {
-      const s = INV.find(x => x.id === r.id);
-      if (!s) return '';
-      const inCart = !!ST.cart[s.id];
-      return `<div class="rec-item${inCart ? ' sel' : ''}" id="ri-${s.id}" onclick="toggleRec('${s.id}')">
-        <div class="rec-check">${inCart ? '✓' : '+'}</div>
-        <div class="rec-icon">${s.icon}</div>
-        <div class="rec-info">
-          <div class="rec-name">${s.name}</div>
-          <div class="rec-why">${r.why}</div>
-        </div>
-        <div class="rec-price">$${s.wkly_rate.toLocaleString()}<span class="rec-price-unit">/wk</span></div>
-      </div>`;
-    }).join('');
-  }
+  if (titleEl)  titleEl.textContent  = '✦ Recommended for: ' + (ST.goalLabel || 'your goal');
+  if (reasonEl) reasonEl.textContent = reason;
+  if (!itemsEl) return;
+  const hasPOI = ST.goalKey==='traffic' && ST.proximityTarget;
+  itemsEl.innerHTML = screens.map(s => {
+    const inCart = !!ST.cart[s.id];
+    const distMi = hasPOI ? haversineMiles(ST.proximityTarget.lat, ST.proximityTarget.lng, s.lat, s.lng) : null;
+    return `<div class="rec-item${inCart?' sel':''}" id="ri-${s.id}" onclick="toggleRec('${s.id}')">
+      <div class="rec-check">${inCart?'✓':'+'}</div>
+      <div class="rec-icon">${s.icon}</div>
+      <div class="rec-info">
+        <div class="rec-name">${s.name}</div>
+        <div class="rec-why">${s._why}</div>
+        ${distMi !== null ? `<div class="rec-dist">📍 ${distLabel(distMi)}</div>` : ''}
+      </div>
+      <div class="rec-price"><div class="rec-price-val">$${s.wkly_rate.toLocaleString()}</div><span class="rec-price-unit">/wk</span></div>
+    </div>`;
+  }).join('');
 }
 
 function toggleRec(id) {
-  const s = INV.find(x => x.id === id);
+  const s = INV.find(x => x.id===id);
   if (!s) return;
-  if (ST.cart[id]) { delete ST.cart[id]; } else { ST.cart[id] = s; }
-  // Update rec item style
-  const ri = document.getElementById('ri-' + id);
-  if (ri) {
-    const inCart = !!ST.cart[id];
-    ri.classList.toggle('sel', inCart);
-    ri.querySelector('.rec-check').textContent = inCart ? '✓' : '+';
-  }
-  // Sync browse card if visible
-  syncBrowseCard(id);
-  renderCart();
+  if (ST.cart[id]) { delete ST.cart[id]; } else { ST.cart[id]=s; }
+  const ri = document.getElementById('ri-'+id);
+  if (ri) { const ic=!!ST.cart[id]; ri.classList.toggle('sel',ic); ri.querySelector('.rec-check').textContent=ic?'✓':'+'; }
+  syncBrowseCard(id); renderCart();
 }
 
 function addAllRecommended() {
-  const pack = PACKS[ST.goalKey] || PACKS.traffic;
-  pack.screens.forEach(r => {
-    const s = INV.find(x => x.id === r.id);
-    if (s) ST.cart[s.id] = s;
-  });
-  renderRecommendations();
-  renderScreens();
-  renderCart();
+  const { screens } = getSortedPack();
+  screens.forEach(s => { if (!ST.cart[s.id]) ST.cart[s.id]=INV.find(x=>x.id===s.id)||s; });
+  renderRecommendations(); renderScreens(); renderCart();
 }
 
-/* ── STEP 2: BROWSE SCREENS ── */
+/* ══ BROWSE SCREENS ══ */
 function renderScreens() {
   const grid = document.getElementById('screen-grid');
   if (!grid) return;
+  const hasPOI = ST.goalKey==='traffic' && ST.proximityTarget;
+  let list = [...INV];
+  if (hasPOI) {
+    const { lat,lng } = ST.proximityTarget;
+    list = list.sort((a,b) => haversineMiles(lat,lng,a.lat,a.lng) - haversineMiles(lat,lng,b.lat,b.lng));
+  } else if (ST.goalKey==='walmart') {
+    list = list.sort((a,b) => haversineMiles(WALMART_HQ.lat,WALMART_HQ.lng,a.lat,a.lng) - haversineMiles(WALMART_HQ.lat,WALMART_HQ.lng,b.lat,b.lng));
+  }
   grid.innerHTML = '';
-  INV.forEach(s => {
+  const countEl = document.getElementById('browse-count');
+  if (countEl) countEl.textContent = list.length + ' screens available';
+  list.forEach(s => {
     const inCart = !!ST.cart[s.id];
+    const distMi = hasPOI ? haversineMiles(ST.proximityTarget.lat,ST.proximityTarget.lng,s.lat,s.lng)
+                 : ST.goalKey==='walmart' ? haversineMiles(WALMART_HQ.lat,WALMART_HQ.lng,s.lat,s.lng) : null;
     const div = document.createElement('div');
-    div.id = 'sc-' + s.id;
-    div.className = 'sc' + (inCart ? ' added' : '');
-    div.innerHTML = `
-      <div class="sc-ico">${s.icon}</div>
+    div.id='sc-'+s.id; div.className='sc'+(inCart?' added':'');
+    div.innerHTML=`<div class="sc-ico">${s.icon}</div>
       <div class="sc-body">
         <div class="sc-name">${s.name}</div>
         <div class="sc-meta">${s.area} · ${fmtImpr(s.weekly_imp)}</div>
+        ${distMi!==null?`<div class="sc-dist">📍 ${distLabel(distMi)}</div>`:''}
       </div>
       <div class="sc-right">
         <div class="sc-price">$${s.wkly_rate.toLocaleString()}<span class="sc-unit">/wk</span></div>
-        <button class="sc-add${inCart ? ' added' : ''}" id="sca-${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')">
-          ${inCart ? '✓ Added' : '+ Add'}
+        <button class="sc-add${inCart?' added':''}" id="sca-${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')">
+          ${inCart?'✓ Added':'+ Add'}
         </button>
       </div>`;
     div.onclick = e => { if (!e.target.closest('button')) toggleScreen(s.id); };
     grid.appendChild(div);
   });
-  const countEl = document.getElementById('browse-count');
-  if (countEl) countEl.textContent = INV.length + ' screens available';
 }
 
 function toggleScreen(id) {
-  const s = INV.find(x => x.id === id);
-  if (!s) return;
-  if (ST.cart[id]) { delete ST.cart[id]; } else { ST.cart[id] = s; }
-  syncBrowseCard(id);
-  syncRecItem(id);
-  renderCart();
+  const s=INV.find(x=>x.id===id); if (!s) return;
+  if (ST.cart[id]) { delete ST.cart[id]; } else { ST.cart[id]=s; }
+  syncBrowseCard(id); syncRecItem(id); renderCart();
 }
-
 function syncBrowseCard(id) {
-  const inCart = !!ST.cart[id];
-  const btn  = document.getElementById('sca-' + id);
-  const card = document.getElementById('sc-' + id);
-  if (btn)  { btn.classList.toggle('added', inCart); btn.textContent = inCart ? '✓ Added' : '+ Add'; }
-  if (card) card.classList.toggle('added', inCart);
+  const ic=!!ST.cart[id];
+  const btn=document.getElementById('sca-'+id), card=document.getElementById('sc-'+id);
+  if (btn) { btn.classList.toggle('added',ic); btn.textContent=ic?'✓ Added':'+ Add'; }
+  if (card) card.classList.toggle('added',ic);
 }
-
 function syncRecItem(id) {
-  const ri = document.getElementById('ri-' + id);
-  if (!ri) return;
-  const inCart = !!ST.cart[id];
-  ri.classList.toggle('sel', inCart);
-  ri.querySelector('.rec-check').textContent = inCart ? '✓' : '+';
+  const ri=document.getElementById('ri-'+id); if (!ri) return;
+  const ic=!!ST.cart[id]; ri.classList.toggle('sel',ic); ri.querySelector('.rec-check').textContent=ic?'✓':'+';
 }
+function removeScreen(id) { delete ST.cart[id]; syncBrowseCard(id); syncRecItem(id); renderCart(); }
+function fmtImpr(n) { return n>=1000?Math.round(n/1000)+'K wkly impr':n+' wkly impr'; }
 
-function removeScreen(id) {
-  delete ST.cart[id];
-  syncBrowseCard(id);
-  syncRecItem(id);
-  renderCart();
-}
-
-function fmtImpr(n) { return n >= 1000 ? Math.round(n/1000) + 'K wkly impr' : n + ' wkly impr'; }
-
-/* ── CART ── */
-function dailyRate(s) { return Math.round((s.wkly_rate / 7) * DAILY_PREMIUM); }
-
+/* ══ CART ══ */
+function dailyRate(s) { return Math.round((s.wkly_rate/7)*DAILY_PREMIUM); }
 function renderCart() {
-  const keys    = Object.keys(ST.cart);
-  const el      = document.getElementById('cart-items');
-  const sub     = document.getElementById('cart-sub');
-  const totalEl = document.getElementById('cart-total-val');
-  const lblEl   = document.getElementById('cart-total-label');
-  const btn     = document.getElementById('btn-next-2');
-
-  const isCustom = ST.schedMode === 'custom' && ST.customDayCount > 0;
-  if (lblEl) lblEl.textContent = isCustom ? 'Custom total' : 'Total / week';
-
+  const keys=Object.keys(ST.cart);
+  const el=document.getElementById('cart-items'), sub=document.getElementById('cart-sub');
+  const totalEl=document.getElementById('cart-total-val'), lblEl=document.getElementById('cart-total-label');
+  const btn=document.getElementById('btn-next-2');
+  const isCustom=ST.schedMode==='custom'&&ST.customDayCount>0;
+  if (lblEl) lblEl.textContent=isCustom?'Custom total':'Total / week';
   if (!keys.length) {
-    if (el) el.innerHTML = '<div class="cart-empty"><span>🛒</span>Add screens from the left to build your proposal.</div>';
-    if (sub) sub.textContent = 'No screens added yet';
-    if (totalEl) totalEl.textContent = '$0';
-    if (btn) btn.disabled = true;
-    return;
+    if (el) el.innerHTML='<div class="cart-empty"><span>🛒</span>Add screens from the left to build your proposal.</div>';
+    if (sub) sub.textContent='No screens added yet'; if (totalEl) totalEl.textContent='$0'; if (btn) btn.disabled=true; return;
   }
-
-  let total = 0;
+  let total=0;
   if (el) {
-    el.innerHTML = keys.map(id => {
-      const s = ST.cart[id];
-      const price = isCustom ? dailyRate(s) * ST.customDayCount : s.wkly_rate;
-      total += price;
-      const priceLabel = isCustom
-        ? '$' + (dailyRate(s) * ST.customDayCount).toLocaleString()
-        : '$' + s.wkly_rate.toLocaleString() + '/wk';
-      return `<div class="ct-row">
-        <div class="ct-icon">${s.icon}</div>
-        <div class="ct-info"><div class="ct-name">${s.name}</div><div class="ct-area">${s.area}</div></div>
-        <div class="ct-price">${priceLabel}</div>
-        <button class="ct-rm" onclick="removeScreen('${id}')">×</button>
-      </div>`;
+    el.innerHTML=keys.map(id => {
+      const s=ST.cart[id];
+      const price=isCustom?dailyRate(s)*ST.customDayCount:s.wkly_rate; total+=price;
+      const lbl=isCustom?'$'+(dailyRate(s)*ST.customDayCount).toLocaleString():'$'+s.wkly_rate.toLocaleString()+'/wk';
+      return `<div class="ct-row"><div class="ct-icon">${s.icon}</div><div class="ct-info"><div class="ct-name">${s.name}</div><div class="ct-area">${s.area}</div></div><div class="ct-price">${lbl}</div><button class="ct-rm" onclick="removeScreen('${id}')">×</button></div>`;
     }).join('');
   }
-
-  if (sub) sub.textContent = keys.length + ' screen' + (keys.length !== 1 ? 's' : '') + ' · $' + total.toLocaleString() + (isCustom ? '' : '/wk');
-  if (totalEl) totalEl.textContent = '$' + total.toLocaleString();
-  if (btn) btn.disabled = false;
+  if (sub) sub.textContent=keys.length+' screen'+(keys.length!==1?'s':'')+' · $'+total.toLocaleString()+(isCustom?'':'/wk');
+  if (totalEl) totalEl.textContent='$'+total.toLocaleString(); if (btn) btn.disabled=false;
 }
 
-/* ── NAVIGATION ── */
+/* ══ VIEW TOGGLE ══ */
+function showView(v) {
+  document.getElementById('view-rec').style.display   = v==='rec'    ? '' : 'none';
+  document.getElementById('view-browse').style.display = v==='browse' ? '' : 'none';
+}
+
+/* ══ NAVIGATION ══ */
 function goTo(n) {
-  for (let i = 1; i <= 4; i++) {
-    document.getElementById('panel-' + i).classList.remove('active');
-    const nav = document.getElementById('nav-s' + i);
+  for (let i=1;i<=4;i++) {
+    document.getElementById('panel-'+i).classList.remove('active');
+    const nav=document.getElementById('nav-s'+i);
     if (nav) {
-      nav.classList.remove('active', 'done');
-      if (i < n)      { nav.classList.add('done');   nav.querySelector('.step-dot').textContent = '✓'; }
-      else if (i === n){ nav.classList.add('active'); nav.querySelector('.step-dot').textContent = i; }
-      else             { nav.querySelector('.step-dot').textContent = i; }
+      nav.classList.remove('active','done');
+      if (i<n) { nav.classList.add('done'); nav.querySelector('.step-dot').textContent='✓'; }
+      else if (i===n) { nav.classList.add('active'); nav.querySelector('.step-dot').textContent=i; }
+      else { nav.querySelector('.step-dot').textContent=i; }
     }
   }
-  document.getElementById('panel-' + n).classList.add('active');
-  window.scrollTo(0, 0);
+  document.getElementById('panel-'+n).classList.add('active');
+  window.scrollTo(0,0);
 
-  if (n === 2) {
+  if (n===2) {
+    updateContextBar();
+    setTimeout(() => {
+      initMap();
+      renderWalmartZones();
+      if (ST.goalKey==='traffic' && ST.proximityTarget) drawProximityRing(ST.proximityTarget);
+    }, 100);
     renderRecommendations();
     renderScreens();
     showView('rec');
   }
-  if (n === 4) generateLink();
+  if (n===4) generateLink();
 }
 
-/* ── PROPOSAL LINK ── */
+/* ══ PROPOSAL LINK ══ */
 function generateLink() {
-  const keys = Object.keys(ST.cart);
-  if (!keys.length) return;
+  const keys=Object.keys(ST.cart); if (!keys.length) return;
+  const prospectName=document.getElementById('f-prospect-name')?.value||'';
+  const contactName=document.getElementById('f-contact-name')?.value||'';
+  const note=document.getElementById('f-note')?.value||'';
+  const isCustom=ST.schedMode==='custom'&&ST.customDayCount>0;
 
-  const prospectName = document.getElementById('f-prospect-name')?.value || '';
-  const contactName  = document.getElementById('f-contact-name')?.value  || '';
-  const note         = document.getElementById('f-note')?.value          || '';
+  const pcTitle=document.getElementById('pc-title');
+  const pcGoal=document.getElementById('pc-goal');
+  const pcScrs=document.getElementById('pc-screens');
+  const pcTotal=document.getElementById('pc-total');
+  const pcTotalLbl=document.getElementById('pc-total-label');
+  const pcNote=document.getElementById('pc-note');
 
-  const isCustom = ST.schedMode === 'custom' && ST.customDayCount > 0;
+  if (pcTitle) pcTitle.textContent=prospectName?'Campaign for '+prospectName:'Campaign proposal';
+  if (pcGoal)  pcGoal.textContent=ST.goalLabel||'';
 
-  const pcTitle    = document.getElementById('pc-title');
-  const pcGoal     = document.getElementById('pc-goal');
-  const pcScrs     = document.getElementById('pc-screens');
-  const pcTotal    = document.getElementById('pc-total');
-  const pcTotalLbl = document.getElementById('pc-total-label');
-  const pcNote     = document.getElementById('pc-note');
-
-  if (pcTitle) pcTitle.textContent = prospectName ? 'Campaign for ' + prospectName : 'Campaign proposal';
-  if (pcGoal)  pcGoal.textContent  = ST.goalLabel || '';
-
-  let total = 0;
+  let total=0;
   if (pcScrs) {
-    pcScrs.innerHTML = keys.map(id => {
-      const s = ST.cart[id];
-      const price = isCustom ? dailyRate(s) * ST.customDayCount : s.wkly_rate * ST.qty;
-      total += price;
-      const lbl = isCustom
-        ? '$' + (dailyRate(s) * ST.customDayCount).toLocaleString()
-        : '$' + s.wkly_rate.toLocaleString() + '/wk';
+    pcScrs.innerHTML=keys.map(id=>{
+      const s=ST.cart[id];
+      const price=isCustom?dailyRate(s)*ST.customDayCount:s.wkly_rate*ST.qty; total+=price;
+      const lbl=isCustom?'$'+(dailyRate(s)*ST.customDayCount).toLocaleString():'$'+s.wkly_rate.toLocaleString()+'/wk';
       return `<div class="pc-screen-row"><span class="pc-screen-icon">${s.icon}</span><span class="pc-screen-name">${s.name}</span><span class="pc-screen-price">${lbl}</span></div>`;
     }).join('');
   }
-
   if (isCustom) {
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const days = ST.customDays.map(d => dayNames[d]).join(' + ');
-    if (pcTotalLbl) pcTotalLbl.textContent = `Estimated total · ${days} · ${ST.customDayCount} days`;
-    if (pcTotal)    pcTotal.textContent    = '$' + total.toLocaleString() + ' total';
+    const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const days=ST.customDays.map(d=>dn[d]).join(' + ');
+    if (pcTotalLbl) pcTotalLbl.textContent=`Estimated total · ${days} · ${ST.customDayCount} days`;
+    if (pcTotal)    pcTotal.textContent='$'+total.toLocaleString()+' total';
   } else {
-    if (pcTotalLbl) pcTotalLbl.textContent = 'Estimated total';
-    if (pcTotal)    pcTotal.textContent    = '$' + total.toLocaleString() + ' total (' + ST.qty + ' wks)';
+    if (pcTotalLbl) pcTotalLbl.textContent='Estimated total';
+    if (pcTotal)    pcTotal.textContent='$'+total.toLocaleString()+' total ('+ST.qty+' wks)';
   }
-
   if (pcNote) {
-    if (note) { pcNote.textContent = '"' + note + '"' + (contactName ? ' — ' + contactName : ''); pcNote.style.display = 'block'; }
-    else { pcNote.style.display = 'none'; }
+    if (note) { pcNote.textContent='"'+note+'"'+(contactName?' — '+contactName:''); pcNote.style.display='block'; }
+    else pcNote.style.display='none';
   }
 
-  const payload = {
-    v: 1,
-    goal: ST.goalLabel,
-    inc: ST.inc,
-    qty: ST.qty,
-    budget: ST.budget,
-    schedMode: ST.schedMode,
-    customDays: ST.customDays,
-    customDayCount: ST.customDayCount,
-    schedStart: ST.schedStart,
-    schedEnd: ST.schedEnd,
-    screens: keys,
-    created: new Date().toISOString().slice(0, 10),
+  const payload={
+    v:1, goal:ST.goalLabel, inc:ST.inc, qty:ST.qty, budget:ST.budget,
+    schedMode:ST.schedMode, customDays:ST.customDays, customDayCount:ST.customDayCount,
+    schedStart:ST.schedStart, schedEnd:ST.schedEnd,
+    proximityTarget:ST.proximityTarget ? { name:ST.proximityTarget.name, lat:ST.proximityTarget.lat, lng:ST.proximityTarget.lng } : null,
+    screens:keys, created:new Date().toISOString().slice(0,10),
     note, contactName, prospectName,
   };
-
-  const encoded = btoa(JSON.stringify(payload));
-  const url = window.location.origin + '/book.html?proposal=' + encoded;
-  const input = document.getElementById('proposal-link');
-  if (input) input.value = url;
+  const url=window.location.origin+'/book.html?proposal='+btoa(JSON.stringify(payload));
+  const inp=document.getElementById('proposal-link'); if (inp) inp.value=url;
 }
 
 function copyLink() {
-  const input = document.getElementById('proposal-link');
-  if (!input) return;
-  navigator.clipboard.writeText(input.value).then(() => {
-    const btn = document.getElementById('btn-copy');
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2500);
-  }).catch(() => { input.select(); document.execCommand('copy'); });
+  const inp=document.getElementById('proposal-link'); if (!inp) return;
+  navigator.clipboard.writeText(inp.value).then(()=>{
+    const btn=document.getElementById('btn-copy');
+    btn.textContent='✓ Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy link'; btn.classList.remove('copied'); },2500);
+  }).catch(()=>{ inp.select(); document.execCommand('copy'); });
 }
 
 function startNew() {
-  Object.assign(ST, {
-    goalKey: null, goalLabel: null, subIntent: null,
-    budget: 2000, qty: 4, inc: 'weekly', cart: {},
-    schedMode: 'standard', customDays: [], customDayCount: 0,
-    schedStart: null, schedEnd: null,
-  });
-  document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('sel'));
-  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('on'));
-  ['insight-traffic','insight-walmart','insight-tech'].forEach(id => {
-    document.getElementById(id).style.display = 'none';
-  });
-  document.getElementById('budget-sched-wrap').style.display = 'none';
-  document.getElementById('f-prospect-name').value = '';
-  document.getElementById('f-contact-name').value  = '';
-  document.getElementById('f-note').value          = '';
-  document.getElementById('sched-start').value     = '';
-  document.getElementById('sched-end').value       = '';
-  document.getElementById('custom-day-count').textContent  = '—';
-  document.getElementById('sched-summary-text').textContent = '';
+  Object.assign(ST,{ goalKey:null, goalLabel:null, subIntent:null, budget:2000, qty:4, inc:'weekly', cart:{}, schedMode:'standard', customDays:[], customDayCount:0, schedStart:null, schedEnd:null, proximityTarget:null });
+  document.querySelectorAll('.goal-card').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('on'));
+  ['insight-traffic','insight-walmart','insight-tech'].forEach(id=>{ document.getElementById(id).style.display='none'; });
+  document.getElementById('budget-sched').style.display='none';
+  document.getElementById('f-prospect-name').value='';
+  document.getElementById('f-contact-name').value='';
+  document.getElementById('f-note').value='';
+  document.getElementById('sched-start').value='';
+  document.getElementById('sched-end').value='';
+  document.getElementById('custom-day-count').textContent='—';
+  document.getElementById('sched-summary-text').textContent='';
+  document.getElementById('poi-sel-bar').classList.remove('show');
+  const gcEl=document.getElementById('geocode-status'); if (gcEl) gcEl.textContent='';
+  const addrEl=document.getElementById('custom-addr'); if (addrEl) addrEl.value='';
+  clearProximityLayers();
+  if (window._wmtLayers) { window._wmtLayers.forEach(l=>map&&map.removeLayer(l)); window._wmtLayers=[]; }
   setSchedMode('standard');
   goTo(1);
 }
