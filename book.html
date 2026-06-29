@@ -1083,9 +1083,10 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 /* ── OPTIMIZER ── */
 .opt-panel {
   background: var(--white); border-top: 1px solid var(--border);
-  padding: 20px 24px; flex-shrink: 0;
+  padding: 20px 24px;
   border-bottom: 1px solid var(--border);
   display: none;
+  flex: 1; overflow-y: auto; min-height: 0;
 }
 .opt-panel.visible { display: block; animation: fadeUp 0.2s ease; }
 .opt-header {
@@ -1666,11 +1667,19 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   .f-chip { font-size: 10px; padding: 4px 10px; }
   .map-view-toggle { align-self: flex-end; }
 
-  /* Key fix: stack map and sidebar vertically on mobile */
+  /* On mobile: let the whole panel grow with content so the page scrolls */
+  #panel-2.active {
+    height: auto !important;
+    min-height: 100svh;
+    overflow: visible;
+  }
+
+  /* Key fix: stack map and sidebar vertically; both overflows visible so page scrolls */
   .s2-body {
     flex-direction: column !important;
-    overflow-y: auto !important;
-    overflow-x: hidden;
+    overflow: visible !important;
+    flex: unset !important;
+    height: auto !important;
   }
 
   /* Map gets a fixed height on mobile — enough to be useful */
@@ -1699,6 +1708,15 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     min-height: 0 !important;
     flex: unset !important;
     height: auto !important;
+    padding-bottom: 80px; /* clear the sticky footer so nothing hides behind it */
+  }
+
+  /* opt-panel on mobile: don't constrain with overflow-y, let s2-body page-scroll */
+  .opt-panel {
+    overflow-y: visible !important;
+    height: auto !important;
+    flex: unset !important;
+    min-height: unset !important;
   }
 
   /* Mobile screen list — remove nested scroll, let page scroll naturally */
@@ -1709,11 +1727,13 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     padding-top: 4px;
   }
 
-  /* Sticky footer on mobile — stays at bottom of viewport when sidebar is visible */
+  /* Footer fixed to viewport bottom on mobile — page scroll, not element scroll */
   .sb-footer {
-    position: sticky;
+    position: fixed;
     bottom: 0;
-    z-index: 10;
+    left: 0;
+    right: 0;
+    z-index: 100;
     box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
   }
 
