@@ -11,6 +11,7 @@
   --accent: #c8440a; --accent2: #1f3d2a; --accent-light: #fdf0ea;
   --accent2-light: #edf5ef; --border: #e2ddd6; --white: #fffef9;
   --bg: #f6f4ef; --ink: #1a1714; --ink2: #4a4540; --muted: #8c857e;
+  --pill-bg: #f0ede8;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
@@ -58,8 +59,8 @@ button { font-family: inherit; cursor: pointer; }
 .goal-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
 .goal-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
 
-/* Budget row */
-.budget-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+/* Budget / schedule section */
+.budget-top { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
 .field-wrap { display: flex; flex-direction: column; gap: 6px; }
 .field-label { font-size: 11px; font-weight: 600; color: var(--muted); }
 .field-input {
@@ -69,6 +70,48 @@ button { font-family: inherit; cursor: pointer; }
 }
 .field-input:focus { border-color: var(--accent2); }
 select.field-input { cursor: pointer; }
+
+/* Schedule mode toggle */
+.schedule-toggle { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.sched-tab {
+  padding: 7px 18px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--white); color: var(--ink2);
+  cursor: pointer; transition: all 0.15s;
+}
+.sched-tab.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+/* Standard duration + billing row */
+.std-sched-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+
+/* Custom schedule panel */
+.custom-schedule-wrap {
+  background: var(--pill-bg); border-radius: 10px;
+  padding: 18px 20px; margin-bottom: 20px; display: none;
+}
+.custom-schedule-wrap.visible { display: block; }
+.day-picker { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.day-btn {
+  width: 38px; height: 38px; border-radius: 50%; font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--border); background: var(--white); color: var(--ink2);
+  cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+}
+.day-btn.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.date-range-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.date-range-row .drr-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 130px; }
+.date-range-row label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.date-range-row input[type=date] {
+  width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
+  border-radius: 8px; font-family: inherit; font-size: 13px;
+  background: var(--white); color: var(--ink); outline: none;
+}
+.date-range-row input[type=date]:focus { border-color: var(--accent); }
+.day-count-box {
+  background: var(--white); border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 9px 14px; text-align: center; min-width: 110px; align-self: flex-end;
+}
+.day-count-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.day-count-val { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--accent); }
+.sched-summary { margin-top: 10px; font-size: 12px; color: var(--accent); font-weight: 600; min-height: 18px; }
 
 .btn-next {
   padding: 14px 32px; background: var(--accent2); color: #fff; border: none;
@@ -130,6 +173,7 @@ select.field-input { cursor: pointer; }
 .ct-rm:hover { color: #dc2626; }
 .cart-total { padding: 12px 16px; border-top: 2px solid var(--border); flex-shrink: 0; }
 .ct-total-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
+.ct-total-label { color: var(--ink2); }
 .ct-total-val { color: var(--accent); font-family: 'Fraunces', serif; }
 .btn-cart-next {
   width: 100%; margin-top: 12px; padding: 12px; background: var(--accent2); color: #fff;
@@ -190,7 +234,8 @@ textarea.field-input { resize: vertical; min-height: 100px; }
 @media (max-width: 768px) {
   .p2-layout { flex-direction: column; height: auto; }
   .p2-right { width: 100%; border-left: none; border-top: 1.5px solid var(--border); }
-  .budget-row { grid-template-columns: 1fr 1fr; }
+  .budget-top { grid-template-columns: 1fr; }
+  .std-sched-row { grid-template-columns: 1fr 1fr; }
   .steps { display: none; }
 }
 </style>
@@ -227,7 +272,7 @@ textarea.field-input { resize: vertical; min-height: 100px; }
         <div class="goal-name">Drive foot traffic</div>
         <div class="goal-desc">Reach commuters and shoppers near your location</div>
       </div>
-      <div class="goal-card" onclick="selectGoal(this,'Reach the NWA Tech & Startup Scene')">
+      <div class="goal-card" onclick="selectGoal(this,'Reach the NWA Tech &amp; Startup Scene')">
         <div class="goal-icon">💡</div>
         <div class="goal-name">Tech &amp; startup reach</div>
         <div class="goal-desc">Hit engineers, founders, and professionals across NWA</div>
@@ -240,10 +285,12 @@ textarea.field-input { resize: vertical; min-height: 100px; }
     </div>
 
     <div class="section-label">Budget &amp; schedule</div>
-    <div class="budget-row">
+
+    <!-- Weekly budget -->
+    <div class="budget-top">
       <div class="field-wrap">
         <div class="field-label">Weekly budget</div>
-        <select class="field-input" id="f-budget" onchange="ST.budget=parseInt(this.value)">
+        <select class="field-input" id="f-budget" onchange="ST.budget=parseInt(this.value);renderCart()">
           <option value="1000">$1,000 / wk</option>
           <option value="2000" selected>$2,000 / wk</option>
           <option value="3500">$3,500 / wk</option>
@@ -251,23 +298,68 @@ textarea.field-input { resize: vertical; min-height: 100px; }
           <option value="10000">$10,000 / wk</option>
         </select>
       </div>
-      <div class="field-wrap">
-        <div class="field-label">Duration</div>
-        <select class="field-input" id="f-qty" onchange="ST.qty=parseInt(this.value)">
-          <option value="2">2 weeks</option>
-          <option value="4" selected>4 weeks</option>
-          <option value="8">8 weeks</option>
-          <option value="13">13 weeks</option>
-          <option value="26">26 weeks</option>
-        </select>
+    </div>
+
+    <!-- Schedule mode tabs -->
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px">Campaign duration</div>
+    <div class="schedule-toggle">
+      <div class="sched-tab on" id="sched-standard" onclick="setSchedMode('standard')">Standard flight</div>
+      <div class="sched-tab" id="sched-custom" onclick="setSchedMode('custom')">Custom days ✦</div>
+    </div>
+
+    <!-- Standard: duration + billing -->
+    <div id="standard-sched-wrap">
+      <div class="std-sched-row">
+        <div class="field-wrap">
+          <div class="field-label">Duration</div>
+          <select class="field-input" id="f-qty" onchange="ST.qty=parseInt(this.value);renderCart()">
+            <option value="2">2 weeks</option>
+            <option value="4" selected>4 weeks</option>
+            <option value="8">8 weeks</option>
+            <option value="13">13 weeks</option>
+            <option value="26">26 weeks</option>
+          </select>
+        </div>
+        <div class="field-wrap">
+          <div class="field-label">Billing</div>
+          <select class="field-input" id="f-inc" onchange="ST.inc=this.value">
+            <option value="weekly" selected>Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
       </div>
-      <div class="field-wrap">
-        <div class="field-label">Billing</div>
-        <select class="field-input" id="f-inc" onchange="ST.inc=this.value">
-          <option value="weekly" selected>Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
+    </div>
+
+    <!-- Custom: day picker + date range -->
+    <div class="custom-schedule-wrap" id="custom-sched-wrap">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">
+        Choose which days of the week to run — ideal for promotions tied to specific days (e.g. every Monday, or Mon + Fri for a weekly special).
       </div>
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Run on these days</div>
+      <div class="day-picker">
+        <div class="day-btn" data-day="0" onclick="toggleDay(this)">Su</div>
+        <div class="day-btn" data-day="1" onclick="toggleDay(this)">Mo</div>
+        <div class="day-btn" data-day="2" onclick="toggleDay(this)">Tu</div>
+        <div class="day-btn" data-day="3" onclick="toggleDay(this)">We</div>
+        <div class="day-btn" data-day="4" onclick="toggleDay(this)">Th</div>
+        <div class="day-btn" data-day="5" onclick="toggleDay(this)">Fr</div>
+        <div class="day-btn" data-day="6" onclick="toggleDay(this)">Sa</div>
+      </div>
+      <div class="date-range-row">
+        <div class="drr-group">
+          <label>Start date</label>
+          <input type="date" id="sched-start" onchange="updateCustomSched()">
+        </div>
+        <div class="drr-group">
+          <label>End date</label>
+          <input type="date" id="sched-end" onchange="updateCustomSched()">
+        </div>
+        <div class="day-count-box">
+          <div class="day-count-label">Total days</div>
+          <div class="day-count-val" id="custom-day-count">—</div>
+        </div>
+      </div>
+      <div class="sched-summary" id="sched-summary-text"></div>
     </div>
 
     <button class="btn-next" id="btn-next-1" disabled onclick="goTo(2)">Choose screens →</button>
@@ -292,7 +384,7 @@ textarea.field-input { resize: vertical; min-height: 100px; }
       </div>
       <div class="cart-total">
         <div class="ct-total-row">
-          <span>Total / week</span>
+          <span class="ct-total-label" id="cart-total-label">Total / week</span>
           <span class="ct-total-val" id="cart-total-val">$0</span>
         </div>
         <button class="btn-cart-next" id="btn-next-2" disabled onclick="goTo(3)">Add prospect details →</button>
@@ -339,7 +431,7 @@ textarea.field-input { resize: vertical; min-height: 100px; }
       <div class="pc-goal" id="pc-goal"></div>
       <div class="pc-screens" id="pc-screens"></div>
       <div class="pc-total-row">
-        <span>Estimated total</span>
+        <span id="pc-total-label">Estimated total</span>
         <span class="pc-total-val" id="pc-total">$0</span>
       </div>
       <div class="pc-note" id="pc-note" style="display:none"></div>
@@ -360,9 +452,22 @@ textarea.field-input { resize: vertical; min-height: 100px; }
 </div>
 
 <script>
-const ST = { goal: null, budget: 2000, qty: 4, inc: 'weekly', cart: {} };
+const ST = {
+  goal: null,
+  budget: 2000,
+  qty: 4,
+  inc: 'weekly',
+  cart: {},
+  schedMode: 'standard',
+  customDays: [],
+  customDayCount: 0,
+  schedStart: null,
+  schedEnd: null,
+};
 
-// Curated NWA inventory — covers all screen types used in book.html proposals
+const DAILY_PREMIUM = 1.25; // daily rate = (wkly_rate / 7) * premium
+
+// Curated NWA inventory
 const INV = [
   { id:'bill-i49-b',  icon:'🪧', name:'I-49 & MLK Billboard South', type:'billboard', area:'Fayetteville', weekly_imp:38000, cpm:4.20, min_spend:500, wkly_rate:1590 },
   { id:'bill-i49-n',  icon:'🪧', name:'I-49 & Joyce Blvd Billboard North', type:'billboard', area:'Fayetteville', weekly_imp:42000, cpm:4.10, min_spend:500, wkly_rate:1720 },
@@ -381,10 +486,88 @@ const INV = [
   { id:'hlt-mercy',   icon:'🏥', name:'Mercy Hospital NWA Lobby', type:'healthcare', area:'Rogers', weekly_imp:9600, cpm:10.20, min_spend:500, wkly_rate:980 },
 ];
 
+function dailyRate(s) {
+  return Math.round((s.wkly_rate / 7) * DAILY_PREMIUM);
+}
+
+function screenTotal(s) {
+  if (ST.schedMode === 'custom' && ST.customDayCount > 0) {
+    return dailyRate(s) * ST.customDayCount;
+  }
+  return s.wkly_rate * ST.qty;
+}
+
+function screenLabel(s) {
+  if (ST.schedMode === 'custom' && ST.customDayCount > 0) {
+    return '$' + dailyRate(s).toLocaleString() + '/day × ' + ST.customDayCount + ' days';
+  }
+  return '$' + s.wkly_rate.toLocaleString() + '/wk × ' + ST.qty + ' wks';
+}
+
 function fmtImpr(n) {
   return n >= 1000 ? Math.round(n/1000) + 'K wkly impr' : n + ' wkly impr';
 }
 
+/* ── SCHEDULE MODE ── */
+function setSchedMode(mode) {
+  ST.schedMode = mode;
+  document.getElementById('sched-standard').classList.toggle('on', mode === 'standard');
+  document.getElementById('sched-custom').classList.toggle('on', mode === 'custom');
+  document.getElementById('standard-sched-wrap').style.display = mode === 'standard' ? '' : 'none';
+  document.getElementById('custom-sched-wrap').classList.toggle('visible', mode === 'custom');
+  updateCustomSched();
+  renderCart();
+}
+
+function toggleDay(el) {
+  el.classList.toggle('on');
+  ST.customDays = [...document.querySelectorAll('.day-btn.on')].map(b => parseInt(b.dataset.day));
+  updateCustomSched();
+}
+
+function updateCustomSched() {
+  const start = document.getElementById('sched-start')?.value;
+  const end   = document.getElementById('sched-end')?.value;
+  ST.schedStart = start || null;
+  ST.schedEnd   = end   || null;
+
+  const countEl   = document.getElementById('custom-day-count');
+  const summaryEl = document.getElementById('sched-summary-text');
+
+  if (!start || !end || ST.customDays.length === 0) {
+    if (countEl) countEl.textContent = '—';
+    if (summaryEl) summaryEl.textContent = '';
+    ST.customDayCount = 0;
+    renderCart();
+    return;
+  }
+
+  const s = new Date(start + 'T00:00:00');
+  const e = new Date(end   + 'T00:00:00');
+  if (e < s) {
+    if (summaryEl) summaryEl.textContent = 'End date must be after start date';
+    return;
+  }
+
+  let count = 0;
+  const cur = new Date(s);
+  while (cur <= e) {
+    if (ST.customDays.includes(cur.getDay())) count++;
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  ST.customDayCount = count;
+  if (countEl) countEl.textContent = count;
+
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const selected = ST.customDays.map(d => dayNames[d]).join(' + ');
+  const weeks = Math.ceil((e - s) / (7 * 24 * 60 * 60 * 1000));
+  if (summaryEl) summaryEl.textContent = `${selected} · ${weeks} week window · ${count} total ad days`;
+
+  renderCart();
+}
+
+/* ── SCREENS ── */
 function renderScreens() {
   const grid = document.getElementById('screen-grid');
   grid.innerHTML = '';
@@ -425,13 +608,18 @@ function toggleScreen(id) {
 
 function renderCart() {
   const keys = Object.keys(ST.cart);
-  const el = document.getElementById('cart-items');
-  const sub = document.getElementById('cart-sub');
-  const totalEl = document.getElementById('cart-total-val');
-  const btn = document.getElementById('btn-next-2');
+  const el       = document.getElementById('cart-items');
+  const sub      = document.getElementById('cart-sub');
+  const totalEl  = document.getElementById('cart-total-val');
+  const labelEl  = document.getElementById('cart-total-label');
+  const btn      = document.getElementById('btn-next-2');
+
+  // Update total label based on mode
+  const isCustom = ST.schedMode === 'custom' && ST.customDayCount > 0;
+  if (labelEl) labelEl.textContent = isCustom ? 'Custom total' : 'Total / week';
 
   if (!keys.length) {
-    el.innerHTML = '<div class="cart-empty"><span>🛒</span>Add screens from the left to build your proposal.</div>';
+    if (el) el.innerHTML = '<div class="cart-empty"><span>🛒</span>Add screens from the left to build your proposal.</div>';
     if (sub) sub.textContent = 'No screens added yet';
     if (totalEl) totalEl.textContent = '$0';
     if (btn) btn.disabled = true;
@@ -439,18 +627,24 @@ function renderCart() {
   }
 
   let total = 0;
-  el.innerHTML = keys.map(id => {
-    const s = ST.cart[id];
-    total += s.wkly_rate;
-    return `<div class="ct-row">
-      <div class="ct-icon">${s.icon}</div>
-      <div class="ct-info"><div class="ct-name">${s.name}</div><div class="ct-area">${s.area}</div></div>
-      <div class="ct-price">$${s.wkly_rate.toLocaleString()}</div>
-      <button class="ct-rm" onclick="removeScreen('${id}')">×</button>
-    </div>`;
-  }).join('');
+  if (el) {
+    el.innerHTML = keys.map(id => {
+      const s = ST.cart[id];
+      const price = isCustom ? dailyRate(s) * ST.customDayCount : s.wkly_rate;
+      total += price;
+      const priceLabel = isCustom
+        ? '$' + (dailyRate(s) * ST.customDayCount).toLocaleString()
+        : '$' + s.wkly_rate.toLocaleString() + '/wk';
+      return `<div class="ct-row">
+        <div class="ct-icon">${s.icon}</div>
+        <div class="ct-info"><div class="ct-name">${s.name}</div><div class="ct-area">${s.area}</div></div>
+        <div class="ct-price">${priceLabel}</div>
+        <button class="ct-rm" onclick="removeScreen('${id}')">×</button>
+      </div>`;
+    }).join('');
+  }
 
-  if (sub) sub.textContent = keys.length + ' screen' + (keys.length !== 1 ? 's' : '') + ' · $' + total.toLocaleString() + '/wk';
+  if (sub) sub.textContent = keys.length + ' screen' + (keys.length !== 1 ? 's' : '') + ' · $' + total.toLocaleString() + (isCustom ? '' : '/wk');
   if (totalEl) totalEl.textContent = '$' + total.toLocaleString();
   if (btn) btn.disabled = false;
 }
@@ -489,22 +683,25 @@ function goTo(n) {
   if (n === 4) generateLink();
 }
 
-function updatePreview() { /* live preview update happens on goTo(4) */ }
+function updatePreview() { /* updates happen on goTo(4) */ }
 
 function generateLink() {
   const keys = Object.keys(ST.cart);
   if (!keys.length) return;
 
   const prospectName = document.getElementById('f-prospect-name')?.value || '';
-  const contactName  = document.getElementById('f-contact-name')?.value || '';
-  const note         = document.getElementById('f-note')?.value || '';
+  const contactName  = document.getElementById('f-contact-name')?.value  || '';
+  const note         = document.getElementById('f-note')?.value          || '';
+
+  const isCustom = ST.schedMode === 'custom' && ST.customDayCount > 0;
 
   // Preview card
-  const pcTitle = document.getElementById('pc-title');
-  const pcGoal  = document.getElementById('pc-goal');
-  const pcScrs  = document.getElementById('pc-screens');
-  const pcTotal = document.getElementById('pc-total');
-  const pcNote  = document.getElementById('pc-note');
+  const pcTitle    = document.getElementById('pc-title');
+  const pcGoal     = document.getElementById('pc-goal');
+  const pcScrs     = document.getElementById('pc-screens');
+  const pcTotal    = document.getElementById('pc-total');
+  const pcTotalLbl = document.getElementById('pc-total-label');
+  const pcNote     = document.getElementById('pc-note');
 
   if (pcTitle) pcTitle.textContent = prospectName ? 'Campaign for ' + prospectName : 'Campaign proposal';
   if (pcGoal)  pcGoal.textContent  = ST.goal || '';
@@ -513,11 +710,25 @@ function generateLink() {
   if (pcScrs) {
     pcScrs.innerHTML = keys.map(id => {
       const s = ST.cart[id];
-      total += s.wkly_rate;
-      return `<div class="pc-screen-row"><span class="pc-screen-icon">${s.icon}</span><span class="pc-screen-name">${s.name}</span><span class="pc-screen-price">$${s.wkly_rate.toLocaleString()}/wk</span></div>`;
+      const price = isCustom ? dailyRate(s) * ST.customDayCount : s.wkly_rate * ST.qty;
+      total += price;
+      const lbl = isCustom
+        ? '$' + (dailyRate(s) * ST.customDayCount).toLocaleString()
+        : '$' + s.wkly_rate.toLocaleString() + '/wk';
+      return `<div class="pc-screen-row"><span class="pc-screen-icon">${s.icon}</span><span class="pc-screen-name">${s.name}</span><span class="pc-screen-price">${lbl}</span></div>`;
     }).join('');
   }
-  if (pcTotal) pcTotal.textContent = '$' + (total * ST.qty).toLocaleString() + ' total (' + ST.qty + ' wks)';
+
+  if (isCustom) {
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const days = ST.customDays.map(d => dayNames[d]).join(' + ');
+    if (pcTotalLbl) pcTotalLbl.textContent = 'Estimated total · ' + days + ' · ' + ST.customDayCount + ' days';
+    if (pcTotal) pcTotal.textContent = '$' + total.toLocaleString() + ' total';
+  } else {
+    if (pcTotalLbl) pcTotalLbl.textContent = 'Estimated total';
+    if (pcTotal) pcTotal.textContent = '$' + total.toLocaleString() + ' total (' + ST.qty + ' wks)';
+  }
+
   if (pcNote) {
     if (note) { pcNote.textContent = '"' + note + '"' + (contactName ? ' — ' + contactName : ''); pcNote.style.display = 'block'; }
     else { pcNote.style.display = 'none'; }
@@ -530,7 +741,11 @@ function generateLink() {
     inc: ST.inc,
     qty: ST.qty,
     budget: ST.budget,
-    schedMode: 'standard',
+    schedMode: ST.schedMode,
+    customDays: ST.customDays,
+    customDayCount: ST.customDayCount,
+    schedStart: ST.schedStart,
+    schedEnd: ST.schedEnd,
     screens: keys,
     created: new Date().toISOString().slice(0, 10),
     note, contactName, prospectName,
@@ -557,12 +772,28 @@ function copyLink() {
 }
 
 function startNew() {
-  ST.goal = null; ST.budget = 2000; ST.qty = 4; ST.inc = 'weekly'; ST.cart = {};
+  ST.goal = null;
+  ST.budget = 2000;
+  ST.qty = 4;
+  ST.inc = 'weekly';
+  ST.cart = {};
+  ST.schedMode = 'standard';
+  ST.customDays = [];
+  ST.customDayCount = 0;
+  ST.schedStart = null;
+  ST.schedEnd = null;
+
   document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('sel'));
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('on'));
   document.getElementById('btn-next-1').disabled = true;
   document.getElementById('f-prospect-name').value = '';
   document.getElementById('f-contact-name').value = '';
   document.getElementById('f-note').value = '';
+  document.getElementById('sched-start').value = '';
+  document.getElementById('sched-end').value = '';
+  document.getElementById('custom-day-count').textContent = '—';
+  document.getElementById('sched-summary-text').textContent = '';
+  setSchedMode('standard');
   goTo(1);
 }
 </script>
