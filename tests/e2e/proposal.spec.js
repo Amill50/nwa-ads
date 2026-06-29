@@ -9,9 +9,19 @@ async function checkout(page) {
   await page.waitForLoadState('domcontentloaded');
   await page.locator('.goal-card').first().click();
   await page.locator('.btn-next').first().click();
-  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 15000 });
+  // On mobile sidebar is hidden in Map view — switch to List view first
+  const sidebar = page.locator('.s2-side');
+  const sidebarVisible = await sidebar.isVisible({ timeout: 12000 }).catch(() => false);
+  if (!sidebarVisible) { await page.locator('#vt-list').click(); }
+  // Navigate from Recommendations state to Browse
+  await expect(page.locator('.btn-browse-own')).toBeVisible({ timeout: 5000 });
+  await page.locator('.btn-browse-own').click();
+  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 5000 });
   await page.locator('.sc-add-btn').first().click();
+  // btn-s2 now shows Cart Review state
   await page.locator('#btn-s2').click();
+  // Continue from cart review to creative upload modal
+  await page.getByText(/Continue to creative upload/).click();
   await expect(page.locator('.summary-modal-title')).toBeVisible({ timeout: 8000 });
   await page.getByText(/Looks good/).click();
   await page.locator('#btn-s3-continue').click();
