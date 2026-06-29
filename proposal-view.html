@@ -493,8 +493,8 @@ function renderPage(d) {
   const totalWklyImpr = screens.reduce((a, s) => a + (s.wkly_impr || 0), 0);
   const imprStr = totalWklyImpr >= 1000 ? Math.round(totalWklyImpr / 1000) + 'K+' : totalWklyImpr.toLocaleString();
   const subUnit = screens.reduce((a, s) => a + (s.unitRate || 0), 0);
-  const disc    = screens.length >= 3 ? Math.round(subUnit * 0.1) : 0;
-  const grand   = Math.round((subUnit - disc) * qty);
+  const disc    = 0;
+  const grand   = Math.round(subUnit * qty);
 
   document.title = d.company ? `Proposal for ${d.company} · NWA Ads` : 'Campaign Proposal · NWA Ads';
 
@@ -568,11 +568,6 @@ function renderPage(d) {
           <span>Subtotal</span>
           <span>${fmtMoney(subUnit * qty)}</span>
         </div>
-        ${disc > 0 ? `
-        <div class="pricing-line green">
-          <span>Multi-screen discount (10%)</span>
-          <span>−${fmtMoney(disc * qty)}</span>
-        </div>` : ''}
         <div class="pricing-grand">
           <span class="pricing-grand-lbl">
             Estimated total
