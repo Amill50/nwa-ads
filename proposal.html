@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWA Ads — Build a Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #c8440a; --accent2: #1f3d2a; --accent-light: #fdf0ea;
+  --accent2-light: #edf5ef; --border: #e2ddd6; --white: #fffef9;
+  --bg: #f6f4ef; --ink: #1a1714; --ink2: #4a4540; --muted: #8c857e;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+button { font-family: inherit; cursor: pointer; }
+
+/* NAV */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px; background: var(--accent2);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-text { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--white); }
+.logo-text em { color: #f0905a; font-style: normal; }
+.nav-badge {
+  font-size: 11px; font-weight: 600; color: #f0905a; border: 1px solid rgba(240,144,90,0.4);
+  padding: 2px 8px; border-radius: 10px;
+}
+.steps { display: flex; align-items: center; gap: 0; }
+.step-item { display: flex; align-items: center; gap: 8px; padding: 6px 16px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.45); cursor: pointer; }
+.step-item.active { color: var(--white); }
+.step-item.done { color: rgba(255,255,255,0.7); }
+.step-dot { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.step-item.done .step-dot { background: rgba(255,255,255,0.2); }
+.step-item.active .step-dot { background: #f0905a; border-color: #f0905a; color: #fff; }
+.step-sep { width: 24px; height: 1px; background: rgba(255,255,255,0.15); }
+
+/* PANELS */
+.panel { display: none; min-height: calc(100vh - 56px); }
+.panel.active { display: flex; flex-direction: column; }
+
+/* STEP 1 */
+.p1-wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px; width: 100%; }
+.p1-head { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+.p1-sub { font-size: 15px; color: var(--ink2); margin-bottom: 36px; }
+.section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 14px; }
+.goal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 36px; }
+.goal-card {
+  padding: 20px 18px; background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 12px; cursor: pointer; transition: all 0.15s; text-align: left;
+}
+.goal-card:hover { border-color: var(--accent2); }
+.goal-card.sel { border-color: var(--accent2); background: var(--accent2-light); }
+.goal-icon { font-size: 24px; margin-bottom: 10px; }
+.goal-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.goal-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+/* Budget row */
+.budget-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+.field-wrap { display: flex; flex-direction: column; gap: 6px; }
+.field-label { font-size: 11px; font-weight: 600; color: var(--muted); }
+.field-input {
+  padding: 10px 14px; background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 14px; font-family: 'Instrument Sans', sans-serif;
+  color: var(--ink); outline: none; transition: border-color 0.15s;
+}
+.field-input:focus { border-color: var(--accent2); }
+select.field-input { cursor: pointer; }
+
+.btn-next {
+  padding: 14px 32px; background: var(--accent2); color: #fff; border: none;
+  border-radius: 9px; font-size: 15px; font-weight: 700; font-family: 'Fraunces', serif;
+  transition: background 0.15s;
+}
+.btn-next:hover { background: #163320; }
+.btn-next:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+/* STEP 2 */
+.p2-layout { display: flex; height: calc(100vh - 56px); }
+.p2-left { flex: 1; overflow-y: auto; padding: 24px; min-width: 0; }
+.p2-right { width: 340px; border-left: 1.5px solid var(--border); background: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
+.p2-head { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.p2-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.screen-grid { display: flex; flex-direction: column; gap: 8px; }
+
+/* Screen card */
+.sc {
+  display: grid; grid-template-columns: 36px 1fr auto;
+  align-items: center; gap: 10px; padding: 11px 13px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 11px; transition: border-color .12s, background .12s; cursor: pointer;
+}
+.sc:hover { border-color: var(--ink2); }
+.sc.added { background: #f0fdf4; border-color: #86efac; }
+.sc-ico { font-size: 20px; text-align: center; }
+.sc-body { min-width: 0; }
+.sc-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.sc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+.sc-price { font-size: 14px; font-weight: 600; color: var(--accent); font-family: 'Fraunces', serif; }
+.sc-unit { font-size: 10px; color: var(--muted); font-weight: 400; }
+.sc-add {
+  border: 1.5px solid var(--accent); color: var(--accent); background: transparent;
+  border-radius: 14px; padding: 4px 11px; font-size: 11px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; transition: all .12s;
+}
+.sc-add:hover { background: var(--accent-light); }
+.sc-add.added { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+
+/* Cart panel */
+.cart-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.cart-head-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; }
+.cart-head-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.cart-items { flex: 1; overflow-y: auto; padding: 8px 0; }
+.cart-empty { padding: 24px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+.cart-empty span { display: block; font-size: 28px; margin-bottom: 8px; }
+.ct-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.ct-icon { font-size: 18px; flex-shrink: 0; }
+.ct-info { flex: 1; min-width: 0; }
+.ct-name { font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ct-area { font-size: 11px; color: var(--muted); }
+.ct-price { font-size: 13px; font-weight: 700; color: var(--accent); font-family: 'Fraunces', serif; flex-shrink: 0; }
+.ct-rm { background: none; border: none; color: var(--muted); font-size: 16px; padding: 2px 4px; cursor: pointer; flex-shrink: 0; }
+.ct-rm:hover { color: #dc2626; }
+.cart-total { padding: 12px 16px; border-top: 2px solid var(--border); flex-shrink: 0; }
+.ct-total-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
+.ct-total-val { color: var(--accent); font-family: 'Fraunces', serif; }
+.btn-cart-next {
+  width: 100%; margin-top: 12px; padding: 12px; background: var(--accent2); color: #fff;
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+  font-family: 'Fraunces', serif; transition: background 0.15s;
+}
+.btn-cart-next:hover { background: #163320; }
+.btn-cart-next:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+/* STEP 3 */
+.p3-wrap { max-width: 640px; margin: 0 auto; padding: 48px 24px; width: 100%; }
+.p3-head { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.p3-sub { font-size: 14px; color: var(--ink2); margin-bottom: 32px; }
+.field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+.field-group label { font-size: 12px; font-weight: 700; color: var(--ink2); }
+textarea.field-input { resize: vertical; min-height: 100px; }
+
+/* STEP 4 */
+.p4-wrap { max-width: 640px; margin: 0 auto; padding: 48px 24px; width: 100%; }
+.p4-head { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.p4-sub { font-size: 14px; color: var(--ink2); margin-bottom: 32px; }
+.proposal-card {
+  background: var(--white); border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 24px; margin-bottom: 24px;
+}
+.pc-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+.pc-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.pc-goal { font-size: 13px; color: var(--ink2); margin-bottom: 16px; }
+.pc-screens { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.pc-screen-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.pc-screen-icon { font-size: 16px; }
+.pc-screen-name { flex: 1; }
+.pc-screen-price { color: var(--accent); font-weight: 600; font-family: 'Fraunces', serif; }
+.pc-total-row { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); font-weight: 700; }
+.pc-total-val { color: var(--accent); font-family: 'Fraunces', serif; }
+.pc-note { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink2); font-style: italic; line-height: 1.6; }
+
+.link-wrap { display: flex; gap: 8px; margin-bottom: 24px; }
+.link-input {
+  flex: 1; padding: 11px 14px; background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 12px; font-family: 'Instrument Sans', sans-serif;
+  color: var(--ink2); outline: none;
+}
+.btn-copy {
+  padding: 10px 20px; background: var(--accent2); color: #fff; border: none;
+  border-radius: 8px; font-size: 13px; font-weight: 600; white-space: nowrap; transition: all 0.15s;
+}
+.btn-copy:hover { background: #163320; }
+.btn-copy.copied { background: #15803d; }
+.p4-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-outline {
+  padding: 12px 20px; background: none; border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--ink2); transition: all 0.15s;
+}
+.btn-outline:hover { border-color: var(--accent2); color: var(--accent2); }
+.validity-note { font-size: 11px; color: var(--muted); margin-top: 10px; }
+
+@media (max-width: 768px) {
+  .p2-layout { flex-direction: column; height: auto; }
+  .p2-right { width: 100%; border-left: none; border-top: 1.5px solid var(--border); }
+  .budget-row { grid-template-columns: 1fr 1fr; }
+  .steps { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/book.html" class="logo">
+    <svg width="26" height="26" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="14" y1="26" x2="50" y2="26" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/><line x1="14" y1="32" x2="50" y2="32" stroke="#f0905a" stroke-width="3.5" stroke-linecap="round"/><line x1="14" y1="38" x2="50" y2="38" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/></svg>
+    <span class="logo-text">NWA <em>Ads</em></span>
+  </a>
+  <div class="steps">
+    <div class="step-item active" id="nav-s1"><div class="step-dot">1</div> Goal</div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="nav-s2"><div class="step-dot">2</div> Screens</div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="nav-s3"><div class="step-dot">3</div> Details</div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="nav-s4"><div class="step-dot">4</div> Send link</div>
+  </div>
+  <div class="nav-badge">Proposal builder</div>
+</nav>
+
+<!-- ── STEP 1: Goal & Budget ── -->
+<div class="panel active" id="panel-1">
+  <div class="p1-wrap">
+    <div class="p1-head">Build a campaign proposal</div>
+    <div class="p1-sub">Choose a goal, set a budget, and pick screens — we'll generate a shareable link for your prospect.</div>
+
+    <div class="section-label">Campaign goal</div>
+    <div class="goal-grid">
+      <div class="goal-card" onclick="selectGoal(this,'Drive customers through your door')">
+        <div class="goal-icon">🏪</div>
+        <div class="goal-name">Drive foot traffic</div>
+        <div class="goal-desc">Reach commuters and shoppers near your location</div>
+      </div>
+      <div class="goal-card" onclick="selectGoal(this,'Reach the NWA Tech & Startup Scene')">
+        <div class="goal-icon">💡</div>
+        <div class="goal-name">Tech &amp; startup reach</div>
+        <div class="goal-desc">Hit engineers, founders, and professionals across NWA</div>
+      </div>
+      <div class="goal-card" onclick="selectGoal(this,&quot;Reach Walmart &amp; Sam&#39;s Club buyers&quot;)">
+        <div class="goal-icon">🎯</div>
+        <div class="goal-name">Walmart buyer reach</div>
+        <div class="goal-desc">Screens near Walmart HQ for vendor brand awareness</div>
+      </div>
+    </div>
+
+    <div class="section-label">Budget &amp; schedule</div>
+    <div class="budget-row">
+      <div class="field-wrap">
+        <div class="field-label">Weekly budget</div>
+        <select class="field-input" id="f-budget" onchange="ST.budget=parseInt(this.value)">
+          <option value="1000">$1,000 / wk</option>
+          <option value="2000" selected>$2,000 / wk</option>
+          <option value="3500">$3,500 / wk</option>
+          <option value="5000">$5,000 / wk</option>
+          <option value="10000">$10,000 / wk</option>
+        </select>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">Duration</div>
+        <select class="field-input" id="f-qty" onchange="ST.qty=parseInt(this.value)">
+          <option value="2">2 weeks</option>
+          <option value="4" selected>4 weeks</option>
+          <option value="8">8 weeks</option>
+          <option value="13">13 weeks</option>
+          <option value="26">26 weeks</option>
+        </select>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">Billing</div>
+        <select class="field-input" id="f-inc" onchange="ST.inc=this.value">
+          <option value="weekly" selected>Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-next" id="btn-next-1" disabled onclick="goTo(2)">Choose screens →</button>
+  </div>
+</div>
+
+<!-- ── STEP 2: Pick Screens ── -->
+<div class="panel" id="panel-2">
+  <div class="p2-layout">
+    <div class="p2-left">
+      <div class="p2-head">Available screens</div>
+      <div class="p2-sub" id="p2-sub-text">Select the screens to include in this proposal</div>
+      <div class="screen-grid" id="screen-grid"></div>
+    </div>
+    <div class="p2-right">
+      <div class="cart-head">
+        <div class="cart-head-title">Campaign screens</div>
+        <div class="cart-head-sub" id="cart-sub">No screens added yet</div>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <div class="cart-empty"><span>🛒</span>Add screens from the left to build your proposal.</div>
+      </div>
+      <div class="cart-total">
+        <div class="ct-total-row">
+          <span>Total / week</span>
+          <span class="ct-total-val" id="cart-total-val">$0</span>
+        </div>
+        <button class="btn-cart-next" id="btn-next-2" disabled onclick="goTo(3)">Add prospect details →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 3: Prospect Details ── -->
+<div class="panel" id="panel-3">
+  <div class="p3-wrap">
+    <div class="p3-head">Prospect details</div>
+    <div class="p3-sub">These details will personalize your proposal. Only the note will appear to the prospect.</div>
+
+    <div class="field-group">
+      <label for="f-prospect-name">Prospect / company name</label>
+      <input type="text" class="field-input" id="f-prospect-name" placeholder="e.g. Acme Coffee Co." oninput="updatePreview()">
+    </div>
+    <div class="field-group">
+      <label for="f-contact-name">Your name</label>
+      <input type="text" class="field-input" id="f-contact-name" placeholder="e.g. Sarah from NWA Ads" oninput="updatePreview()">
+    </div>
+    <div class="field-group">
+      <label for="f-note">Personal note to prospect <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <textarea class="field-input" id="f-note" placeholder="e.g. Based on your target audience near Dickson Street, I've selected screens with the highest reach in your area." oninput="updatePreview()"></textarea>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button class="btn-outline" onclick="goTo(2)">← Back</button>
+      <button class="btn-next" onclick="goTo(4)">Generate proposal link →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 4: Generated Link ── -->
+<div class="panel" id="panel-4">
+  <div class="p4-wrap">
+    <div class="p4-head">Your proposal is ready ✓</div>
+    <div class="p4-sub">Share this link with your prospect. It opens a pre-loaded campaign view in NWA Ads.</div>
+
+    <div class="proposal-card" id="preview-card">
+      <div class="pc-label">Campaign proposal</div>
+      <div class="pc-title" id="pc-title">Campaign for —</div>
+      <div class="pc-goal" id="pc-goal"></div>
+      <div class="pc-screens" id="pc-screens"></div>
+      <div class="pc-total-row">
+        <span>Estimated total</span>
+        <span class="pc-total-val" id="pc-total">$0</span>
+      </div>
+      <div class="pc-note" id="pc-note" style="display:none"></div>
+    </div>
+
+    <div class="link-wrap">
+      <input class="link-input" id="proposal-link" readonly placeholder="Generating link…">
+      <button class="btn-copy" id="btn-copy" onclick="copyLink()">Copy link</button>
+    </div>
+    <div class="validity-note">Link is valid for 7 days. Prospects can book directly from the link.</div>
+
+    <div class="p4-actions" style="margin-top:24px">
+      <button class="btn-outline" onclick="goTo(3)">← Edit details</button>
+      <button class="btn-outline" onclick="window.open(document.getElementById('proposal-link').value,'_blank')">Preview link →</button>
+      <button class="btn-next" onclick="startNew()">Build another proposal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ST = { goal: null, budget: 2000, qty: 4, inc: 'weekly', cart: {} };
+
+// Curated NWA inventory — covers all screen types used in book.html proposals
+const INV = [
+  { id:'bill-i49-b',  icon:'🪧', name:'I-49 & MLK Billboard South', type:'billboard', area:'Fayetteville', weekly_imp:38000, cpm:4.20, min_spend:500, wkly_rate:1590 },
+  { id:'bill-i49-n',  icon:'🪧', name:'I-49 & Joyce Blvd Billboard North', type:'billboard', area:'Fayetteville', weekly_imp:42000, cpm:4.10, min_spend:500, wkly_rate:1720 },
+  { id:'bill-walton', icon:'🪧', name:'SE Walton Blvd Billboard (Walmart Corridor)', type:'billboard', area:'Bentonville', weekly_imp:31000, cpm:5.10, min_spend:500, wkly_rate:1580 },
+  { id:'bill-bus',    icon:'🪧', name:'Rogers Business Loop Billboard', type:'billboard', area:'Rogers', weekly_imp:29000, cpm:4.50, min_spend:500, wkly_rate:1305 },
+  { id:'cin-malco-f', icon:'🎬', name:'Malco Razorback Cinema', type:'cinema', area:'Fayetteville', weekly_imp:9200, cpm:11.40, min_spend:500, wkly_rate:1050 },
+  { id:'cin-malco-r', icon:'🎬', name:'Malco Rogers Cinema', type:'cinema', area:'Rogers', weekly_imp:8800, cpm:11.70, min_spend:500, wkly_rate:1030 },
+  { id:'gas-murphy',  icon:'⛽', name:'Murphy Oil — Walmart Supercenter', type:'gasstation', area:'Bentonville', weekly_imp:19400, cpm:6.20, min_spend:500, wkly_rate:1200 },
+  { id:'gas-shell',   icon:'⛽', name:'Shell — I-49 at Wedington Dr', type:'gasstation', area:'Fayetteville', weekly_imp:21000, cpm:5.90, min_spend:500, wkly_rate:1240 },
+  { id:'air-xna',     icon:'✈️', name:'XNA Airport — Concourse A', type:'airport', area:'Bentonville', weekly_imp:14500, cpm:9.30, min_spend:1000, wkly_rate:1350 },
+  { id:'gym-golds',   icon:'🏋️', name:"Gold's Gym Fayetteville", type:'gym', area:'Fayetteville', weekly_imp:7800, cpm:9.00, min_spend:500, wkly_rate:700 },
+  { id:'gym-life',    icon:'🏋️', name:'Life Time Fitness Bentonville', type:'gym', area:'Bentonville', weekly_imp:8400, cpm:9.50, min_spend:500, wkly_rate:800 },
+  { id:'din-dickson', icon:'🍽️', name:'Dickson Street Restaurant Row', type:'dining', area:'Fayetteville', weekly_imp:11200, cpm:7.80, min_spend:500, wkly_rate:875 },
+  { id:'ret-pinnacle', icon:'🏪', name:'Pinnacle Hills Promenade', type:'retail', area:'Rogers', weekly_imp:24000, cpm:6.50, min_spend:500, wkly_rate:1560 },
+  { id:'ret-market',  icon:'🏪', name:'8th Street Market', type:'retail', area:'Bentonville', weekly_imp:15500, cpm:7.10, min_spend:500, wkly_rate:1100 },
+  { id:'hlt-mercy',   icon:'🏥', name:'Mercy Hospital NWA Lobby', type:'healthcare', area:'Rogers', weekly_imp:9600, cpm:10.20, min_spend:500, wkly_rate:980 },
+];
+
+function fmtImpr(n) {
+  return n >= 1000 ? Math.round(n/1000) + 'K wkly impr' : n + ' wkly impr';
+}
+
+function renderScreens() {
+  const grid = document.getElementById('screen-grid');
+  grid.innerHTML = '';
+  INV.forEach(s => {
+    const inCart = !!ST.cart[s.id];
+    const div = document.createElement('div');
+    div.id = 'sc-' + s.id;
+    div.className = 'sc' + (inCart ? ' added' : '');
+    div.innerHTML = `
+      <div class="sc-ico">${s.icon}</div>
+      <div class="sc-body">
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-meta">${s.area} · ${fmtImpr(s.weekly_imp)}</div>
+      </div>
+      <div class="sc-right">
+        <div class="sc-price">$${s.wkly_rate.toLocaleString()}<span class="sc-unit">/wk</span></div>
+        <button class="sc-add${inCart ? ' added' : ''}" id="sca-${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')">
+          ${inCart ? '✓ Added' : '+ Add'}
+        </button>
+      </div>
+    `;
+    div.onclick = (e) => { if (!e.target.closest('button')) toggleScreen(s.id); };
+    grid.appendChild(div);
+  });
+}
+
+function toggleScreen(id) {
+  const s = INV.find(x => x.id === id);
+  if (!s) return;
+  if (ST.cart[id]) { delete ST.cart[id]; } else { ST.cart[id] = s; }
+  const inCart = !!ST.cart[id];
+  const btn = document.getElementById('sca-' + id);
+  if (btn) { btn.classList.toggle('added', inCart); btn.textContent = inCart ? '✓ Added' : '+ Add'; }
+  const card = document.getElementById('sc-' + id);
+  if (card) card.classList.toggle('added', inCart);
+  renderCart();
+}
+
+function renderCart() {
+  const keys = Object.keys(ST.cart);
+  const el = document.getElementById('cart-items');
+  const sub = document.getElementById('cart-sub');
+  const totalEl = document.getElementById('cart-total-val');
+  const btn = document.getElementById('btn-next-2');
+
+  if (!keys.length) {
+    el.innerHTML = '<div class="cart-empty"><span>🛒</span>Add screens from the left to build your proposal.</div>';
+    if (sub) sub.textContent = 'No screens added yet';
+    if (totalEl) totalEl.textContent = '$0';
+    if (btn) btn.disabled = true;
+    return;
+  }
+
+  let total = 0;
+  el.innerHTML = keys.map(id => {
+    const s = ST.cart[id];
+    total += s.wkly_rate;
+    return `<div class="ct-row">
+      <div class="ct-icon">${s.icon}</div>
+      <div class="ct-info"><div class="ct-name">${s.name}</div><div class="ct-area">${s.area}</div></div>
+      <div class="ct-price">$${s.wkly_rate.toLocaleString()}</div>
+      <button class="ct-rm" onclick="removeScreen('${id}')">×</button>
+    </div>`;
+  }).join('');
+
+  if (sub) sub.textContent = keys.length + ' screen' + (keys.length !== 1 ? 's' : '') + ' · $' + total.toLocaleString() + '/wk';
+  if (totalEl) totalEl.textContent = '$' + total.toLocaleString();
+  if (btn) btn.disabled = false;
+}
+
+function removeScreen(id) {
+  delete ST.cart[id];
+  renderCart();
+  const btn = document.getElementById('sca-' + id);
+  if (btn) { btn.classList.remove('added'); btn.textContent = '+ Add'; }
+  const card = document.getElementById('sc-' + id);
+  if (card) card.classList.remove('added');
+}
+
+function selectGoal(el, goal) {
+  ST.goal = goal;
+  document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('btn-next-1').disabled = false;
+}
+
+function goTo(n) {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('panel-' + i).classList.remove('active');
+    const nav = document.getElementById('nav-s' + i);
+    if (nav) {
+      nav.classList.remove('active', 'done');
+      if (i < n) { nav.classList.add('done'); nav.querySelector('.step-dot').textContent = '✓'; }
+      else if (i === n) { nav.classList.add('active'); nav.querySelector('.step-dot').textContent = i; }
+      else { nav.querySelector('.step-dot').textContent = i; }
+    }
+  }
+  document.getElementById('panel-' + n).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (n === 2) renderScreens();
+  if (n === 4) generateLink();
+}
+
+function updatePreview() { /* live preview update happens on goTo(4) */ }
+
+function generateLink() {
+  const keys = Object.keys(ST.cart);
+  if (!keys.length) return;
+
+  const prospectName = document.getElementById('f-prospect-name')?.value || '';
+  const contactName  = document.getElementById('f-contact-name')?.value || '';
+  const note         = document.getElementById('f-note')?.value || '';
+
+  // Preview card
+  const pcTitle = document.getElementById('pc-title');
+  const pcGoal  = document.getElementById('pc-goal');
+  const pcScrs  = document.getElementById('pc-screens');
+  const pcTotal = document.getElementById('pc-total');
+  const pcNote  = document.getElementById('pc-note');
+
+  if (pcTitle) pcTitle.textContent = prospectName ? 'Campaign for ' + prospectName : 'Campaign proposal';
+  if (pcGoal)  pcGoal.textContent  = ST.goal || '';
+
+  let total = 0;
+  if (pcScrs) {
+    pcScrs.innerHTML = keys.map(id => {
+      const s = ST.cart[id];
+      total += s.wkly_rate;
+      return `<div class="pc-screen-row"><span class="pc-screen-icon">${s.icon}</span><span class="pc-screen-name">${s.name}</span><span class="pc-screen-price">$${s.wkly_rate.toLocaleString()}/wk</span></div>`;
+    }).join('');
+  }
+  if (pcTotal) pcTotal.textContent = '$' + (total * ST.qty).toLocaleString() + ' total (' + ST.qty + ' wks)';
+  if (pcNote) {
+    if (note) { pcNote.textContent = '"' + note + '"' + (contactName ? ' — ' + contactName : ''); pcNote.style.display = 'block'; }
+    else { pcNote.style.display = 'none'; }
+  }
+
+  // Encode proposal
+  const payload = {
+    v: 1,
+    goal: ST.goal,
+    inc: ST.inc,
+    qty: ST.qty,
+    budget: ST.budget,
+    schedMode: 'standard',
+    screens: keys,
+    created: new Date().toISOString().slice(0, 10),
+    note, contactName, prospectName,
+  };
+
+  const encoded = btoa(JSON.stringify(payload));
+  const url = window.location.origin + '/book.html?proposal=' + encoded;
+  const input = document.getElementById('proposal-link');
+  if (input) input.value = url;
+}
+
+function copyLink() {
+  const input = document.getElementById('proposal-link');
+  if (!input) return;
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2500);
+  }).catch(() => {
+    input.select();
+    document.execCommand('copy');
+  });
+}
+
+function startNew() {
+  ST.goal = null; ST.budget = 2000; ST.qty = 4; ST.inc = 'weekly'; ST.cart = {};
+  document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('sel'));
+  document.getElementById('btn-next-1').disabled = true;
+  document.getElementById('f-prospect-name').value = '';
+  document.getElementById('f-contact-name').value = '';
+  document.getElementById('f-note').value = '';
+  goTo(1);
+}
+</script>
+</body>
+</html>
