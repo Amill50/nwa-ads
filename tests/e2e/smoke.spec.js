@@ -31,8 +31,19 @@ test('screen list renders after goTo(2)', async ({ page }) => {
   await page.locator('.goal-card').first().click();
   await page.locator('.btn-next').first().click();
 
-  // Wait up to 10s for sc-add-btn to appear (renderList runs in goTo(2))
-  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 10000 });
+  // On mobile, sidebar is hidden in Map view — switch to List view to reveal it
+  const sidebar = page.locator('.s2-side');
+  const sidebarVisible = await sidebar.isVisible({ timeout: 8000 }).catch(() => false);
+  if (!sidebarVisible) {
+    await page.locator('#vt-list').click();
+  }
+
+  // Step 2 loads with Recommendations state — navigate to Browse state
+  await expect(page.locator('.btn-browse-own')).toBeVisible({ timeout: 5000 });
+  await page.locator('.btn-browse-own').click();
+
+  // Now sc-add-btn cards are visible in Browse state
+  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 5000 });
 
   // Log what we got
   const count = await page.locator('.sc-add-btn').count();
