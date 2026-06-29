@@ -1512,6 +1512,121 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 }
 .conf-admin-btn:hover { color: var(--ink); }
 
+/* ══════════════════════════════
+   THREE-STATE SIDEBAR
+══════════════════════════════ */
+.sb-state { display: none; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+
+.sb-browse-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; background: var(--bg); gap: 8px;
+}
+.sb-back {
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 600; color: var(--accent2);
+  padding: 4px 0; white-space: nowrap;
+  font-family: 'Instrument Sans', sans-serif;
+}
+.sb-back:hover { color: var(--accent); }
+.sb-browse-count { font-size: 11px; color: var(--muted); }
+.sbcr-head-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+.rec-footer {
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  flex-shrink: 0; background: var(--white);
+}
+.btn-browse-own {
+  width: 100%; padding: 10px; border: 1.5px dashed var(--border);
+  background: transparent; border-radius: 8px; font-size: 12px; font-weight: 600;
+  color: var(--ink2); cursor: pointer; transition: all .15s;
+  font-family: 'Instrument Sans', sans-serif;
+}
+.btn-browse-own:hover { border-color: var(--accent2); color: var(--accent2); background: var(--accent2-light); }
+
+.sbcr-scroll { flex: 1; overflow-y: auto; min-height: 0; }
+.sbcr-note {
+  margin: 0 14px 10px; padding: 9px 12px;
+  background: var(--accent2-light); border-radius: 7px;
+  font-size: 11px; color: var(--accent2); font-weight: 500;
+}
+.sbcr-ctas { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+.sbcr-edit {
+  background: none; border: 1.5px solid var(--border); border-radius: 7px;
+  padding: 9px; font-size: 13px; font-weight: 600; color: var(--ink2);
+  cursor: pointer; transition: all .15s; font-family: 'Fraunces', serif;
+}
+.sbcr-edit:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* Sticky footer */
+.sb-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 12px; border-top: 2px solid var(--border);
+  background: var(--white); flex-shrink: 0; gap: 10px;
+}
+.sbf-left { flex: 1; min-width: 0; }
+.sbf-count { font-size: 13px; font-weight: 700; color: var(--ink); }
+.sbf-note { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.sbf-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.sbf-btn {
+  padding: 9px 16px; background: var(--accent); color: #fff;
+  border: none; border-radius: 7px; font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.sbf-btn:hover { background: var(--accent-hover, #a83608); }
+.sbf-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+/* Grid-based screen card */
+.sc {
+  display: grid; grid-template-columns: 36px 1fr auto;
+  align-items: center; gap: 10px; padding: 11px 13px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 11px; transition: border-color .12s, background .12s;
+  cursor: pointer; -webkit-overflow-scrolling: touch;
+}
+.sc:hover { border-color: var(--ink2); }
+.sc.added { background: #f0fdf4; border-color: #86efac; }
+.sc.compact { padding: 8px 11px; grid-template-columns: 28px 1fr auto; gap: 8px; }
+.sc-ico { font-size: 20px; text-align: center; }
+.sc > .sc-body { min-width: 0; }
+.sc > .sc-body > .sc-name {
+  font-size: 13px; font-weight: 500; font-family: 'Instrument Sans', sans-serif;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--ink); line-height: 1.3;
+}
+.sc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.sc-badge {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  color: var(--accent2); background: var(--accent2-light);
+  padding: 1px 7px; border-radius: 9px; margin-top: 4px;
+}
+.sc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+.sc > .sc-right > .sc-price {
+  font-size: 14px; font-weight: 600; color: var(--accent);
+  white-space: nowrap; font-family: 'Fraunces', serif;
+}
+.sc-unit { font-size: 10px; color: var(--muted); font-weight: 400; }
+.sc-btns { display: flex; align-items: center; gap: 5px; }
+.sc-x {
+  display: flex; background: none; border: 1px solid #fca5a5;
+  border-radius: 50%; width: 26px; height: 26px; cursor: pointer;
+  color: #dc2626; font-size: 12px; align-items: center;
+  justify-content: center; transition: all .12s; line-height: 1;
+  opacity: 0; pointer-events: none;
+}
+.sc-x.show { opacity: 1; pointer-events: auto; }
+.sc-x:hover { background: #fee2e2; border-color: #f87171; }
+.sc-add {
+  border: 1.5px solid var(--accent); color: var(--accent);
+  background: transparent; border-radius: 14px; padding: 4px 11px;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; transition: all .12s;
+  font-family: 'Instrument Sans', sans-serif;
+}
+.sc-add:hover { background: var(--accent-light); }
+.sc-add.added { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+
 /* Responsive */
 @media (max-width: 768px) {
 
@@ -1578,12 +1693,28 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     overflow: visible;
   }
 
+  /* On mobile: states are not height-constrained — let content flow naturally */
+  .sb-state {
+    overflow: visible !important;
+    min-height: 0 !important;
+    flex: unset !important;
+    height: auto !important;
+  }
+
   /* Mobile screen list — remove nested scroll, let page scroll naturally */
   .screen-list-wrap {
     max-height: none;
     overflow-y: visible;
     overflow: visible;
-    padding-top: 4px; /* small breathing room between label and first card */
+    padding-top: 4px;
+  }
+
+  /* Sticky footer on mobile — stays at bottom of viewport when sidebar is visible */
+  .sb-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
   }
 
   /* Disable sticky on mobile — causes overlap in natural-scroll layout */
@@ -1721,6 +1852,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     <div class="step" id="nav-s4" onclick="goTo(4)"><div class="step-dot" id="dot-4">4</div> Checkout</div>
   </div>
   <div class="nav-status" id="nav-sel"></div>
+  <a href="/proposal.html" style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.65);text-decoration:none;white-space:nowrap;padding:4px 0;flex-shrink:0" onmouseover="this.style.color='#f0905a'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Send as proposal →</a>
 </nav>
 
 <!-- ═══ STEP 1 ═══ -->
@@ -2122,78 +2254,102 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
         <div class="cb-item"><div class="cbl">Duration</div><div class="cbv" id="cb-dur">—</div></div>
       </div>
 
-      <!-- Optimizer (injected by showOptimizer()) -->
-      <div class="opt-panel" id="opt-panel">
-        <div class="opt-header">
-          <div>
-            <div class="opt-title">✦ Smart Optimizer</div>
-            <div class="opt-sub">Let us pick the best screens for your goal</div>
+      <!-- ── State 1: Recommendations (default) ── -->
+      <div class="sb-state" id="sb-rec" style="display:flex">
+
+        <!-- Smart Optimizer -->
+        <div class="opt-panel" id="opt-panel">
+          <div class="opt-header">
+            <div>
+              <div class="opt-title">✦ Smart Optimizer</div>
+              <div class="opt-sub">Let us pick the best screens for your goal</div>
+            </div>
+            <button class="btn-optimize" id="btn-optimize" onclick="runOptimizer()">✦ Recommend screens</button>
           </div>
-          <button class="btn-optimize" id="btn-optimize" onclick="runOptimizer()">✦ Recommend screens</button>
+          <div class="opt-thinking" id="opt-thinking">
+            <div class="opt-dot"></div><div class="opt-dot"></div><div class="opt-dot"></div>
+            <span id="opt-thinking-text">Analyzing your goal and budget…</span>
+          </div>
+          <div class="opt-results" id="opt-results">
+            <div class="opt-reason" id="opt-reason"></div>
+            <div class="opt-result-label">✓ Recommended screens</div>
+            <div class="opt-basket" id="opt-basket"></div>
+            <button class="opt-add-btn" onclick="addOptimizedToCart()">Add all recommended to campaign →</button>
+          </div>
         </div>
-        <div class="opt-thinking" id="opt-thinking">
-          <div class="opt-dot"></div><div class="opt-dot"></div><div class="opt-dot"></div>
-          <span id="opt-thinking-text">Analyzing your goal and budget…</span>
+
+        <!-- Browse own screens CTA -->
+        <div class="rec-footer">
+          <button class="btn-browse-own" onclick="showState('browse')">＋ Choose your own screens instead</button>
         </div>
-        <div class="opt-results" id="opt-results">
-          <div class="opt-reason" id="opt-reason"></div>
-          <div class="opt-result-label">✓ Recommended screens</div>
-          <div class="opt-basket" id="opt-basket"></div>
-          <button class="opt-add-btn" onclick="addOptimizedToCart()">Add all recommended to campaign →</button>
-        </div>
+
       </div>
 
-      <!-- Cart header with shopping cart icon + badge -->
-      <div class="cart-header-bar">
-        <div class="cart-icon-wrap">
-          <div class="cart-icon-svg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-            </svg>
-            <div class="cart-icon-badge" id="cart-icon-badge">0</div>
-          </div>
-          <div>
-            <div class="ch-title">Your campaign</div>
-            <div class="ch-sub" id="ch-sub">No screens added yet</div>
-          </div>
+      <!-- ── State 2: Browse all screens ── -->
+      <div class="sb-state" id="sb-browse" style="display:none">
+
+        <div class="sb-browse-head">
+          <button class="sb-back" onclick="showState('rec')">← Back to recommendations</button>
+          <span id="sb-browse-count" class="sb-browse-count"></span>
         </div>
-        <div class="ch-discount" id="ch-discount">10% off</div>
+        <div class="screen-list-label" id="screen-list-label">Available screens</div>
+        <div class="screen-list-wrap">
+          <div id="tab-screens-content" class="screen-list"></div>
+        </div>
+
       </div>
 
-      <!-- Screen list — label is OUTSIDE the scroll container so it never overlaps -->
-      <div class="screen-list-label" id="screen-list-label">Available screens</div>
-      <div class="screen-list-wrap">
-        <div id="tab-screens-content" class="screen-list"></div>
+      <!-- ── State 3: Cart review ── -->
+      <div class="sb-state" id="sb-cart-review" style="display:none">
+
+        <div class="sb-browse-head">
+          <button class="sb-back" onclick="showState('browse')">← Edit screens</button>
+          <span class="sbcr-head-title">Your campaign</span>
+        </div>
+        <div class="sbcr-scroll">
+          <div class="cart-summary">
+            <div class="cart-summary-head">
+              <span class="cs-title" id="cs-title">Campaign cart</span>
+              <span class="cs-clear" id="cs-clear" onclick="clearAllCart()">Clear all</span>
+            </div>
+            <div class="cart-table-wrap" id="cart-table-wrap">
+              <div class="cart-empty-state">
+                <span class="cei">🛒</span>
+                Tap <strong>+</strong> on any screen to add it to your campaign.
+              </div>
+            </div>
+            <div class="cart-totals" id="cart-totals">
+              <div class="tot-line"><span>Subtotal</span><span id="ct-sub">$0</span></div>
+              <div class="tot-line disc" id="ct-disc-row" style="display:none">
+                <span>Multi-screen discount (10%)</span><span id="ct-disc">—</span>
+              </div>
+              <div class="tot-line grand">
+                <span>Total (<span id="ct-mo">—</span>)</span>
+                <span class="v" id="ct-grand">$0</span>
+              </div>
+            </div>
+          </div>
+          <div class="sbcr-note">Platform fee included — no hidden costs</div>
+          <div class="sbcr-ctas">
+            <button class="btn-cta" onclick="showSummary()">✦ Continue to creative upload →</button>
+            <button class="sbcr-edit" onclick="showState('browse')">← Edit screens</button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Cart summary — always visible, pinned bottom -->
-      <div class="cart-summary">
-        <div class="cart-summary-head">
-          <span class="cs-title" id="cs-title">Campaign cart</span>
-          <span class="cs-clear" id="cs-clear" onclick="clearAllCart()">Clear all</span>
+      <!-- ── Sticky footer (always visible) ── -->
+      <div class="sb-footer">
+        <div class="sbf-left">
+          <div id="sbf-count" class="sbf-count">0 screens</div>
+          <div id="ch-sub" class="sbf-note">Add screens to continue</div>
         </div>
-        <div class="cart-table-wrap" id="cart-table-wrap">
-          <div class="cart-empty-state">
-            <span class="cei">🛒</span>
-            Tap <strong>+</strong> on any screen to add it to your campaign.
-          </div>
-        </div>
-        <div class="cart-totals" id="cart-totals">
-          <div class="tot-line"><span>Subtotal</span><span id="ct-sub">$0</span></div>
-          <div class="tot-line disc" id="ct-disc-row" style="display:none">
-            <span>Multi-screen discount (10%)</span><span id="ct-disc">—</span>
-          </div>
-          <div class="tot-line grand">
-            <span>Total (<span id="ct-mo">—</span>)</span>
-            <span class="v" id="ct-grand">$0</span>
-          </div>
-        </div>
-        <div class="cart-cta">
-          <button class="btn-cta" id="btn-s2" disabled onclick="showSummary()">Review campaign →</button>
-          <div class="cart-cta-note" id="cart-cta-note">Add at least one screen to continue</div>
+        <div class="sbf-right">
+          <div class="ch-discount" id="ch-discount">10% off</div>
+          <button class="sbf-btn" id="btn-s2" disabled onclick="showState('cart')">Review campaign →</button>
         </div>
       </div>
+      <div id="cart-cta-note" style="display:none"></div>
 
     </div>
   </div>
@@ -13653,30 +13809,37 @@ function renderList() {
     ].join('');
     const displayPrice = Math.round(unitRate(s));
 
+    const metaText = [
+      s.area,
+      badgeLabels[s.type] || s.type,
+      (s.impr || (s.weekly_imp >= 1000 ? Math.round(s.weekly_imp/1000)+'K wkly impr' : (s.weekly_imp ? s.weekly_imp+' wkly impr' : '')))
+    ].filter(Boolean).join(' · ');
+    const badge = (ST.goal==='Drive customers through your door') && ST.proximityTarget
+      ? `<span class="sc-badge">📍 ${distLabel(haversineMiles(ST.proximityTarget.lat,ST.proximityTarget.lng,s.lat,s.lng))} from ${ST.proximityTarget.name.split('–')[0].trim()}</span>`
+      : ST.goal==="Reach Walmart & Sam's Club buyers"
+        ? `<span class="sc-badge">🏢 ${distLabel(haversineMiles(WALMART_HQ.lat,WALMART_HQ.lng,s.lat,s.lng))} from Walmart HQ</span>`
+        : '';
+
     const card = document.createElement('div');
-    card.className = 'sc-card' + (sel?' sel':'');
-    card.dataset.id = s.id;
+    card.id = 'sc-' + s.id;
+    card.className = 'sc' + (sel ? ' added' : '');
     card.innerHTML = `
-      <div class="sc-check">✓</div>
-      <div class="sc-row1">
-        <div class="sc-name">${s.icon} ${s.name}</div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <div class="sc-price">$${displayPrice.toLocaleString()} <small>${rateLabel()}</small></div>
-          <button class="sc-add-btn${!!ST.cart[s.id]?' added':''}" data-id="${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')" title="${!!ST.cart[s.id]?'Remove from campaign':'Add to campaign'}">
-            ${!!ST.cart[s.id]?'✓':'+'}
-          </button>
+      <div class="sc-ico">${s.icon}</div>
+      <div class="sc-body">
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-meta">${metaText}</div>
+        ${badge}
+      </div>
+      <div class="sc-right">
+        <div class="sc-price">$${displayPrice.toLocaleString()}<span class="sc-unit">/wk</span></div>
+        <div class="sc-btns">
+          <button class="sc-x${sel ? ' show' : ''}" id="scx-${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')">✕</button>
+          <button class="sc-add sc-add-btn${sel ? ' added' : ''}" id="sca-${s.id}" data-id="${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')">${sel ? '✓ Added' : '+ Add'}</button>
         </div>
       </div>
-      <div class="sc-tags">${tagHtml}</div>
-      <div class="sc-impr">${s.impr||(s.weekly_imp>=1000?Math.round(s.weekly_imp/1000)+'K weekly':s.weekly_imp+' weekly')||'—'} · $${s.cpm.toFixed(2)} CPM · min $${(s.min_spend||500).toLocaleString()}</div>
-      ${(ST.goal==='Drive customers through your door')&&ST.proximityTarget
-        ?`<div style="margin-top:5px"><span class="prox-badge ${proxClass(haversineMiles(ST.proximityTarget.lat,ST.proximityTarget.lng,s.lat,s.lng))}">📍 ${distLabel(haversineMiles(ST.proximityTarget.lat,ST.proximityTarget.lng,s.lat,s.lng))} from ${ST.proximityTarget.name.split('–')[0].trim()}</span></div>`
-        :ST.goal==="Reach Walmart & Sam's Club buyers"
-          ?`<div style="margin-top:5px"><span class="prox-badge ${proxClass(haversineMiles(WALMART_HQ.lat,WALMART_HQ.lng,s.lat,s.lng))}">🏢 ${distLabel(haversineMiles(WALMART_HQ.lat,WALMART_HQ.lng,s.lat,s.lng))} from Walmart HQ</span></div>`
-          :''}
     `;
-    card.onclick = () => {
-      /* Fly map to pin */
+    card.onclick = (e) => {
+      if (e.target.closest('button')) return;
       if (markers[s.id] && map) { map.flyTo([s.lat, s.lng], 14, {duration:0.6}); }
       openDrawer(s.id);
     };
@@ -13689,34 +13852,52 @@ function toggleScreen(id) {
   const s = INV.find(x => x.id === id);
   if (!s) return;
 
-  // Toggle cart state
-  if (ST.cart[id]) {
-    delete ST.cart[id];
-  } else {
-    ST.cart[id] = s;
-  }
+  if (ST.cart[id]) { delete ST.cart[id]; } else { ST.cart[id] = s; }
+  const inCart = !!ST.cart[id];
 
-  // Update cart sidebar immediately
   renderCart();
   updateNavSel();
 
-  // Update only the specific button — no full list re-render needed
-  const btn = document.querySelector('.sc-add-btn[data-id="' + id + '"]');
+  // Update add button (new sca- id or legacy data-id selector)
+  const btn = document.getElementById('sca-' + id) || document.querySelector('.sc-add-btn[data-id="' + id + '"]');
   if (btn) {
-    const inCart = !!ST.cart[id];
     btn.classList.toggle('added', inCart);
-    btn.title = inCart ? 'Remove from campaign' : 'Add to campaign';
-    btn.textContent = inCart ? '✓' : '+';
+    btn.textContent = inCart ? '✓ Added' : '+ Add';
   }
+  // Show/hide X button
+  const xb = document.getElementById('scx-' + id);
+  if (xb) xb.classList.toggle('show', inCart);
+  // Card tint
+  const cardEl = document.getElementById('sc-' + id);
+  if (cardEl) cardEl.classList.toggle('added', inCart);
 
-  // Update map marker for this screen only — no full cluster rebuild
-  if (markers[id] && map) {
-    markers[id].setIcon(makePinIcon(s));
-  }
+  // Update map marker
+  if (markers[id] && map) { markers[id].setIcon(makePinIcon(s)); }
 
-  // Update drawer add button if drawer is open on this screen
+  // Update drawer add button if open on this screen
   if (typeof drawerScreenId !== 'undefined' && drawerScreenId === id) {
     if (typeof updateDrawerAddBtn === 'function') updateDrawerAddBtn(s);
+  }
+}
+
+/* ══════════════ TOGGLE CART (alias) ══════════════ */
+function toggleCart(id) { toggleScreen(id); }
+
+/* ══════════════ SIDEBAR STATE ══════════════ */
+function showState(state) {
+  const rec = document.getElementById('sb-rec');
+  const browse = document.getElementById('sb-browse');
+  const cartReview = document.getElementById('sb-cart-review');
+  if (rec)        rec.style.display        = state === 'rec'    ? 'flex' : 'none';
+  if (browse)     browse.style.display     = state === 'browse' ? 'flex' : 'none';
+  if (cartReview) cartReview.style.display = state === 'cart'   ? 'flex' : 'none';
+
+  if (state === 'browse') {
+    const countEl = document.getElementById('sb-browse-count');
+    if (countEl) {
+      const n = document.querySelectorAll('#tab-screens-content .sc').length;
+      if (n) countEl.textContent = n + ' screens available';
+    }
   }
 }
 
@@ -13821,9 +14002,11 @@ function clearAllCart() {
 
 function updateCartHeader() {
   const n = Object.keys(ST.cart).length;
-  const badge = document.getElementById('cart-icon-badge');
-  const sub   = document.getElementById('ch-sub');
+  const badge    = document.getElementById('cart-icon-badge');
+  const sub      = document.getElementById('ch-sub');
+  const countEl  = document.getElementById('sbf-count');
   if (badge) { badge.textContent = n; badge.style.display = n ? 'flex' : 'none'; }
+  if (countEl) countEl.textContent = n ? n + ' screen' + (n!==1?'s':'') : '0 screens';
   if (!sub) return;
   if (!n) { sub.textContent = 'No screens added yet'; return; }
   const total = Object.values(ST.cart).reduce((a,s) => a+unitRate(s), 0);
@@ -14258,13 +14441,13 @@ function setView(v) {
     if (v === 'map' && map) setTimeout(() => map.invalidateSize(true), 50);
   } else {
     if (v === 'list') {
-      if (mapWrap)  mapWrap.style.display = 'none';
-      if (sidebar)  { sidebar.style.display = 'flex'; sidebar.style.width = '100%'; sidebar.style.borderLeft = 'none'; }
-      if (optPanel) optPanel.style.display = 'none';
+      if (mapWrap) mapWrap.style.display = 'none';
+      if (sidebar) { sidebar.style.display = 'flex'; sidebar.style.width = '100%'; sidebar.style.borderLeft = 'none'; }
+      showState('browse');
     } else {
-      if (mapWrap)  mapWrap.style.display = 'block';
-      if (sidebar)  { sidebar.style.display = 'flex'; sidebar.style.width = '380px'; sidebar.style.borderLeft = '1px solid var(--border)'; }
-      if (optPanel) optPanel.style.display = '';
+      if (mapWrap) mapWrap.style.display = 'block';
+      if (sidebar) { sidebar.style.display = 'flex'; sidebar.style.width = '380px'; sidebar.style.borderLeft = '1px solid var(--border)'; }
+      showState('rec');
       if (map) setTimeout(() => map.invalidateSize(true), 100);
     }
   }
