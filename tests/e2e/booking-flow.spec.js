@@ -8,13 +8,24 @@ async function step2(page) {
   await page.waitForLoadState('domcontentloaded');
   await page.locator('.goal-card').first().click();
   await page.locator('.btn-next').first().click();
-  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 15000 });
+  // On mobile, sidebar is hidden in Map view — switch to List view to reveal it
+  const sidebar = page.locator('.s2-side');
+  const sidebarVisible = await sidebar.isVisible({ timeout: 12000 }).catch(() => false);
+  if (!sidebarVisible) {
+    await page.locator('#vt-list').click();
+  }
+  // Recommendations state shown — navigate to Browse to access screen cards
+  await expect(page.locator('.btn-browse-own')).toBeVisible({ timeout: 5000 });
+  await page.locator('.btn-browse-own').click();
+  await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 5000 });
 }
 
 async function step3(page) {
   await step2(page);
   await page.locator('.sc-add-btn').first().click();
   await page.locator('#btn-s2').click();
+  // Cart review state shows — click Continue to advance to creative upload
+  await page.getByText(/Continue to creative upload/).click();
   await expect(page.locator('.summary-modal-title')).toBeVisible({ timeout: 8000 });
   await page.getByText(/Looks good/).click();
   await expect(page.getByText('Upload your creative')).toBeVisible({ timeout: 8000 });
@@ -114,18 +125,18 @@ test.describe('Step 2 — Screen Picker', () => {
     await step2(page);
     const btn = page.locator('.sc-add-btn').first();
 
-    // Before: no .added class, text is +
+    // Before: no .added class, text is '+ Add'
     await expect(btn).not.toHaveClass(/added/);
     const beforeText = (await btn.textContent()).trim();
-    expect(beforeText).toBe('+');
+    expect(beforeText).toBe('+ Add');
 
     // Click — should update immediately without full list re-render
     await btn.click();
 
-    // After: .added class present, text is ✓
+    // After: .added class present, text is '✓ Added'
     await expect(btn).toHaveClass(/added/);
     const afterText = (await btn.textContent()).trim();
-    expect(afterText).toBe('✓');
+    expect(afterText).toBe('✓ Added');
   });
 
   // ── Bug 1 fix proof: clicking ✓ removes from cart ────────────────────────────
@@ -141,7 +152,7 @@ test.describe('Step 2 — Screen Picker', () => {
     await btn.click();
     await expect(btn).not.toHaveClass(/added/);
     const text = (await btn.textContent()).trim();
-    expect(text).toBe('+');
+    expect(text).toBe('+ Add');
 
     // Cart should be empty again
     await expect(page.getByText('No screens added yet')).toBeVisible();
@@ -192,7 +203,9 @@ test.describe('Step 2 — Screen Picker', () => {
     await page.locator('#sched-start').fill('2026-06-23');
     await page.locator('#sched-end').fill('2026-09-07');
     await page.locator('.btn-next').first().click();
-    await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.btn-browse-own')).toBeVisible({ timeout: 15000 });
+    await page.locator('.btn-browse-own').click();
+    await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 5000 });
     await expect(page.locator('#cb-dur')).toContainText('22');
   });
 });
