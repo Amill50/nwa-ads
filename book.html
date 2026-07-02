@@ -576,6 +576,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   transition: transform 0.15s;
 }
 .pin-bubble.digital { background: #c8440a; }
+.pin-bubble.billboard { background: #c8440a; }
 .pin-bubble.static { background: #1f3d2a; }
 .pin-bubble.cinema { background: #6b21a8; }
 .pin-bubble.gasstation { background: #b45309; }
@@ -1079,6 +1080,25 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   padding: 10px 20px; background: var(--accent2); color: #fff;
   font-size: 12px;
 }
+.insight-walmart .insight-sub {
+  font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.4;
+}
+.insight-why-toggle {
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  padding: 10px 20px; background: transparent; border: none;
+  border-top: 1px solid var(--border);
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--accent2);
+  cursor: pointer; text-align: left;
+}
+.insight-why-toggle:hover { background: rgba(31,61,42,0.05); }
+.insight-why-chevron { margin-left: auto; flex-shrink: 0; transition: transform 0.2s ease; }
+.insight-why-toggle.open .insight-why-chevron { transform: rotate(180deg); }
+.insight-why-body { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.insight-why-body.open { max-height: 260px; }
+.insight-why-content {
+  padding: 2px 20px 14px; font-size: 12px; color: var(--ink2); line-height: 1.6;
+}
 
 
 /* ── OPTIMIZER ── */
@@ -1577,7 +1597,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   white-space: nowrap;
 }
 .sbf-btn:hover { background: var(--accent-hover, #a83608); }
-.sbf-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+.sbf-btn:disabled { background: var(--border); color: var(--ink2); cursor: not-allowed; }
 
 /* Grid-based screen card */
 .sc {
@@ -1944,15 +1964,22 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
             <span class="insight-icon">🎯</span>
             <div>
               <div class="insight-title">Reach Walmart &amp; Sam&#39;s Club buyers where they live, work, and travel</div>
-              <div class="insight-sub">We geo-target three high-concentration buyer zones: the Walmart Home Office campus, the Scissortail executive residential enclave, and the Pinnacle Country Club corridor in Rogers. Screens are filtered to billboard, cinema, gym, and dining — the environments where decision-makers spend time outside the office. Time your flight to Q1 or Q3 for peak decision-maker traffic.</div>
+              <div class="insight-sub">Best timed for Q1 or Q3, when decision-maker traffic peaks.</div>
             </div>
           </div>
           <div class="insight-tips">
-            <div class="insight-tip">🏢 <strong>Walmart Home Office zone</strong> — Digital billboards on SE Walton Blvd and the I-49 Home Office exit put your brand directly in the daily commute of executives</div>
-            <div class="insight-tip">🏡 <strong>Scissortail &amp; Pinnacle Hills</strong> — Screens in the premier executive residential corridors reach buyers where they live, dine, and spend time away from the office</div>
-            <div class="insight-tip">✈️ <strong>XNA Airport screens</strong> catch merchants and retail executives mid-travel — high dwell time at the exact moment they are thinking about business</div>
+            <div class="insight-tip">🏢 <strong>Walmart HQ zone</strong> — daily commute exposure for executives</div>
+            <div class="insight-tip">🏡 <strong>Scissortail &amp; Pinnacle Hills</strong> — where buyers live and dine</div>
+            <div class="insight-tip">✈️ <strong>XNA Airport</strong> — high dwell time with traveling decision-makers</div>
           </div>
-          <div class="insight-walmart-badge" style="margin-top:14px;padding:10px 14px;background:linear-gradient(135deg,#eaf2ec,#f6f4ef);border-radius:8px;border-left:3px solid #1f3d2a">
+          <button type="button" class="insight-why-toggle" onclick="toggleInsightWhy(this)" aria-expanded="false">
+            <span>Why these screens?</span>
+            <svg class="insight-why-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="insight-why-body">
+            <div class="insight-why-content">We geo-target three high-concentration buyer zones: the Walmart Home Office campus, the Scissortail executive residential enclave, and the Pinnacle Country Club corridor in Rogers. Screens are filtered to billboard, cinema, gym, and dining — the environments where decision-makers spend time outside the office.</div>
+          </div>
+          <div class="insight-walmart-badge" style="margin-top:0;padding:10px 14px;background:linear-gradient(135deg,#eaf2ec,#f6f4ef);border-radius:8px;border-left:3px solid #1f3d2a">
             <span style="font-size:12px;font-weight:600;color:#1f3d2a">🗺 Map shows 3 buyer concentration zones · Billboard, cinema, gym &amp; dining only</span>
           </div>
         </div>
@@ -13641,7 +13668,7 @@ function initMap() {
     const div = L.DomUtil.create('div');
     div.style.cssText = 'background:#fff;padding:12px 16px;border-radius:12px;border:1px solid #e2ddd6;font-family:Instrument Sans,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,0.12);min-width:160px;max-height:60vh;overflow-y:auto';
     div.innerHTML = `
-      <div style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#9a9590;margin-bottom:8px">Venue type</div>
+      <div style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#6b6560;margin-bottom:8px">Venue type</div>
       
       <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:2px 0;user-select:none" title="Toggle Billboard">
         <input type="checkbox" checked data-type="billboard" onchange="toggleVenueType(this)"
@@ -13721,7 +13748,7 @@ function initMap() {
         <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0369a1;flex-shrink:0"></span>
         <span style="font-size:12px;color:#1a1714">Campus</span>
       </label>
-      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2ddd6;font-size:10px;color:#9a9590">Click to filter map &amp; list</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2ddd6;font-size:10px;color:#6b6560">Click to filter map &amp; list</div>
     `;
     L.DomEvent.disableClickPropagation(div);
     return div;
@@ -16044,6 +16071,15 @@ function selSubIntent(el, group) {
   el.closest('.ft-status-row').querySelectorAll('.ft-status-pill').forEach(p => p.classList.remove('on'));
   el.classList.add('on');
   ST.subIntent = el.textContent.trim();
+}
+
+function toggleInsightWhy(btn) {
+  const open = btn.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  const body = btn.nextElementSibling;
+  if (body && body.classList.contains('insight-why-body')) {
+    body.classList.toggle('open', open);
+  }
 }
 
 function updBudget(inp) {
