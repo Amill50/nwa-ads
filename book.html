@@ -13488,6 +13488,18 @@ const INV = [
   }
 ];
 
+/* ── Haversine helpers — must be defined before the INV normalizer runs ── */
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  return haversineKm(lat1, lng1, lat2, lng2) * 0.621371;
+}
+
 /* ── Normalize INV — compute rates and tag directional billboards ── */
 const EXIT_86   = { lat: 36.3481, lng: -94.2205 }; // I-49 Exit 86
 const SE_WALTON = { lat: 36.3580, lng: -94.2100 }; // SE Walton Blvd corridor
