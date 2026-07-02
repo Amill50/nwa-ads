@@ -2132,7 +2132,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
         id="advertiser-name"
         placeholder="e.g. Tusk &amp; Trotter, Planet Fitness, Smith Law Group"
         autocomplete="organization"
-        oninput="ST.advertiserName = this.value.trim()"
+        oninput="handleAdvertiserInput(this.value)"
         style="width:100%;padding:10px 14px;border:1.5px solid #e2ddd6;
           border-radius:8px;font-size:13px;font-family:inherit;color:#1a1714;
           background:#fffef9;outline:none;transition:border-color .15s;
@@ -2668,7 +2668,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 
 const NWA_POIS = [{"id":"r_walmart_bxv","name":"Walmart Supercenter \u2013 Bentonville","cat":"Retail","icon":"\ud83d\uded2","lat":36.3728,"lng":-94.2083},{"id":"r_walmart_rog","name":"Walmart Supercenter \u2013 Rogers","cat":"Retail","icon":"\ud83d\uded2","lat":36.332,"lng":-94.1442},{"id":"r_walmart_fay","name":"Walmart Supercenter \u2013 Fayetteville","cat":"Retail","icon":"\ud83d\uded2","lat":36.0758,"lng":-94.1702},{"id":"r_walmart_spr","name":"Walmart Supercenter \u2013 Springdale","cat":"Retail","icon":"\ud83d\uded2","lat":36.1762,"lng":-94.1456},{"id":"r_sams_bxv","name":"Sam's Club \u2013 Bentonville","cat":"Retail","icon":"\ud83d\uded2","lat":36.3502,"lng":-94.2148},{"id":"r_sams_fay","name":"Sam's Club \u2013 Fayetteville","cat":"Retail","icon":"\ud83d\uded2","lat":36.0671,"lng":-94.1638},{"id":"r_pinnacle","name":"Pinnacle Hills Promenade","cat":"Retail","icon":"\ud83d\udecd","lat":36.3066,"lng":-94.1748},{"id":"r_promenade_bxv","name":"Bentonville Promenade","cat":"Retail","icon":"\ud83d\udecd","lat":36.3631,"lng":-94.2108},{"id":"r_market_fay","name":"Fayetteville Town Center","cat":"Retail","icon":"\ud83c\udfd9","lat":36.0625,"lng":-94.1574},{"id":"r_market_rog","name":"Rogers Towne Center","cat":"Retail","icon":"\ud83d\udecd","lat":36.3421,"lng":-94.1798},{"id":"r_target_bxv","name":"Target \u2013 Bentonville","cat":"Retail","icon":"\ud83c\udfaf","lat":36.3643,"lng":-94.2201},{"id":"r_target_fay","name":"Target \u2013 Fayetteville","cat":"Retail","icon":"\ud83c\udfaf","lat":36.0742,"lng":-94.1887},{"id":"r_target_rog","name":"Target \u2013 Rogers","cat":"Retail","icon":"\ud83c\udfaf","lat":36.3098,"lng":-94.1759},{"id":"r_dillards_rog","name":"Dillard's \u2013 Pinnacle Hills","cat":"Retail","icon":"\ud83d\udecd","lat":36.3072,"lng":-94.1743},{"id":"r_bestbuy_fay","name":"Best Buy \u2013 Fayetteville","cat":"Retail","icon":"\ud83d\udda5","lat":36.0733,"lng":-94.1896},{"id":"r_homegoods_rog","name":"HomeGoods \u2013 Rogers","cat":"Retail","icon":"\ud83c\udfe0","lat":36.3101,"lng":-94.1762},{"id":"r_academy_bxv","name":"Academy Sports \u2013 Bentonville","cat":"Retail","icon":"\u26bd","lat":36.3512,"lng":-94.2197},{"id":"r_springdale_commons","name":"Springdale Commons Shopping Center","cat":"Retail","icon":"\ud83d\udecd","lat":36.1823,"lng":-94.1623},{"id":"r_kohls_rog","name":"Kohl's \u2013 Rogers","cat":"Retail","icon":"\ud83d\udecd","lat":36.3089,"lng":-94.1743},{"id":"r_marshalls_rog","name":"Marshalls \u2013 Rogers","cat":"Retail","icon":"\ud83d\udecd","lat":36.3094,"lng":-94.1751},{"id":"r_tjmaxx_bxv","name":"TJ Maxx \u2013 Bentonville","cat":"Retail","icon":"\ud83d\udecd","lat":36.3621,"lng":-94.2189},{"id":"r_ross_fay","name":"Ross Dress for Less \u2013 Fayetteville","cat":"Retail","icon":"\ud83d\udecd","lat":36.0748,"lng":-94.1891},{"id":"r_burlington_rog","name":"Burlington \u2013 Rogers","cat":"Retail","icon":"\ud83d\udecd","lat":36.3101,"lng":-94.1768},{"id":"r_oldnavy_rog","name":"Old Navy \u2013 Rogers","cat":"Retail","icon":"\ud83d\udc55","lat":36.3068,"lng":-94.1744},{"id":"r_gap_rog","name":"Gap \u2013 Pinnacle Hills","cat":"Retail","icon":"\ud83d\udc55","lat":36.3071,"lng":-94.1741},{"id":"r_ulta_rog","name":"Ulta Beauty \u2013 Rogers","cat":"Retail","icon":"\ud83d\udc84","lat":36.3092,"lng":-94.1756},{"id":"r_sephora_rog","name":"Sephora \u2013 Pinnacle Hills","cat":"Retail","icon":"\ud83d\udc84","lat":36.3069,"lng":-94.1739},{"id":"r_bath_body_rog","name":"Bath & Body Works \u2013 Rogers","cat":"Retail","icon":"\ud83e\uddf4","lat":36.3074,"lng":-94.1746},{"id":"r_victorias_rog","name":"Victoria's Secret \u2013 Rogers","cat":"Retail","icon":"\ud83d\udecd","lat":36.3076,"lng":-94.1748},{"id":"r_dick_sporting_rog","name":"Dick's Sporting Goods \u2013 Rogers","cat":"Retail","icon":"\u26bd","lat":36.3088,"lng":-94.1753},{"id":"r_petco_rog","name":"Petco \u2013 Rogers","cat":"Retail","icon":"\ud83d\udc3e","lat":36.3099,"lng":-94.1761},{"id":"r_petsmart_fay","name":"PetSmart \u2013 Fayetteville","cat":"Retail","icon":"\ud83d\udc3e","lat":36.0736,"lng":-94.1889},{"id":"r_michaels_bxv","name":"Michaels \u2013 Bentonville","cat":"Retail","icon":"\ud83c\udfa8","lat":36.3618,"lng":-94.2192},{"id":"r_joann_rog","name":"JOANN Fabrics \u2013 Rogers","cat":"Retail","icon":"\ud83e\uddf5","lat":36.3096,"lng":-94.1758},{"id":"r_dollar_general_spr","name":"Dollar General \u2013 Springdale","cat":"Retail","icon":"\ud83d\udcb0","lat":36.1843,"lng":-94.1489},{"id":"r_five_below_rog","name":"Five Below \u2013 Rogers","cat":"Retail","icon":"\ud83d\udecd","lat":36.3091,"lng":-94.1754},{"id":"r_gamestop_rog","name":"GameStop \u2013 Rogers","cat":"Retail","icon":"\ud83c\udfae","lat":36.3082,"lng":-94.1749},{"id":"r_booksamillion_rog","name":"Books-A-Million \u2013 Rogers","cat":"Retail","icon":"\ud83d\udcda","lat":36.3079,"lng":-94.1747},{"id":"r_hallmark_bxv","name":"Hallmark \u2013 Bentonville","cat":"Retail","icon":"\ud83c\udf81","lat":36.3624,"lng":-94.2194},{"id":"g_harps_bxv","name":"Harp's Food Store \u2013 Bentonville","cat":"Grocery","icon":"\ud83e\udd66","lat":36.3724,"lng":-94.2312},{"id":"g_harps_rog","name":"Harp's Food Store \u2013 Rogers","cat":"Grocery","icon":"\ud83e\udd66","lat":36.3398,"lng":-94.1224},{"id":"g_harps_fay","name":"Harp's Food Store \u2013 Fayetteville","cat":"Grocery","icon":"\ud83e\udd66","lat":36.0912,"lng":-94.1812},{"id":"g_harps_spr","name":"Harp's Food Store \u2013 Springdale","cat":"Grocery","icon":"\ud83e\udd66","lat":36.1889,"lng":-94.1312},{"id":"g_aldi_bxv","name":"ALDI \u2013 Bentonville","cat":"Grocery","icon":"\ud83e\udd66","lat":36.3589,"lng":-94.2273},{"id":"g_aldi_fay","name":"ALDI \u2013 Fayetteville","cat":"Grocery","icon":"\ud83e\udd66","lat":36.0814,"lng":-94.1924},{"id":"g_aldi_rog","name":"ALDI \u2013 Rogers","cat":"Grocery","icon":"\ud83e\udd66","lat":36.3312,"lng":-94.1501},{"id":"g_whole_fay","name":"Whole Foods \u2013 Fayetteville","cat":"Grocery","icon":"\ud83c\udf3f","lat":36.0849,"lng":-94.1894},{"id":"g_natural_fay","name":"Natural Grocers \u2013 Fayetteville","cat":"Grocery","icon":"\ud83c\udf3f","lat":36.0821,"lng":-94.1979},{"id":"g_fresh_spr","name":"Walmart Neighborhood Market \u2013 Springdale","cat":"Grocery","icon":"\ud83e\udd66","lat":36.1924,"lng":-94.1287},{"id":"g_walmart_nm_bxv","name":"Walmart Neighborhood Market \u2013 Bentonville","cat":"Grocery","icon":"\ud83e\udd66","lat":36.3524,"lng":-94.2198},{"id":"g_kroger_fay","name":"Kroger \u2013 Fayetteville","cat":"Grocery","icon":"\ud83e\udd66","lat":36.0821,"lng":-94.1743},{"id":"g_sprouts_fay","name":"Sprouts Farmers Market \u2013 Fayetteville","cat":"Grocery","icon":"\ud83c\udf3f","lat":36.0838,"lng":-94.1882},{"id":"g_costco_rog","name":"Costco \u2013 Rogers","cat":"Grocery","icon":"\ud83d\uded2","lat":36.3201,"lng":-94.1589},{"id":"f_8th_market","name":"8th Street Market \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf74","lat":36.3686,"lng":-94.2094},{"id":"f_dickson","name":"Dickson Street Entertainment District","cat":"Food & Drink","icon":"\ud83c\udf7a","lat":36.0822,"lng":-94.1719},{"id":"f_onyx_bxv","name":"Onyx Coffee Lab \u2013 Bentonville","cat":"Food & Drink","icon":"\u2615","lat":36.3742,"lng":-94.2089},{"id":"f_onyx_rog","name":"Onyx Coffee Lab \u2013 Rogers","cat":"Food & Drink","icon":"\u2615","lat":36.3312,"lng":-94.1189},{"id":"f_pressroom","name":"The Press Room \u2013 Fayetteville","cat":"Food & Drink","icon":"\ud83c\udf7a","lat":36.0831,"lng":-94.1712},{"id":"f_preacher_bxv","name":"Preacher's Son \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf7d","lat":36.3736,"lng":-94.2093},{"id":"f_hive_bxv","name":"The Hive at 21c \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf7d","lat":36.3721,"lng":-94.2096},{"id":"f_sassy_rog","name":"Sassy's BBQ \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf56","lat":36.3312,"lng":-94.1198},{"id":"f_george_fay","name":"George's Majestic Lounge \u2013 Fayetteville","cat":"Food & Drink","icon":"\ud83c\udfb6","lat":36.0817,"lng":-94.1722},{"id":"f_hammontree","name":"Hammontree's Grilled Cheese \u2013 Fayetteville","cat":"Food & Drink","icon":"\ud83e\uddc0","lat":36.0827,"lng":-94.1631},{"id":"f_bentonville_sq","name":"Bentonville Square","cat":"Food & Drink","icon":"\ud83c\udfd9","lat":36.3733,"lng":-94.2087},{"id":"f_sqroot_rog","name":"Square Root \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf55","lat":36.3328,"lng":-94.1181},{"id":"f_tusk_needle","name":"Tusk & Needle \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf74","lat":36.3698,"lng":-94.2083},{"id":"f_tusk_rog","name":"Tusk & Needle \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf74","lat":36.3312,"lng":-94.1192},{"id":"f_farrell_fay","name":"Farrell's BBQ \u2013 Fayetteville","cat":"Food & Drink","icon":"\ud83c\udf56","lat":36.0818,"lng":-94.1714},{"id":"f_flyway_bxv","name":"Flyway Brewing \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf7a","lat":36.3729,"lng":-94.2081},{"id":"f_bentonville_brewing","name":"Bentonville Brewing Company","cat":"Food & Drink","icon":"\ud83c\udf7a","lat":36.3721,"lng":-94.2078},{"id":"f_ozark_beer_rog","name":"Ozark Beer Company \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf7a","lat":36.3319,"lng":-94.1183},{"id":"f_wood_stone_bxv","name":"Wood Stone Craft Pizza \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf55","lat":36.3731,"lng":-94.2084},{"id":"f_tavola_bxv","name":"Tavola Trattoria \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf5d","lat":36.3723,"lng":-94.2091},{"id":"f_mojo_bxv","name":"Mojo's Patio Bar & Grill \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf2e","lat":36.3728,"lng":-94.2089},{"id":"f_andina_bxv","name":"Andina Cocina \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf74","lat":36.3734,"lng":-94.2086},{"id":"f_rokc_rog","name":"ROKC \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf55","lat":36.3321,"lng":-94.1179},{"id":"f_collier_rog","name":"Collier Drug Store Soda Fountain \u2013 Rogers","cat":"Food & Drink","icon":"\ud83e\udd64","lat":36.3318,"lng":-94.1177},{"id":"f_21c_bar","name":"The Pharmacy Bar \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf78","lat":36.3316,"lng":-94.1181},{"id":"f_starbucks_bxv","name":"Starbucks \u2013 Bentonville","cat":"Food & Drink","icon":"\u2615","lat":36.3641,"lng":-94.2198},{"id":"f_starbucks_rog","name":"Starbucks \u2013 Rogers","cat":"Food & Drink","icon":"\u2615","lat":36.3104,"lng":-94.1763},{"id":"f_starbucks_fay","name":"Starbucks \u2013 Fayetteville","cat":"Food & Drink","icon":"\u2615","lat":36.0826,"lng":-94.1748},{"id":"f_starbucks_spr","name":"Starbucks \u2013 Springdale","cat":"Food & Drink","icon":"\u2615","lat":36.1878,"lng":-94.1491},{"id":"f_panera_bxv","name":"Panera Bread \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83e\udd56","lat":36.3638,"lng":-94.2196},{"id":"f_panera_rog","name":"Panera Bread \u2013 Rogers","cat":"Food & Drink","icon":"\ud83e\udd56","lat":36.3097,"lng":-94.1759},{"id":"f_chick_fil_a_rog","name":"Chick-fil-A \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf57","lat":36.3103,"lng":-94.1765},{"id":"f_chick_fil_a_bxv","name":"Chick-fil-A \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf57","lat":36.3631,"lng":-94.2193},{"id":"f_whataburger_spr","name":"Whataburger \u2013 Springdale","cat":"Food & Drink","icon":"\ud83c\udf54","lat":36.1872,"lng":-94.1483},{"id":"f_chipotle_rog","name":"Chipotle \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf2f","lat":36.3094,"lng":-94.1757},{"id":"f_chipotle_fay","name":"Chipotle \u2013 Fayetteville","cat":"Food & Drink","icon":"\ud83c\udf2f","lat":36.0739,"lng":-94.1884},{"id":"f_pjscoffee_rog","name":"PJ's Coffee \u2013 Rogers","cat":"Food & Drink","icon":"\u2615","lat":36.3318,"lng":-94.1491},{"id":"f_arsaga_fay","name":"Arsaga's Coffee \u2013 Fayetteville","cat":"Food & Drink","icon":"\u2615","lat":36.0829,"lng":-94.1723},{"id":"f_root_bxv","name":"Root Coffeehouse \u2013 Bentonville","cat":"Food & Drink","icon":"\u2615","lat":36.3739,"lng":-94.2092},{"id":"f_meteor_bxv","name":"Meteor Caf\u00e9 \u2013 Bentonville","cat":"Food & Drink","icon":"\u2615","lat":36.3741,"lng":-94.2088},{"id":"f_bordinos_fay","name":"Bordino's \u2013 Fayetteville","cat":"Food & Drink","icon":"\ud83c\udf5d","lat":36.0812,"lng":-94.1716},{"id":"f_tacos4life_bxv","name":"Tacos 4 Life \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf2e","lat":36.3618,"lng":-94.2191},{"id":"f_tacos4life_rog","name":"Tacos 4 Life \u2013 Rogers","cat":"Food & Drink","icon":"\ud83c\udf2e","lat":36.3098,"lng":-94.1761},{"id":"f_ellas_bxv","name":"Ella's Restaurant \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf7d","lat":36.3726,"lng":-94.2084},{"id":"f_molinaro_bxv","name":"Molinaro's Italian Kitchen \u2013 Bentonville","cat":"Food & Drink","icon":"\ud83c\udf5d","lat":36.3724,"lng":-94.2082},{"id":"f_james_at_the_mill","name":"James at the Mill \u2013 Johnson","cat":"Food & Drink","icon":"\ud83c\udf7d","lat":36.1021,"lng":-94.1589},{"id":"f_turkey_leg_spr","name":"The Turkey Leg \u2013 Springdale","cat":"Food & Drink","icon":"\ud83c\udf57","lat":36.1881,"lng":-94.1387},{"id":"f_hammontree_rog","name":"Hammontree's \u2013 Rogers","cat":"Food & Drink","icon":"\ud83e\uddc0","lat":36.3321,"lng":-94.1188},{"id":"fit_lifetime_rog","name":"Life Time Fitness \u2013 Rogers","cat":"Fitness","icon":"\ud83d\udcaa","lat":36.3089,"lng":-94.1812},{"id":"fit_cyclebar_bxv","name":"CycleBar \u2013 Bentonville","cat":"Fitness","icon":"\ud83d\udeb4","lat":36.3623,"lng":-94.2178},{"id":"fit_orangetheory_rog","name":"Orangetheory Fitness \u2013 Rogers","cat":"Fitness","icon":"\ud83d\udd25","lat":36.3102,"lng":-94.1771},{"id":"fit_orangetheory_bxv","name":"Orangetheory Fitness \u2013 Bentonville","cat":"Fitness","icon":"\ud83d\udd25","lat":36.3609,"lng":-94.2168},{"id":"fit_anytime_bxv","name":"Anytime Fitness \u2013 Bentonville","cat":"Fitness","icon":"\ud83c\udfcb","lat":36.3541,"lng":-94.2264},{"id":"fit_anytime_rog","name":"Anytime Fitness \u2013 Rogers","cat":"Fitness","icon":"\ud83c\udfcb","lat":36.3312,"lng":-94.1498},{"id":"fit_anytime_spr","name":"Anytime Fitness \u2013 Springdale","cat":"Fitness","icon":"\ud83c\udfcb","lat":36.1878,"lng":-94.1489},{"id":"fit_ymca_fay","name":"Fayetteville YMCA","cat":"Fitness","icon":"\ud83c\udfca","lat":36.0843,"lng":-94.1573},{"id":"fit_ymca_rog","name":"Rogers YMCA","cat":"Fitness","icon":"\ud83c\udfca","lat":36.3421,"lng":-94.1648},{"id":"fit_snap_spr","name":"Snap Fitness \u2013 Springdale","cat":"Fitness","icon":"\ud83d\udcaa","lat":36.1876,"lng":-94.1498},{"id":"fit_f45_bxv","name":"F45 Training \u2013 Bentonville","cat":"Fitness","icon":"\ud83c\udfcb","lat":36.3601,"lng":-94.2153},{"id":"fit_f45_rog","name":"F45 Training \u2013 Rogers","cat":"Fitness","icon":"\ud83c\udfcb","lat":36.3309,"lng":-94.1492},{"id":"fit_pure_fay","name":"Pure Barre \u2013 Fayetteville","cat":"Fitness","icon":"\ud83e\ude70","lat":36.0802,"lng":-94.1748},{"id":"fit_pure_bxv","name":"Pure Barre \u2013 Bentonville","cat":"Fitness","icon":"\ud83e\ude70","lat":36.3612,"lng":-94.2171},{"id":"fit_topgolf_rog","name":"Topgolf \u2013 Rogers","cat":"Fitness","icon":"\u26f3","lat":36.3241,"lng":-94.1512},{"id":"fit_planet_fay","name":"Planet Fitness \u2013 Fayetteville","cat":"Fitness","icon":"\ud83d\udcaa","lat":36.0752,"lng":-94.1893},{"id":"fit_planet_spr","name":"Planet Fitness \u2013 Springdale","cat":"Fitness","icon":"\ud83d\udcaa","lat":36.1862,"lng":-94.1492},{"id":"fit_crunch_rog","name":"Crunch Fitness \u2013 Rogers","cat":"Fitness","icon":"\ud83d\udcaa","lat":36.3308,"lng":-94.1487},{"id":"fit_bodyfit_bxv","name":"Body Fit Training \u2013 Bentonville","cat":"Fitness","icon":"\ud83c\udfcb","lat":36.3619,"lng":-94.2182},{"id":"fit_yoga_bxv","name":"Hot Yoga Bentonville","cat":"Fitness","icon":"\ud83e\uddd8","lat":36.3623,"lng":-94.2186},{"id":"fit_yoga_fay","name":"Core Power Yoga \u2013 Fayetteville","cat":"Fitness","icon":"\ud83e\uddd8","lat":36.0809,"lng":-94.1741},{"id":"fit_nwa_tennis","name":"NWA Tennis Center \u2013 Rogers","cat":"Fitness","icon":"\ud83c\udfbe","lat":36.3289,"lng":-94.1498},{"id":"h_mercy_rog","name":"Mercy Hospital Rogers","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.3328,"lng":-94.1274},{"id":"h_mercy_bxv","name":"Mercy Hospital Bentonville","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.3513,"lng":-94.2214},{"id":"h_wash_reg","name":"Washington Regional Medical Center","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.0889,"lng":-94.1869},{"id":"h_uams_fay","name":"UAMS Northwest \u2013 Fayetteville","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.0968,"lng":-94.1856},{"id":"h_arkansaschildren","name":"Arkansas Children's NW \u2013 Springdale","cat":"Healthcare","icon":"\ud83d\udc76","lat":36.1931,"lng":-94.1623},{"id":"h_springdale_uc","name":"Springdale Urgent Care","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.1762,"lng":-94.1524},{"id":"h_nwa_urgent_rog","name":"NWA Urgent Care \u2013 Rogers","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.3312,"lng":-94.1489},{"id":"h_nwa_urgent_bxv","name":"NWA Urgent Care \u2013 Bentonville","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.3618,"lng":-94.2189},{"id":"h_dental_bxv","name":"Gentle Dental \u2013 Bentonville","cat":"Healthcare","icon":"\ud83e\uddb7","lat":36.3612,"lng":-94.2231},{"id":"h_dental_rog","name":"Aspen Dental \u2013 Rogers","cat":"Healthcare","icon":"\ud83e\uddb7","lat":36.3308,"lng":-94.1492},{"id":"h_dental_fay","name":"Fayetteville Dental Arts","cat":"Healthcare","icon":"\ud83e\uddb7","lat":36.0818,"lng":-94.1732},{"id":"h_vision_bxv","name":"America's Best Eyeglasses \u2013 Bentonville","cat":"Healthcare","icon":"\ud83d\udc53","lat":36.3621,"lng":-94.2188},{"id":"h_vision_rog","name":"LensCrafters \u2013 Rogers","cat":"Healthcare","icon":"\ud83d\udc53","lat":36.3078,"lng":-94.1749},{"id":"h_nwaos","name":"NWA Orthopaedic Surgery Specialists","cat":"Healthcare","icon":"\ud83e\uddb4","lat":36.3489,"lng":-94.2198},{"id":"h_ozark_guidance","name":"Ozark Guidance \u2013 Springdale","cat":"Healthcare","icon":"\ud83e\udde0","lat":36.1872,"lng":-94.1381},{"id":"h_nwa_dermatology","name":"NWA Dermatology","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.3512,"lng":-94.2201},{"id":"h_nwa_womens","name":"NWA Women's Clinic \u2013 Rogers","cat":"Healthcare","icon":"\ud83c\udfe5","lat":36.3321,"lng":-94.1271},{"id":"hot_21c","name":"21c Museum Hotel \u2013 Bentonville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3723,"lng":-94.2094},{"id":"hot_embassy_rog","name":"Embassy Suites \u2013 Rogers","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3127,"lng":-94.1412},{"id":"hot_hyatt_bxv","name":"Hyatt Place \u2013 Bentonville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3641,"lng":-94.2069},{"id":"hot_marriott_fay","name":"Marriott \u2013 Fayetteville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.0817,"lng":-94.1627},{"id":"hot_hampton_bxv","name":"Hampton Inn \u2013 Bentonville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3589,"lng":-94.2213},{"id":"hot_hilton_rog","name":"Hilton Garden Inn \u2013 Rogers","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3109,"lng":-94.1401},{"id":"hot_springhill_spr","name":"SpringHill Suites \u2013 Springdale","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.1841,"lng":-94.1589},{"id":"hot_courtyard_fay","name":"Courtyard by Marriott \u2013 Fayetteville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.0823,"lng":-94.1631},{"id":"hot_aloft_bxv","name":"Aloft Hotel \u2013 Bentonville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3639,"lng":-94.2143},{"id":"hot_homewood_rog","name":"Homewood Suites \u2013 Rogers","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3132,"lng":-94.1418},{"id":"hot_doubletree_fay","name":"DoubleTree \u2013 Fayetteville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.0812,"lng":-94.1643},{"id":"hot_residence_bxv","name":"Residence Inn \u2013 Bentonville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3642,"lng":-94.2072},{"id":"hot_townplace_rog","name":"TownePlace Suites \u2013 Rogers","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3134,"lng":-94.1421},{"id":"hot_candlewood_fay","name":"Candlewood Suites \u2013 Fayetteville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.0819,"lng":-94.1634},{"id":"hot_best_western_spr","name":"Best Western Springdale","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.1838,"lng":-94.1578},{"id":"hot_staybridge_rog","name":"Staybridge Suites \u2013 Rogers","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3129,"lng":-94.1409},{"id":"hot_sleep_inn_bxv","name":"Sleep Inn & Suites \u2013 Bentonville","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.3588,"lng":-94.2209},{"id":"hot_comfort_spr","name":"Comfort Inn \u2013 Springdale","cat":"Hotel","icon":"\ud83c\udfe8","lat":36.1843,"lng":-94.1582},{"id":"w_great_clips_bxv","name":"Great Clips \u2013 Bentonville","cat":"Wellness","icon":"\u2702","lat":36.3619,"lng":-94.2186},{"id":"w_great_clips_rog","name":"Great Clips \u2013 Rogers","cat":"Wellness","icon":"\u2702","lat":36.3101,"lng":-94.1763},{"id":"w_supercuts_fay","name":"Supercuts \u2013 Fayetteville","cat":"Wellness","icon":"\u2702","lat":36.0741,"lng":-94.1886},{"id":"w_sport_clips_bxv","name":"Sport Clips \u2013 Bentonville","cat":"Wellness","icon":"\u2702","lat":36.3621,"lng":-94.2191},{"id":"w_hand_stone_rog","name":"Hand & Stone Massage \u2013 Rogers","cat":"Wellness","icon":"\ud83d\udc86","lat":36.3093,"lng":-94.1756},{"id":"w_massage_envy_fay","name":"Massage Envy \u2013 Fayetteville","cat":"Wellness","icon":"\ud83d\udc86","lat":36.0743,"lng":-94.1888},{"id":"w_massage_envy_bxv","name":"Massage Envy \u2013 Bentonville","cat":"Wellness","icon":"\ud83d\udc86","lat":36.3623,"lng":-94.2193},{"id":"w_european_wax_rog","name":"European Wax Center \u2013 Rogers","cat":"Wellness","icon":"\ud83d\udc84","lat":36.3091,"lng":-94.1754},{"id":"w_nail_salon_bxv","name":"Pink Nails & Spa \u2013 Bentonville","cat":"Wellness","icon":"\ud83d\udc85","lat":36.3617,"lng":-94.2188},{"id":"w_drybar_bxv","name":"Drybar \u2013 Bentonville","cat":"Wellness","icon":"\u2702","lat":36.3626,"lng":-94.2196},{"id":"art_crystalbridges","name":"Crystal Bridges Museum of American Art","cat":"Arts & Culture","icon":"\ud83d\uddbc","lat":36.3816,"lng":-94.2045},{"id":"art_walton_arts","name":"Walton Arts Center \u2013 Fayetteville","cat":"Arts & Culture","icon":"\ud83c\udfad","lat":36.0771,"lng":-94.1674},{"id":"art_momentary","name":"The Momentary \u2013 Bentonville","cat":"Arts & Culture","icon":"\ud83c\udfa8","lat":36.3701,"lng":-94.2059},{"id":"art_argenta_bxv","name":"Walmart Arkansas Music Pavilion (AMP)","cat":"Arts & Culture","icon":"\ud83c\udfb6","lat":36.3481,"lng":-94.2301},{"id":"art_trike_fay","name":"TheatreSquared \u2013 Fayetteville","cat":"Arts & Culture","icon":"\ud83c\udfad","lat":36.0796,"lng":-94.1711},{"id":"art_nwa_artcenter","name":"NWA Art Center \u2013 Springdale","cat":"Arts & Culture","icon":"\ud83c\udfa8","lat":36.1873,"lng":-94.1321},{"id":"art_bentonville_film","name":"Bentonville Film Festival Venue","cat":"Arts & Culture","icon":"\ud83c\udfac","lat":36.3721,"lng":-94.2089},{"id":"art_museum_rog","name":"Rogers Historical Museum","cat":"Arts & Culture","icon":"\ud83c\udfdb","lat":36.3323,"lng":-94.1178},{"id":"art_shiloh_museum","name":"Shiloh Museum of Ozark History \u2013 Springdale","cat":"Arts & Culture","icon":"\ud83c\udfdb","lat":36.1879,"lng":-94.1291},{"id":"sp_razorback_stad","name":"Donald W. Reynolds Razorback Stadium","cat":"Sports","icon":"\ud83c\udfdf","lat":36.0681,"lng":-94.1736},{"id":"sp_bud_walker","name":"Bud Walton Arena \u2013 Fayetteville","cat":"Sports","icon":"\ud83c\udfc0","lat":36.0687,"lng":-94.1762},{"id":"sp_baum_stadium","name":"Baum-Walker Stadium (Baseball)","cat":"Sports","icon":"\u26be","lat":36.0689,"lng":-94.1801},{"id":"sp_nwa_naturals","name":"Arvest Ballpark \u2013 Springdale","cat":"Sports","icon":"\u26be","lat":36.1766,"lng":-94.1482},{"id":"sp_back40_trails","name":"Back 40 Trail System \u2013 Bentonville","cat":"Sports","icon":"\ud83d\udeb5","lat":36.3621,"lng":-94.2312},{"id":"sp_slaughter_pen","name":"Slaughter Pen Trails \u2013 Bentonville","cat":"Sports","icon":"\ud83d\udeb5","lat":36.3541,"lng":-94.2389},{"id":"sp_coler_trails","name":"Coler Mountain Bike Preserve","cat":"Sports","icon":"\ud83d\udeb5","lat":36.3712,"lng":-94.2176},{"id":"sp_lake_leatherwood","name":"Lake Leatherwood City Park \u2013 Eureka Springs","cat":"Sports","icon":"\ud83d\udeb4","lat":36.4021,"lng":-93.7312},{"id":"sp_razorback_greenway","name":"Razorback Regional Greenway","cat":"Sports","icon":"\ud83d\udeb4","lat":36.1891,"lng":-94.1489},{"id":"out_tanyard_creek","name":"Tanyard Creek Trail \u2013 Fayetteville","cat":"Outdoors","icon":"\ud83c\udf3f","lat":36.0863,"lng":-94.1983},{"id":"out_wilson_park","name":"Wilson Park \u2013 Fayetteville","cat":"Outdoors","icon":"\ud83c\udf33","lat":36.0866,"lng":-94.1741},{"id":"out_compton_garden","name":"Compton Gardens \u2013 Bentonville","cat":"Outdoors","icon":"\ud83c\udf3a","lat":36.3792,"lng":-94.2061},{"id":"out_benton_aboret","name":"Bentonville Arboretum","cat":"Outdoors","icon":"\ud83c\udf32","lat":36.3813,"lng":-94.2112},{"id":"out_lake_sequoyah","name":"Lake Sequoyah \u2013 Fayetteville","cat":"Outdoors","icon":"\ud83c\udfca","lat":36.0449,"lng":-94.1873},{"id":"out_whitaker_park","name":"Whitaker Park \u2013 Bentonville","cat":"Outdoors","icon":"\ud83d\udef9","lat":36.3712,"lng":-94.2153},{"id":"out_scott_park","name":"Scott Family Amazeum","cat":"Outdoors","icon":"\ud83c\udfaa","lat":36.3561,"lng":-94.2271},{"id":"out_osage_park","name":"Osage Park \u2013 Bentonville","cat":"Outdoors","icon":"\ud83c\udf33","lat":36.3689,"lng":-94.2301},{"id":"out_benton_sq_park","name":"Bentonville Central Park","cat":"Outdoors","icon":"\ud83c\udf33","lat":36.3731,"lng":-94.2087},{"id":"ed_uark","name":"University of Arkansas","cat":"Education","icon":"\ud83c\udf93","lat":36.0681,"lng":-94.1737},{"id":"ed_nwacc","name":"NorthWest Arkansas Community College","cat":"Education","icon":"\ud83c\udf93","lat":36.3347,"lng":-94.1408},{"id":"ed_jbu","name":"John Brown University \u2013 Siloam Springs","cat":"Education","icon":"\ud83c\udf93","lat":36.1863,"lng":-94.5152},{"id":"ed_bentonville_hs","name":"Bentonville High School","cat":"Education","icon":"\ud83c\udfeb","lat":36.3489,"lng":-94.2213},{"id":"ed_rogers_hs","name":"Rogers Heritage High School","cat":"Education","icon":"\ud83c\udfeb","lat":36.3391,"lng":-94.1532},{"id":"ed_fayetteville_hs","name":"Fayetteville High School","cat":"Education","icon":"\ud83c\udfeb","lat":36.0723,"lng":-94.1623},{"id":"ed_springdale_hs","name":"Springdale High School","cat":"Education","icon":"\ud83c\udfeb","lat":36.1923,"lng":-94.1338},{"id":"ed_amazeum","name":"Scott Family Amazeum (Children's Museum)","cat":"Education","icon":"\ud83c\udfaa","lat":36.3561,"lng":-94.2271},{"id":"ed_haas_hall","name":"Haas Hall Academy \u2013 Fayetteville","cat":"Education","icon":"\ud83c\udfeb","lat":36.0798,"lng":-94.1743},{"id":"ed_bentonville_west","name":"Bentonville West High School","cat":"Education","icon":"\ud83c\udfeb","lat":36.3412,"lng":-94.2412},{"id":"corp_walmart_hq","name":"Walmart Home Office","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.3729,"lng":-94.2192},{"id":"corp_tyson_hq","name":"Tyson Foods HQ \u2013 Springdale","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.1871,"lng":-94.1339},{"id":"corp_jbhunt_hq","name":"J.B. Hunt Transport HQ","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.3311,"lng":-94.1431},{"id":"corp_arvest_bank","name":"Arvest Bank HQ \u2013 Fayetteville","cat":"Corporate","icon":"\ud83c\udfe6","lat":36.0786,"lng":-94.1649},{"id":"corp_endeavor","name":"Endeavor NWA","cat":"Corporate","icon":"\ud83d\ude80","lat":36.3742,"lng":-94.2083},{"id":"corp_heartland","name":"Heartland Ventures","cat":"Corporate","icon":"\ud83d\udcbc","lat":36.3721,"lng":-94.2091},{"id":"corp_nwacc_biz","name":"NWA Business Park \u2013 Springdale","cat":"Corporate","icon":"\ud83c\udfed","lat":36.1912,"lng":-94.1502},{"id":"corp_intermodal","name":"Northwest Arkansas Intermodal Facility","cat":"Corporate","icon":"\ud83d\ude9b","lat":36.2984,"lng":-94.3012},{"id":"corp_supplier_row_bxv","name":"Supplier Row \u2013 Bentonville (NE A St corridor)","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.3641,"lng":-94.2241},{"id":"corp_george_pf","name":"George's Inc. \u2013 Springdale (Poultry)","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.1879,"lng":-94.1341},{"id":"corp_simmons","name":"Simmons Foods \u2013 Siloam Springs","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.1889,"lng":-94.5223},{"id":"corp_dassault","name":"Dassault Falcon Jet \u2013 Little Rock/XNA","cat":"Corporate","icon":"\u2708","lat":36.2821,"lng":-94.3071},{"id":"corp_nwa_chamber","name":"Rogers-Lowell Area Chamber of Commerce","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.3328,"lng":-94.1189},{"id":"corp_bxv_chamber","name":"Bentonville-Bella Vista Chamber","cat":"Corporate","icon":"\ud83c\udfe2","lat":36.3731,"lng":-94.2089},{"id":"re_brightwater","name":"Brightwater \u2013 Bentonville","cat":"Real Estate","icon":"\ud83c\udfd8","lat":36.3412,"lng":-94.2298},{"id":"re_greenhouse","name":"The Greenhouse District \u2013 Bentonville","cat":"Real Estate","icon":"\ud83c\udf3f","lat":36.3689,"lng":-94.2301},{"id":"re_creekside_rog","name":"Creekside at Pinnacle Hills \u2013 Rogers","cat":"Real Estate","icon":"\ud83c\udfd8","lat":36.3021,"lng":-94.1823},{"id":"re_sugar_bxv","name":"Sugar Creek \u2013 Bentonville","cat":"Real Estate","icon":"\ud83c\udfd8","lat":36.3389,"lng":-94.2412},{"id":"re_bellvue_bella","name":"Bella Vista Developments","cat":"Real Estate","icon":"\ud83c\udfe1","lat":36.4631,"lng":-94.3012},{"id":"re_tontitown","name":"Tontitown Residential Corridor","cat":"Real Estate","icon":"\ud83c\udfd8","lat":36.1789,"lng":-94.2421},{"id":"re_downtown_bxv","name":"Downtown Bentonville Lofts","cat":"Real Estate","icon":"\ud83c\udfd9","lat":36.3731,"lng":-94.2091},{"id":"re_centerton","name":"Centerton Residential Growth Corridor","cat":"Real Estate","icon":"\ud83c\udfd8","lat":36.3601,"lng":-94.2849},{"id":"re_cave_springs","name":"Cave Springs New Developments","cat":"Real Estate","icon":"\ud83c\udfe1","lat":36.2912,"lng":-94.2401},{"id":"auto_bxv_mile","name":"Auto Dealer Row \u2013 Bentonville (Hwy 102)","cat":"Auto","icon":"\ud83d\ude97","lat":36.3411,"lng":-94.2209},{"id":"auto_rog_strip","name":"Auto Dealer Row \u2013 Rogers (S 8th St)","cat":"Auto","icon":"\ud83d\ude97","lat":36.3244,"lng":-94.1385},{"id":"auto_fay_strip","name":"Auto Dealer Row \u2013 Fayetteville (Hwy 71)","cat":"Auto","icon":"\ud83d\ude97","lat":36.0882,"lng":-94.1751},{"id":"auto_carmax_rog","name":"CarMax \u2013 Rogers","cat":"Auto","icon":"\ud83d\ude99","lat":36.3189,"lng":-94.1401},{"id":"auto_ford_bxv","name":"Cavenaugh Ford \u2013 Bentonville","cat":"Auto","icon":"\ud83d\ude99","lat":36.3412,"lng":-94.2218},{"id":"auto_toyota_fay","name":"Crain Toyota \u2013 Fayetteville","cat":"Auto","icon":"\ud83d\ude99","lat":36.0913,"lng":-94.1748},{"id":"auto_rv_bxv","name":"Camping World / RV \u2013 Bentonville","cat":"Auto","icon":"\ud83d\ude90","lat":36.3312,"lng":-94.2298},{"id":"auto_jiffy_bxv","name":"Jiffy Lube \u2013 Bentonville","cat":"Auto","icon":"\ud83d\udd27","lat":36.3619,"lng":-94.2189},{"id":"auto_firestone_rog","name":"Firestone Complete Auto Care \u2013 Rogers","cat":"Auto","icon":"\ud83d\udd27","lat":36.3308,"lng":-94.1491},{"id":"rx_cvs_bxv","name":"CVS Pharmacy \u2013 Bentonville","cat":"Pharmacy","icon":"\ud83d\udc8a","lat":36.3628,"lng":-94.2201},{"id":"rx_walgreens_rog","name":"Walgreens \u2013 Rogers","cat":"Pharmacy","icon":"\ud83d\udc8a","lat":36.3334,"lng":-94.1192},{"id":"rx_walgreens_fay","name":"Walgreens \u2013 Fayetteville","cat":"Pharmacy","icon":"\ud83d\udc8a","lat":36.0814,"lng":-94.1724},{"id":"rx_walgreens_bxv","name":"Walgreens \u2013 Bentonville","cat":"Pharmacy","icon":"\ud83d\udc8a","lat":36.3631,"lng":-94.2198},{"id":"rx_walmart_pharm","name":"Walmart Pharmacy \u2013 Bentonville","cat":"Pharmacy","icon":"\ud83d\udc8a","lat":36.3728,"lng":-94.2083},{"id":"gov_bentonville_ch","name":"Bentonville City Hall","cat":"Government","icon":"\ud83c\udfdb","lat":36.3731,"lng":-94.2087},{"id":"gov_rogers_ch","name":"Rogers City Hall","cat":"Government","icon":"\ud83c\udfdb","lat":36.3323,"lng":-94.1178},{"id":"gov_fay_ch","name":"Fayetteville City Hall","cat":"Government","icon":"\ud83c\udfdb","lat":36.0781,"lng":-94.1591},{"id":"gov_benton_county","name":"Benton County Courthouse","cat":"Government","icon":"\ud83c\udfdb","lat":36.3731,"lng":-94.2094},{"id":"gov_wash_county","name":"Washington County Courthouse","cat":"Government","icon":"\ud83c\udfdb","lat":36.0789,"lng":-94.1581},{"id":"gov_springdale_ch","name":"Springdale City Hall","cat":"Government","icon":"\ud83c\udfdb","lat":36.1871,"lng":-94.1291},{"id":"ent_ropeswing","name":"Rope Swing Public House","cat":"Entertainment","icon":"\ud83c\udfb3","lat":36.3741,"lng":-94.2076},{"id":"ent_bowlero_rog","name":"Bowlero \u2013 Rogers","cat":"Entertainment","icon":"\ud83c\udfb3","lat":36.3098,"lng":-94.1768},{"id":"ent_arcade_bxv","name":"Pinpoint Laser Tag \u2013 Bentonville","cat":"Entertainment","icon":"\ud83c\udfae","lat":36.3601,"lng":-94.2209},{"id":"ent_escape_rog","name":"Escape Room NWA \u2013 Rogers","cat":"Entertainment","icon":"\ud83d\udd10","lat":36.3312,"lng":-94.1189},{"id":"ent_movie_rog","name":"AMC Pinnacle Hills 12 \u2013 Rogers","cat":"Entertainment","icon":"\ud83c\udfac","lat":36.3061,"lng":-94.1737},{"id":"ent_movie_fay","name":"Malco Razorback Cinema \u2013 Fayetteville","cat":"Entertainment","icon":"\ud83c\udfac","lat":36.1819,"lng":-94.1808},{"id":"ent_movie_bxv","name":"Malco Rogers Towne Center Cinema","cat":"Entertainment","icon":"\ud83c\udfac","lat":36.3412,"lng":-94.1798},{"id":"ent_trampoline_bxv","name":"Altitude Trampoline Park \u2013 Bentonville","cat":"Entertainment","icon":"\ud83e\udd38","lat":36.3512,"lng":-94.2219},{"id":"ent_axe_rog","name":"Axe Monkeys \u2013 Rogers","cat":"Entertainment","icon":"\ud83e\ude93","lat":36.3319,"lng":-94.1192},{"id":"ent_main_event_rog","name":"Main Event Entertainment \u2013 Rogers","cat":"Entertainment","icon":"\ud83c\udfae","lat":36.3229,"lng":-94.1489},{"id":"rel_fellowship","name":"Fellowship Bible Church \u2013 Rogers","cat":"Religious","icon":"\u26ea","lat":36.3128,"lng":-94.1649},{"id":"rel_cross_ch_bxv","name":"Cross Church \u2013 Springdale","cat":"Religious","icon":"\u26ea","lat":36.1923,"lng":-94.1613},{"id":"rel_first_united","name":"First United Methodist \u2013 Fayetteville","cat":"Religious","icon":"\u26ea","lat":36.0781,"lng":-94.1619},{"id":"rel_church_christ_bxv","name":"Church of Christ \u2013 Bentonville","cat":"Religious","icon":"\u26ea","lat":36.3621,"lng":-94.2198},{"id":"air_xna","name":"XNA \u2013 Northwest Arkansas National Airport","cat":"Airport","icon":"\u2708","lat":36.2818,"lng":-94.3068}];
 /* ══════════════ STATE ══════════════ */
-const ST = { goal:null, subIntent:null, budget:2000, proximityTarget:null, walmartMode:false, filter:'all', inc:'weekly', qty:2, cart:{}, tab:'screens', schedMode:'standard', customDays:[], schedStart:null, schedEnd:null, customDayCount:0, advertiserName:'' };
+const ST = { goal:null, subIntent:null, budget:2000, proximityTarget:null, walmartMode:false, filter:'all', inc:'weekly', qty:2, cart:{}, tab:'screens', schedMode:'standard', customDays:[], schedStart:null, schedEnd:null, customDayCount:0, advertiserName:'', advertiserCategory:'' };
 
 /* ══════════════ RATE CONFIG ══════════════
    Source of truth for all pricing logic.
@@ -13488,23 +13488,43 @@ const INV = [
   }
 ];
 
-/* ── Normalize INV fields for backwards compat with booking engine ── */
-/* New CSV-sourced inventory uses weekly_imp + cpm; engine needs mo_rate, wkly_impr, impr */
+/* ── Normalize INV — compute rates and tag directional billboards ── */
+const EXIT_86   = { lat: 36.3481, lng: -94.2205 }; // I-49 Exit 86
+const SE_WALTON = { lat: 36.3580, lng: -94.2100 }; // SE Walton Blvd corridor
+const WMT_HQ_PT = { lat: 36.3729, lng: -94.2192 }; // Home Office
+
 INV.forEach(s => {
-  const wkly_imp = s.weekly_imp || s.wkly_impr || 0;
-  // Derived rates from platform CPM (already has 20% margin baked in)
-  if (!s.wkly_rate)  s.wkly_rate  = Math.round(s.cpm * wkly_imp / 1000);
-  if (!s.mo_rate)    s.mo_rate    = Math.round(s.wkly_rate * 4.33);
-  if (!s.daily_rate) s.daily_rate = Math.round(s.wkly_rate / 7 * RATE_CONFIG.daily_premium);
-  if (!s.wkly_impr)  s.wkly_impr  = wkly_imp;
-  if (!s.daily_impr) s.daily_impr = Math.round(wkly_imp / 7);
-  // impr: human-readable impression string for UI display
-  if (!s.impr) s.impr = wkly_imp >= 1000 ? Math.round(wkly_imp/1000)+'K+/wk' : wkly_imp+'/wk';
-  // area: city, state abbreviation (new data has full state name)
-  if (!s.area) s.area = s.city + (s.state ? ', ' + (s.state.length > 2 ? s.state.slice(0,2).toUpperCase() : s.state) : '');
-  // Google Maps / Street View URLs from lat/lng
+  const wkly_imp  = s.weekly_imp || s.wkly_impr || 0;
+  const wkly_rate = wkly_imp && s.cpm ? Math.round(s.cpm * wkly_imp / 1000) : 0;
+  s.wkly_rate  = wkly_rate;
+  s.mo_rate    = Math.round(wkly_rate * 4.33);
+  s.daily_rate = Math.round(wkly_rate / 7 * RATE_CONFIG.daily_premium);
+  s.wkly_impr  = wkly_imp;
+  s.weekly_imp = wkly_imp;
+  s.daily_impr = Math.round(wkly_imp / 7);
+  s.impr = wkly_imp >= 1000
+    ? Math.round(wkly_imp / 1000) + 'K+/wk'
+    : (wkly_imp || '—') + '/wk';
+  if (!s.area) {
+    s.area = (s.city || '') + (s.state ? ', ' + (s.state.length > 2 ? s.state.slice(0,2).toUpperCase() : s.state) : '');
+  }
   if (!s.maps_url) s.maps_url = `https://www.google.com/maps?q=${s.lat},${s.lng}`;
   if (!s.sv_url)   s.sv_url   = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${s.lat},${s.lng}`;
+
+  // Tag billboard directionality for Walmart buyer map
+  if (s.type === 'billboard') {
+    const distToExit   = haversineMiles(EXIT_86.lat,   EXIT_86.lng,   s.lat, s.lng);
+    const distToWalton = haversineMiles(SE_WALTON.lat, SE_WALTON.lng, s.lat, s.lng);
+    const distToHQ     = haversineMiles(WMT_HQ_PT.lat, WMT_HQ_PT.lng, s.lat, s.lng);
+    if (distToExit < 1.5 || (s.lat < WMT_HQ_PT.lat && distToHQ < 4.0)) {
+      s._direction = 'inbound';
+    } else if (distToWalton < 1.5 || (s.lat > WMT_HQ_PT.lat && distToHQ < 4.0)) {
+      s._direction = 'outbound';
+    } else {
+      s._direction = null;
+    }
+    s._priority = (distToExit < 0.8 || distToWalton < 0.8);
+  }
 });
 
 /* ── Map & filter constants ── */
@@ -13716,6 +13736,31 @@ function makePinIcon(s) {
   const sel = !!ST.cart[s.id];
   const unitP = Math.round(unitRate(s));
   const priceLabel = unitP >= 1000 ? '$' + (unitP/1000).toFixed(1) + 'K' : '$' + unitP;
+
+  // Directional badge for billboard pins on Walmart goal
+  if (s.type === 'billboard' &&
+      ST.goal === "Reach Walmart & Sam's Club buyers" &&
+      s._direction) {
+    const arrow = s._direction === 'inbound' ? '▶ HQ' : '◀ Home';
+    const badge = s._priority ? '⭐ ' : '';
+    const color = s._direction === 'inbound' ? '#1f3d2a' : '#c8440a';
+    return L.divIcon({
+      className: '',
+      html: '<div style="'
+        + 'background:' + color + ';'
+        + 'color:#fff;border-radius:10px;'
+        + 'padding:3px 8px;font-size:10px;font-weight:700;'
+        + 'white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.25);'
+        + 'font-family:inherit;line-height:1.4;'
+        + 'border:2px solid #fff;">'
+        + badge + priceLabel
+        + '<br><span style="font-size:8px;font-weight:400;opacity:0.85">'
+        + arrow + '</span></div>',
+      iconSize:   [72, 36],
+      iconAnchor: [36, 36],
+    });
+  }
+
   return L.divIcon({
     className: '',
     html: `<div class="custom-pin">
@@ -14475,20 +14520,27 @@ function goTo(step) {
     showOptimizer();
     // Invalidate map size after layout settles on mobile
     setTimeout(() => { if (map) map.invalidateSize(true); }, 300);
-    // Render Walmart buyer heatmap zones + auto-suggest if applicable
+    // Render heatmap + auto-suggest recommendations for all goals
     setTimeout(() => {
       renderWmtHeatmap();
-      // Auto-load default recommendation for Walmart goal
-      if (ST.goal === "Reach Walmart & Sam's Club buyers") {
-        const recs = fallbackRecommend();
-        if (recs.length > 0 && !optRecommended.length) {
-          optRecommended = recs.map(s => ({...s, _why: ''}));
-          document.getElementById('opt-reason').textContent =
-            'Top screens across the 3 buyer zones — anchored by a billboard on SE Walton Blvd, the daily commute route for Home Office executives.';
-          renderOptimizerBasket();
-          document.getElementById('opt-results').classList.add('visible');
-          document.getElementById('opt-thinking').classList.remove('visible');
+      const recs = fallbackRecommend();
+      if (recs.length > 0) {
+        optRecommended = recs;
+        const total = recs.reduce((t, s) => t + screenRate(s), 0);
+        const pct   = Math.round(total / (ST.budget||1) * 100);
+        const el    = document.getElementById('opt-reason');
+        if (el && !el.querySelector('div')) {
+          el.textContent = recs.length + ' screen'
+            + (recs.length !== 1 ? 's' : '')
+            + ' recommended · $' + total.toLocaleString()
+            + '/wk (' + pct + '% of your $'
+            + (ST.budget||0).toLocaleString() + ' budget)';
         }
+        renderOptimizerBasket();
+        const results  = document.getElementById('opt-results');
+        const thinking = document.getElementById('opt-thinking');
+        if (results)  results.classList.add('visible');
+        if (thinking) thinking.classList.remove('visible');
       }
     }, 500);
 
@@ -15485,6 +15537,27 @@ Respond ONLY with valid JSON, no markdown:
   btn.textContent = '✦ Recommend again';
 }
 
+function handleAdvertiserInput(val) {
+  ST.advertiserName = val.trim();
+  const nm = ST.advertiserName.toLowerCase();
+  if (/pizza|burger|taco|chicken|sandwich|cafe|coffee|deli|bistro|grill|bbq|sushi|ramen/.test(nm)) {
+    ST.advertiserCategory = 'qsr';
+  } else if (/fitness|gym|yoga|crossfit|planet fit|anytime/.test(nm)) {
+    ST.advertiserCategory = 'fitness';
+  } else if (/beer|brewery|winery|spirits|liquor|bar /.test(nm)) {
+    ST.advertiserCategory = 'alcohol';
+  } else {
+    ST.advertiserCategory = '';
+  }
+}
+
+function screenRate(s) {
+  if (s.cpm && s.weekly_imp) return Math.round(s.cpm * s.weekly_imp / 1000);
+  if (s.wkly_rate && s.wkly_rate > 0) return s.wkly_rate;
+  if (s.mo_rate   && s.mo_rate   > 0) return Math.round(s.mo_rate / 4.33);
+  return 0;
+}
+
 function showBudgetWarning(budget) {
   const cheapest = INV
     .map(s => ({ ...s, _rate: s.wkly_rate || Math.round((s.cpm||0)*(s.weekly_imp||0)/1000) }))
@@ -15522,132 +15595,244 @@ function fallbackRecommend() {
   const goal   = ST.goal;
   const budget = ST.budget || 2000;
 
-  // Budget sanity check — any screens affordable at this budget?
-  const affordable = INV.filter(s => {
-    const rate = s.wkly_rate || Math.round((s.cpm||0)*(s.weekly_imp||0)/1000);
-    return rate > 0 && rate <= budget * 1.1;
-  });
-  if (affordable.length === 0) {
-    showBudgetWarning(budget);
-    return [];
+  function d(s, lat, lng) {
+    return haversineMiles(lat, lng, s.lat, s.lng);
   }
 
-  function proximityScore(s, tLat, tLng, maxMi) {
-    const dist = haversineMiles(tLat, tLng, s.lat, s.lng);
-    if (dist > maxMi) return 0;
-    return Math.round(50 * Math.max(0, 1 - dist / maxMi));
-  }
-
-  function budgetFitScore(rate, remaining) {
-    if (!rate || rate <= 0) return 0;
-    const pct = rate / remaining;
-    if (pct < 0.05) return 10;
-    if (pct < 0.10) return 20;
-    if (pct < 0.20) return 45;
-    if (pct < 0.35) return 50;
-    if (pct < 0.50) return 40;
-    if (pct < 0.70) return 25;
-    if (pct <= 1.00) return 15;
-    return 0;
-  }
-
-  function scoreAndRank(pool, getProxScore) {
+  /* Greedy fill — always returns at least 1 screen.
+     First candidate always included even if over budget.
+     Keeps adding until 80-105% budget utilization or max screens reached. */
+  function greedyFill(candidates, maxScreens) {
+    if (!candidates || candidates.length === 0) return [];
+    maxScreens = maxScreens || 6;
     const picks = [];
     let spent = 0;
-    let remaining = budget;
-    const scored = pool.map(s => {
-      const rate = s.wkly_rate || Math.round((s.cpm||0)*(s.weekly_imp||0)/1000);
-      if (!rate || rate > budget) return null;
-      const prox = getProxScore(s);
-      const bfit = budgetFitScore(rate, remaining);
-      return { ...s, _rate: rate, _score: prox + bfit };
-    }).filter(Boolean).sort((a, b) => b._score - a._score);
-    for (const s of scored) {
-      if (picks.length >= 6) break;
-      if (spent + s._rate > budget * 1.05) continue;
-      picks.push(s);
-      spent += s._rate;
-      remaining = Math.max(1, budget - spent);
+    for (const s of candidates) {
+      if (picks.length >= maxScreens) break;
+      if (picks.length === 0) {
+        picks.push(s); spent += s._rate; continue;
+      }
+      if (spent + s._rate <= budget * 1.05) {
+        picks.push(s); spent += s._rate;
+      }
+      if (spent >= budget * 0.80) break;
     }
     return picks;
   }
 
-  // WALMART: billboard ≤5mi HQ first, then airport if budget remains
+  /* Show over-budget card if spend exceeds budget */
+  function maybeShowBudgetCard(picks) {
+    const spent = picks.reduce((t, s) => t + s._rate, 0);
+    const overBudget = spent > budget * 1.05;
+    const el = document.getElementById('opt-reason');
+    if (!el) return;
+    if (overBudget && picks.length > 0) {
+      const overAmt = spent - budget;
+      el.innerHTML = '<div style="background:#fdf1eb;border-left:3px solid'
+        + ' #c8440a;border-radius:0 8px 8px 0;padding:10px 14px;margin:4px 0">'
+        + '<div style="font-size:12px;font-weight:600;color:#c8440a;margin-bottom:3px">'
+        + '⚠️ Slightly over budget due to inventory constraints</div>'
+        + '<div style="font-size:11px;color:#4a4540;line-height:1.5">'
+        + 'The closest available screens total <strong>$'
+        + spent.toLocaleString() + '/wk</strong> — $'
+        + overAmt.toLocaleString()
+        + ' above your $' + budget.toLocaleString()
+        + '/wk budget. These are the best options near your target area. '
+        + 'Adjust your budget or remove a screen to bring it in range.</div></div>';
+    }
+  }
+
+  /* ── OBJECTIVE 1: Reach Walmart & Sam's Club buyers ── */
   if (goal === "Reach Walmart & Sam's Club buyers") {
     const HQ = WALMART_HQ;
-    const billboards = INV.filter(s =>
-      s.type === 'billboard' &&
-      haversineMiles(HQ.lat, HQ.lng, s.lat, s.lng) <= 5.0
-    );
-    const airports = INV.filter(s => s.type === 'airport');
+
+    function inTargetZone(s) {
+      if (haversineMiles(HQ.lat, HQ.lng, s.lat, s.lng) <= 5.0) return true;
+      if (typeof WMT_ZONES !== 'undefined') {
+        return WMT_ZONES.some(z =>
+          haversineMiles(z.lat, z.lng, s.lat, s.lng) <= z.radius
+        );
+      }
+      return false;
+    }
+
+    let billboards = INV
+      .filter(s => s.type === 'billboard' && inTargetZone(s))
+      .map(s => ({ ...s, _rate: screenRate(s), _dist: d(s, HQ.lat, HQ.lng) }))
+      .filter(s => s._rate > 0);
+
+    // Expand to 10mi if none found in zone
+    if (billboards.length === 0) {
+      billboards = INV
+        .filter(s => s.type === 'billboard')
+        .map(s => ({ ...s, _rate: screenRate(s), _dist: d(s, HQ.lat, HQ.lng) }))
+        .filter(s => s._rate > 0 && s._dist <= 10.0);
+    }
+
+    // Sort: priority units first, then by distance
+    billboards.sort((a, b) => {
+      if (a._priority && !b._priority) return -1;
+      if (!a._priority && b._priority) return 1;
+      return a._dist - b._dist;
+    });
+
+    // Fill to 70% of budget with billboards
     const picks = [];
     let spent = 0;
-    const scoredBills = billboards.map(s => {
-      const rate = s.wkly_rate || Math.round(s.cpm*(s.weekly_imp||0)/1000);
-      const prox = proximityScore(s, HQ.lat, HQ.lng, 5.0);
-      const bfit = budgetFitScore(rate, budget);
-      return { ...s, _rate: rate, _score: prox + bfit };
-    }).filter(s => s._rate > 0 && s._rate <= budget)
-      .sort((a, b) => b._score - a._score);
-    for (const s of scoredBills) {
+    for (const s of billboards) {
       if (picks.length >= 3) break;
-      if (spent + s._rate <= budget * 0.65 + 300) {
+      if (picks.length === 0) {
+        picks.push(s); spent += s._rate; continue;
+      }
+      if (spent + s._rate <= budget * 0.70) {
         picks.push(s); spent += s._rate;
       }
     }
-    if (picks.length >= 1) {
-      const scoredAirports = airports.map(s => {
-        const rate = s.wkly_rate || Math.round(s.cpm*(s.weekly_imp||0)/1000);
-        return { ...s, _rate: rate };
-      }).filter(s => s._rate > 0 && spent + s._rate <= budget * 1.10)
-        .sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0));
-      for (const s of scoredAirports) {
-        if (picks.length >= 5) break;
+
+    // Add 1 airport screen with remaining budget
+    const airports = INV
+      .filter(s => s.type === 'airport')
+      .map(s => ({ ...s, _rate: screenRate(s) }))
+      .filter(s => s._rate > 0)
+      .sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0));
+
+    for (const s of airports) {
+      if (picks.length >= 5) break;
+      if (spent + s._rate <= budget * 1.05) {
         picks.push(s); spent += s._rate; break;
       }
     }
+
+    maybeShowBudgetCard(picks);
     return picks;
   }
 
-  // POI / FOOT TRAFFIC: proximity to ST.proximityTarget
+  /* ── OBJECTIVE 2: Drive customers through your door ── */
   if (goal === 'Drive customers through your door') {
-    const pool = INV.filter(s => isVisible(s));
+
+    // Format conflict exclusions based on advertiser category
+    const cat = (ST.advertiserCategory || '').toLowerCase();
+    function hasConflict(s) {
+      if (cat.includes('qsr') || cat.includes('fast food') ||
+          cat.includes('restaurant')) {
+        if (s.type === 'dining') return true;
+      }
+      if (cat.includes('alcohol') || cat.includes('beer') ||
+          cat.includes('wine') || cat.includes('spirits')) {
+        if (s.type === 'healthcare') return true;
+      }
+      if (cat.includes('fitness') || cat.includes('gym')) {
+        if (s.type === 'gym') return true;
+      }
+      return false;
+    }
+
+    const pool = INV
+      .filter(s => isVisible(s) && !hasConflict(s))
+      .map(s => ({ ...s, _rate: screenRate(s) }))
+      .filter(s => s._rate > 0);
+
     if (ST.proximityTarget) {
       const tLat = ST.proximityTarget.lat;
       const tLng = ST.proximityTarget.lng;
-      return scoreAndRank(pool, s => proximityScore(s, tLat, tLng, 5.0));
+
+      const byDist = pool
+        .map(s => ({ ...s, _dist: d(s, tLat, tLng) }))
+        .sort((a, b) => a._dist - b._dist);
+
+      // Expanding radius until 2+ candidates
+      let candidates = [];
+      for (const radius of [1, 3, 5, 10, 9999]) {
+        candidates = byDist.filter(s => s._dist <= radius);
+        if (candidates.length >= 2) break;
+      }
+      if (candidates.length === 0) candidates = byDist;
+
+      const picks = greedyFill(candidates, 6);
+      maybeShowBudgetCard(picks);
+      return picks;
     }
-    return pool
-      .map(s => ({ ...s, _rate: s.wkly_rate || Math.round(s.cpm*(s.weekly_imp||0)/1000) }))
-      .filter(s => s._rate > 0 && s._rate <= budget)
-      .sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0))
-      .slice(0, 5);
+
+    // No POI — highest impressions within budget
+    const byImpr = pool.sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0));
+    const picks = greedyFill(byImpr, 5);
+    maybeShowBudgetCard(picks);
+    return picks;
   }
 
-  // TECH & STARTUP: proximity to NWA innovation hubs, billboard first
+  /* ── OBJECTIVE 3: Reach the NWA Tech & Startup Scene ── */
   if (goal === 'Reach the NWA Tech & Startup Scene') {
-    const TECH_HUBS = [
-      { lat: 36.3729, lng: -94.2192, weight: 1.0 },
-      { lat: 36.0626, lng: -94.1574, weight: 0.8 },
-      { lat: 36.3320, lng: -94.1185, weight: 0.7 },
+    const HUBS = [
+      { lat: 36.3729, lng: -94.2192 },
+      { lat: 36.0626, lng: -94.1574 },
+      { lat: 36.3320, lng: -94.1185 },
     ];
-    const pool = INV.filter(s =>
-      ['billboard','gym','dining'].includes(s.type) && isVisible(s)
-    );
-    return scoreAndRank(pool, s => {
-      const best = Math.max(...TECH_HUBS.map(h =>
-        proximityScore(s, h.lat, h.lng, 8.0) * h.weight
-      ));
-      return Math.round(best);
-    });
+
+    function minDistToHubs(s) {
+      return Math.min(...HUBS.map(h => d(s, h.lat, h.lng)));
+    }
+
+    // Billboards sorted by closest hub — priority units first
+    let billPool = INV
+      .filter(s => s.type === 'billboard' && isVisible(s))
+      .map(s => ({ ...s, _rate: screenRate(s), _dist: minDistToHubs(s) }))
+      .filter(s => s._rate > 0)
+      .sort((a, b) => {
+        if (a._priority && !b._priority) return -1;
+        if (!a._priority && b._priority) return 1;
+        return a._dist - b._dist;
+      });
+
+    // Expand if no billboards found near hubs
+    if (billPool.length === 0) {
+      billPool = INV
+        .filter(s => s.type === 'billboard')
+        .map(s => ({ ...s, _rate: screenRate(s), _dist: minDistToHubs(s) }))
+        .filter(s => s._rate > 0)
+        .sort((a, b) => a._dist - b._dist);
+    }
+
+    const secondary = INV
+      .filter(s => ['gym','dining'].includes(s.type) && isVisible(s))
+      .map(s => ({ ...s, _rate: screenRate(s), _dist: minDistToHubs(s) }))
+      .filter(s => s._rate > 0)
+      .sort((a, b) => a._dist - b._dist);
+
+    // Fill to 70% with billboards
+    const picks = [];
+    let spent = 0;
+    for (const s of billPool) {
+      if (picks.length >= 3) break;
+      if (picks.length === 0) {
+        picks.push(s); spent += s._rate; continue;
+      }
+      if (spent + s._rate <= budget * 0.70) {
+        picks.push(s); spent += s._rate;
+      }
+    }
+
+    // Fill remaining 30% with gym/dining
+    for (const s of secondary) {
+      if (picks.length >= 6) break;
+      if (spent + s._rate <= budget * 1.05) {
+        picks.push(s); spent += s._rate;
+      }
+      if (spent >= budget * 0.80) break;
+    }
+
+    maybeShowBudgetCard(picks);
+    return picks;
   }
 
-  // DEFAULT: impressions within budget
-  return INV.filter(s => isVisible(s))
-    .map(s => ({ ...s, _rate: s.wkly_rate || Math.round(s.cpm*(s.weekly_imp||0)/1000) }))
-    .filter(s => s._rate > 0 && s._rate <= budget)
-    .sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0))
-    .slice(0, 5);
+  /* ── DEFAULT ── */
+  const pool = INV
+    .filter(s => isVisible(s))
+    .map(s => ({ ...s, _rate: screenRate(s) }))
+    .filter(s => s._rate > 0)
+    .sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0));
+  const picks = greedyFill(pool, 5);
+  maybeShowBudgetCard(picks);
+  return picks;
 }
 function renderOptimizerBasket() {
   const container = document.getElementById('opt-basket');
@@ -16027,6 +16212,44 @@ function renderWmtHeatmap() {
 
   const bounds = L.latLngBounds(WMT_ZONES.map(z => [z.lat, z.lng])).pad(0.35);
   map.fitBounds(bounds);
+
+  // Directional legend
+  const existingLegend = document.getElementById('dir-legend');
+  if (existingLegend) existingLegend.remove();
+
+  if (ST.goal === "Reach Walmart & Sam's Club buyers") {
+    const legendDiv = document.createElement('div');
+    legendDiv.id = 'dir-legend';
+    legendDiv.style.cssText = 'position:absolute;top:12px;right:12px;'
+      + 'z-index:500;background:rgba(255,255,255,0.95);'
+      + 'border:1px solid #e2ddd6;border-radius:10px;'
+      + 'padding:10px 14px;font-family:inherit;'
+      + 'box-shadow:0 2px 8px rgba(0,0,0,0.1);min-width:180px';
+    legendDiv.innerHTML =
+      '<div style="font-size:10px;font-weight:700;text-transform:uppercase;'
+      + 'letter-spacing:0.06em;color:#6b6560;margin-bottom:8px">'
+      + 'Billboard direction</div>'
+      + '<div style="display:flex;flex-direction:column;gap:6px">'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<div style="background:#1f3d2a;color:#fff;border-radius:6px;'
+      + 'padding:2px 7px;font-size:10px;font-weight:700">▶ HQ</div>'
+      + '<span style="font-size:11px;color:#1a1714">Inbound to Home Office</span></div>'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<div style="background:#c8440a;color:#fff;border-radius:6px;'
+      + 'padding:2px 7px;font-size:10px;font-weight:700">◀ Home</div>'
+      + '<span style="font-size:11px;color:#1a1714">Outbound to residential</span></div>'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-top:2px">'
+      + '<span style="font-size:12px">⭐</span>'
+      + '<span style="font-size:11px;color:#1a1714">Priority unit (Exit 86 / SE Walton)</span></div>'
+      + '</div>';
+    const mapEl = document.getElementById('map');
+    if (mapEl) mapEl.style.position = 'relative';
+    const mapWrap = mapEl ? mapEl.parentElement : null;
+    if (mapWrap) {
+      mapWrap.style.position = 'relative';
+      mapWrap.appendChild(legendDiv);
+    }
+  }
 }
 </script>
 
