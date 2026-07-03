@@ -1857,6 +1857,14 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 }
 .wmt-zone-tip::before { display: none; }
 
+/* Billboard direction hover tooltip (replaces persistent map legend) */
+.billboard-dir-tip {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 6px 8px;
+}
+.billboard-dir-tip::before { display: none; }
+
 /* MarkerCluster overrides — clean dark clusters */
 .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large,
 .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
@@ -13814,9 +13822,32 @@ function makePinIcon(s) {
 function addMarker(s) {
   const m = L.marker([s.lat, s.lng], { icon: makePinIcon(s) });
   m.on('click', () => openPopup(s, m));
+  bindDirectionTooltip(s, m);
   markers[s.id] = m;
   if (markerCluster) markerCluster.addLayer(m);
   else m.addTo(map);
+}
+
+function bindDirectionTooltip(s, m) {
+  if (m.getTooltip()) m.unbindTooltip();
+  if (s.type !== 'billboard' || !s._direction) return;
+  if (ST.goal !== "Reach Walmart & Sam's Club buyers") return;
+  const arrow = s._direction === 'inbound' ? '▶ HQ' : '◀ Home';
+  const color = s._direction === 'inbound' ? '#1f3d2a' : '#c8440a';
+  const label = s._direction === 'inbound' ? 'Inbound to Home Office' : 'Outbound to residential';
+  const priorityRow = s._priority
+    ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px">'
+      + '<span style="font-size:11px">⭐</span>'
+      + '<span style="font-size:10px;color:#1a1714">Priority unit (Exit 86 / SE Walton)</span></div>'
+    : '';
+  const html = '<div style="font-family:inherit;padding:2px 2px">'
+    + '<div style="display:flex;align-items:center;gap:6px">'
+    + '<span style="background:' + color + ';color:#fff;border-radius:6px;'
+    + 'padding:2px 6px;font-size:10px;font-weight:700">' + arrow + '</span>'
+    + '<span style="font-size:11px;color:#1a1714">' + label + '</span></div>'
+    + priorityRow
+    + '</div>';
+  m.bindTooltip(html, { direction: 'top', offset: [0, -18], className: 'billboard-dir-tip', opacity: 1 });
 }
 
 function refreshMarkers() {
@@ -13828,6 +13859,7 @@ function refreshMarkers() {
     const m = markers[s.id];
     if (!m) return;
     m.setIcon(makePinIcon(s));
+    bindDirectionTooltip(s, m);
     if (isVisible(s)) toAdd.push(m);
   });
   markerCluster.addLayers(toAdd);
@@ -16261,43 +16293,10 @@ function renderWmtHeatmap() {
   const bounds = L.latLngBounds(WMT_ZONES.map(z => [z.lat, z.lng])).pad(0.35);
   map.fitBounds(bounds);
 
-  // Directional legend
+  // Directional legend removed from persistent view — direction info now
+  // shown on hover via marker tooltip (see makePinIcon/addMarker).
   const existingLegend = document.getElementById('dir-legend');
   if (existingLegend) existingLegend.remove();
-
-  if (ST.goal === "Reach Walmart & Sam's Club buyers") {
-    const legendDiv = document.createElement('div');
-    legendDiv.id = 'dir-legend';
-    legendDiv.style.cssText = 'position:absolute;top:12px;right:12px;'
-      + 'z-index:500;background:rgba(255,255,255,0.95);'
-      + 'border:1px solid #e2ddd6;border-radius:10px;'
-      + 'padding:10px 14px;font-family:inherit;'
-      + 'box-shadow:0 2px 8px rgba(0,0,0,0.1);min-width:180px';
-    legendDiv.innerHTML =
-      '<div style="font-size:10px;font-weight:700;text-transform:uppercase;'
-      + 'letter-spacing:0.06em;color:#6b6560;margin-bottom:8px">'
-      + 'Billboard direction</div>'
-      + '<div style="display:flex;flex-direction:column;gap:6px">'
-      + '<div style="display:flex;align-items:center;gap:8px">'
-      + '<div style="background:#1f3d2a;color:#fff;border-radius:6px;'
-      + 'padding:2px 7px;font-size:10px;font-weight:700">▶ HQ</div>'
-      + '<span style="font-size:11px;color:#1a1714">Inbound to Home Office</span></div>'
-      + '<div style="display:flex;align-items:center;gap:8px">'
-      + '<div style="background:#c8440a;color:#fff;border-radius:6px;'
-      + 'padding:2px 7px;font-size:10px;font-weight:700">◀ Home</div>'
-      + '<span style="font-size:11px;color:#1a1714">Outbound to residential</span></div>'
-      + '<div style="display:flex;align-items:center;gap:8px;margin-top:2px">'
-      + '<span style="font-size:12px">⭐</span>'
-      + '<span style="font-size:11px;color:#1a1714">Priority unit (Exit 86 / SE Walton)</span></div>'
-      + '</div>';
-    const mapEl = document.getElementById('map');
-    if (mapEl) mapEl.style.position = 'relative';
-    const mapWrap = mapEl ? mapEl.parentElement : null;
-    if (mapWrap) {
-      mapWrap.style.position = 'relative';
-      mapWrap.appendChild(legendDiv);
-    }
-  }
 }
 </script>
 
