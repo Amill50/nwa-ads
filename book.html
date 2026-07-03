@@ -298,7 +298,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 }
 .s2-top-left { display: flex; align-items: center; gap: 20px; }
 .s2-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: #fff; }
-.s2-count { font-size: 12px; color: rgba(255,255,255,0.72); }
+.s2-count { font-size: 12px; color: rgba(255,255,255,0.85); }
 .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; }
 .f-chip {
   padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
@@ -307,11 +307,12 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   display: inline-flex; align-items: center; gap: 5px;
 }
 .f-chip.off {
-  opacity: 0.45; text-decoration: line-through;
+  opacity: 0.7; color: var(--ink2); text-decoration: line-through;
   background: var(--bg); border-style: dashed;
 }
-.f-chip:hover { border-color: var(--ink2); }
+.f-chip:hover { border-color: var(--ink2); color: var(--ink); }
 .f-chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.f-chip.on:hover { color: #fff; }
 
 /* VIEW TOGGLE */
 .view-toggle {
@@ -1894,14 +1895,19 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   <div class="steps">
     <div class="step active" id="nav-s1" onclick="goTo(1)"><div class="step-dot" id="dot-1">1</div> Goal</div>
     <div class="step-sep"></div>
-    <div class="step" id="nav-s2" onclick="goTo(2)"><div class="step-dot" id="dot-2">2</div> Pick Screens</div>
+    <div class="step" id="nav-s2" onclick="goTo(2)"><div class="step-dot" id="dot-2">2</div> Details</div>
     <div class="step-sep"></div>
-    <div class="step" id="nav-s3" onclick="goTo(3)"><div class="step-dot" id="dot-3">3</div> Creative</div>
+    <div class="step" id="nav-s3" onclick="goTo(3)"><div class="step-dot" id="dot-3">3</div> Setup</div>
     <div class="step-sep"></div>
-    <div class="step" id="nav-s4" onclick="goTo(4)"><div class="step-dot" id="dot-4">4</div> Checkout</div>
+    <div class="step" id="nav-s4" onclick="goTo(4)"><div class="step-dot" id="dot-4">4</div> Pick Screens</div>
+    <div class="step-sep"></div>
+    <div class="step" id="nav-s5" onclick="goTo(5)"><div class="step-dot" id="dot-5">5</div> Cart</div>
+    <div class="step-sep"></div>
+    <div class="step" id="nav-s6" onclick="goTo(6)"><div class="step-dot" id="dot-6">6</div> Creative</div>
+    <div class="step-sep"></div>
+    <div class="step" id="nav-s7" onclick="goTo(7)"><div class="step-dot" id="dot-7">7</div> Checkout</div>
   </div>
   <div class="nav-status" id="nav-sel"></div>
-  <a href="/proposal.html" style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.65);text-decoration:none;white-space:nowrap;padding:4px 0;flex-shrink:0" onmouseover="this.style.color='#f0905a'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Send as proposal →</a>
 </nav>
 
 <!-- ═══ STEP 1 ═══ -->
@@ -1985,10 +1991,10 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
             <svg class="insight-why-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="insight-why-body">
-            <div class="insight-why-content">We geo-target three high-concentration buyer zones: the Walmart Home Office campus, the Scissortail executive residential enclave, and the Pinnacle Country Club corridor in Rogers. Screens are filtered to billboard, cinema, gym, and dining — the environments where decision-makers spend time outside the office.</div>
+            <div class="insight-why-content">We geo-target three high-concentration buyer zones: the Walmart Home Office campus, the Scissortail executive residential enclave, and the Pinnacle Country Club corridor in Rogers. Screens are filtered to billboard, cinema, gym, dining, sports &amp; entertainment, and recreation venues — the environments where decision-makers spend time outside the office.</div>
           </div>
           <div class="insight-walmart-badge" style="margin-top:0;padding:10px 14px;background:linear-gradient(135deg,#eaf2ec,#f6f4ef);border-radius:8px;border-left:3px solid #1f3d2a">
-            <span style="font-size:12px;font-weight:600;color:#1f3d2a">🗺 Map shows 3 buyer concentration zones · Billboard, cinema, gym &amp; dining only</span>
+            <span style="font-size:12px;font-weight:600;color:#1f3d2a">🗺 Map shows 3 buyer concentration zones · Billboard, cinema, gym, dining, sports &amp; recreation</span>
           </div>
         </div>
         <div class="insight-subintent">
@@ -2157,7 +2163,19 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
       </div>
     </div>
 
-    <div style="margin-bottom:16px">
+    <div style="margin-bottom:44px"></div>
+
+    <button class="btn-next" onclick="goTo(2)">Continue <span class="arr">→</span></button>
+  </div>
+</div>
+
+<!-- ═══ STEP 2: CAMPAIGN & CUSTOMER DETAILS ═══ -->
+<div class="panel panel-scroll" id="panel-2">
+  <div class="s1-wrap">
+    <h1 class="s1-title">Tell us about your business</h1>
+    <div class="s1-sub" style="margin-bottom:28px">We'll use this to tailor your campaign and send your booking confirmation.</div>
+
+    <div style="margin-bottom:20px">
       <label style="display:block;font-size:11px;font-weight:600;color:#6b6560;
         text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">
         Your business name
@@ -2176,6 +2194,47 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
         onblur="this.style.borderColor='#e2ddd6'"
       />
     </div>
+
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px">
+      <div style="flex:1;min-width:180px">
+        <label style="display:block;font-size:11px;font-weight:600;color:#6b6560;
+          text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">First name</label>
+        <input type="text" id="f-fname" placeholder="Jane" autocomplete="given-name"
+          style="width:100%;padding:10px 14px;border:1.5px solid #e2ddd6;border-radius:8px;
+            font-size:13px;font-family:inherit;color:#1a1714;background:#fffef9;outline:none;
+            transition:border-color .15s;box-sizing:border-box;"
+          onfocus="this.style.borderColor='#1f3d2a'" onblur="this.style.borderColor='#e2ddd6'" />
+      </div>
+      <div style="flex:1;min-width:180px">
+        <label style="display:block;font-size:11px;font-weight:600;color:#6b6560;
+          text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Last name</label>
+        <input type="text" id="f-lname" placeholder="Smith" autocomplete="family-name"
+          style="width:100%;padding:10px 14px;border:1.5px solid #e2ddd6;border-radius:8px;
+            font-size:13px;font-family:inherit;color:#1a1714;background:#fffef9;outline:none;
+            transition:border-color .15s;box-sizing:border-box;"
+          onfocus="this.style.borderColor='#1f3d2a'" onblur="this.style.borderColor='#e2ddd6'" />
+      </div>
+    </div>
+
+    <div style="margin-bottom:44px">
+      <label style="display:block;font-size:11px;font-weight:600;color:#6b6560;
+        text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Email</label>
+      <input type="email" id="f-email" placeholder="jane@yourbusiness.com" autocomplete="email"
+        style="width:100%;padding:10px 14px;border:1.5px solid #e2ddd6;border-radius:8px;
+          font-size:13px;font-family:inherit;color:#1a1714;background:#fffef9;outline:none;
+          transition:border-color .15s;box-sizing:border-box;"
+        onfocus="this.style.borderColor='#1f3d2a'" onblur="this.style.borderColor='#e2ddd6'" />
+    </div>
+
+    <button class="btn-next" onclick="goTo(3)">Continue <span class="arr">→</span></button>
+  </div>
+</div>
+
+<!-- ═══ STEP 3: CAMPAIGN SETUP ═══ -->
+<div class="panel panel-scroll" id="panel-3">
+  <div class="s1-wrap">
+    <h1 class="s1-title">Set your budget &amp; schedule</h1>
+    <div class="s1-sub" style="margin-bottom:28px">Choose how much you want to spend and for how long.</div>
 
     <div class="budget-row">
       <span id="budget-label">Monthly budget</span>
@@ -2260,20 +2319,20 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 
     <div style="margin-bottom:44px"></div>
 
-    <button class="btn-next" onclick="goTo(2)">Show me available screens <span class="arr">→</span></button>
+    <button class="btn-next" onclick="goTo(4)">Show me available screens <span class="arr">→</span></button>
   </div>
 </div>
 
-<!-- ═══ STEP 2 ═══ -->
-<div class="panel" id="panel-2">
+<!-- ═══ STEP 4: MAP ═══ -->
+<div class="panel" id="panel-4">
   <!-- Top bar -->
   <div class="s2-top">
     <div class="s2-top-left">
       <div>
         <div class="s2-title" id="s2-title-text">Pick your screens</div>
         <div class="s2-count" id="s2-count">82 screens across NWA</div>
-        <div id="s2-hint-text" style="font-size:12px;color:rgba(255,255,255,0.85);font-weight:500;margin-top:3px;max-width:480px;"></div>
-        <div id="s2-advertiser" style="display:none;font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px;font-style:italic"></div>
+        <div id="s2-hint-text" style="font-size:12px;color:rgba(255,255,255,0.9);font-weight:500;margin-top:3px;max-width:480px;"></div>
+        <div id="s2-advertiser" style="display:none;font-size:11px;color:rgba(255,255,255,0.78);margin-top:3px;font-style:italic"></div>
       </div>
       <div class="filter-bar">
         <div class="f-chip on" id="chip-all" onclick="doFilter(this,'all')">All formats</div>
@@ -2319,7 +2378,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
           <span style="font-size:12px;font-weight:500;color:#1a1714">Pinnacle Country Club</span>
         </div>
       </div>
-      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2ddd6;font-size:10px;color:#6b6560">Billboard · Cinema · Gym · Dining only</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2ddd6;font-size:10px;color:#6b6560">Billboard, cinema, gym, dining, sports & recreation</div>
     </div>
 
     <div class="s2-side">
@@ -2376,42 +2435,6 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 
       </div>
 
-      <!-- ── State 3: Cart review ── -->
-      <div class="sb-state" id="sb-cart-review" style="display:none">
-
-        <div class="sb-browse-head">
-          <button class="sb-back" onclick="showState('browse')">← Edit screens</button>
-          <span class="sbcr-head-title">Your campaign</span>
-        </div>
-        <div class="sbcr-scroll">
-          <div class="cart-summary">
-            <div class="cart-summary-head">
-              <span class="cs-title" id="cs-title">Campaign cart</span>
-              <span class="cs-clear" id="cs-clear" onclick="clearAllCart()">Clear all</span>
-            </div>
-            <div class="cart-table-wrap" id="cart-table-wrap">
-              <div class="cart-empty-state">
-                <span class="cei">🛒</span>
-                Tap <strong>+</strong> on any screen to add it to your campaign.
-              </div>
-            </div>
-            <div class="cart-totals" id="cart-totals">
-              <div class="tot-line"><span>Subtotal</span><span id="ct-sub">$0</span></div>
-              <div class="tot-line grand">
-                <span>Total (<span id="ct-mo">—</span>)</span>
-                <span class="v" id="ct-grand">$0</span>
-              </div>
-            </div>
-          </div>
-          <div class="sbcr-note">Platform fee included — no hidden costs</div>
-          <div class="sbcr-ctas">
-            <button class="btn-cta" onclick="showSummary()">✦ Continue to creative upload →</button>
-            <button class="sbcr-edit" onclick="showState('browse')">← Edit screens</button>
-          </div>
-        </div>
-
-      </div>
-
       <!-- ── Sticky footer (always visible) ── -->
       <div class="sb-footer">
         <div class="sbf-left">
@@ -2419,17 +2442,61 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
           <div id="ch-sub" class="sbf-note">Add screens to continue</div>
         </div>
         <div class="sbf-right">
-          <button class="sbf-btn" id="btn-s2" disabled onclick="showState('cart')">Review campaign →</button>
+          <button class="sbf-btn" id="btn-s2" disabled onclick="goTo(5)">Review campaign →</button>
         </div>
       </div>
-      <div id="cart-cta-note" style="display:none"></div>
 
     </div>
   </div>
 </div>
 
-<!-- ═══ STEP 3 ═══ -->
-<div class="panel panel-scroll" id="panel-3">
+<!-- ═══ STEP 5: CART ═══ -->
+<div class="panel panel-scroll" id="panel-5">
+  <div class="s1-wrap">
+    <h1 class="s1-title">Your campaign cart</h1>
+    <div class="s1-sub" style="margin-bottom:28px">Review your screens before moving on to creative &amp; checkout.</div>
+
+    <div class="cart-summary">
+      <div class="cart-summary-head">
+        <span class="cs-title" id="cs-title">Campaign cart</span>
+        <span class="cs-clear" id="cs-clear" onclick="clearAllCart()">Clear all</span>
+      </div>
+      <div class="cart-table-wrap" id="cart-table-wrap">
+        <div class="cart-empty-state">
+          <span class="cei">🛒</span>
+          Tap <strong>+</strong> on any screen to add it to your campaign.
+        </div>
+      </div>
+      <div class="cart-totals" id="cart-totals">
+        <div class="tot-line"><span>Subtotal</span><span id="ct-sub">$0</span></div>
+        <div class="tot-line grand">
+          <span>Total (<span id="ct-mo">—</span>)</span>
+          <span class="v" id="ct-grand">$0</span>
+        </div>
+      </div>
+    </div>
+    <div id="cart-cta-note" style="display:none"></div>
+    <div class="sbcr-note">Platform fee included — no hidden costs</div>
+
+    <div class="proposal-section" id="proposal-section-wrap" style="margin-top:24px">
+      <h5>Want to share this campaign first?</h5>
+      <p>Generate a shareable proposal link — send it to a colleague or client to review before you check out.</p>
+      <button class="btn-cta" style="background:transparent;border:1.5px solid var(--accent);color:var(--accent);margin-bottom:0" onclick="generateProposalLink()">Generate proposal link</button>
+      <div id="proposal-link-wrap" style="display:none;gap:8px;margin-top:12px">
+        <input type="text" id="proposal-link-input" readonly style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;background:var(--white)">
+        <button id="btn-copy-link" onclick="copyProposalLink()" style="padding:8px 14px;border-radius:8px;border:1.5px solid var(--accent);background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer">Copy link</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:28px">
+      <button class="skip-btn" onclick="goTo(4)">← Edit screens</button>
+      <button class="btn-next" style="flex:1" onclick="showSummary()">Continue to creative upload <span class="arr">→</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STEP 6: CREATIVE ═══ -->
+<div class="panel panel-scroll" id="panel-6">
   <div class="s3-wrap">
     <h2 class="step-heading">Upload your creative</h2>
     <p class="step-sub">Upload your artwork below — our team reviews every creative before it goes live. Not ready yet? Skip and send it later.</p>
@@ -2443,7 +2510,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
         <span id="s3-total" style="font-weight:700;color:var(--accent)">$0</span>
         <span style="color:var(--muted);font-size:13px"> est. total</span>
       </div>
-      <button onclick="goTo(2)" style="font-size:11px;font-weight:600;color:var(--accent2);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer">← Edit screens</button>
+      <button onclick="goTo(4)" style="font-size:11px;font-weight:600;color:var(--accent2);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer">← Edit screens</button>
     </div>
 
     <!-- Spec cards -->
@@ -2501,33 +2568,33 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     </div>
 
     <div class="s3-actions">
-      <button class="btn-next" id="btn-s3-continue" onclick="goTo(4)">Continue to checkout <span class="arr">→</span></button>
-      <button class="skip-btn" onclick="goTo(4)">Skip — I'll send creative later</button>
+      <button class="btn-next" id="btn-s3-continue" onclick="goTo(7)">Continue to checkout <span class="arr">→</span></button>
+      <button class="skip-btn" onclick="goTo(7)">Skip — I'll send creative later</button>
     </div>
   </div>
 </div>
 
 <!-- ═══ STEP 4 — REQUEST TO BOOK ═══ -->
-<div class="panel panel-scroll" id="panel-4">
+<div class="panel panel-scroll" id="panel-7">
   <div class="s4-layout">
 
     <!-- Left: form -->
     <div class="checkout-form">
       <h2 class="step-heading">Almost live.</h2>
-      <p class="step-sub">Fill in your details and we'll confirm screen availability, then send a secure payment link within 2 hours.</p>
+      <p class="step-sub">Review your details below and we'll confirm screen availability, then send a secure payment link within 2 hours.</p>
 
       <div class="form-section">
         <h4>Your details</h4>
         <div class="form-row">
-          <div class="form-group"><label>First name</label><input id="f-fname" placeholder="Jon"></div>
-          <div class="form-group"><label>Last name</label><input id="f-lname" placeholder="Smith"></div>
-        </div>
-        <div class="form-row full">
-          <div class="form-group"><label>Company / brand</label><input id="f-company" placeholder="Acme Brands LLC"></div>
+          <div class="form-group"><label>Name</label><div id="co-recap-name" class="creative-status-pill">—</div></div>
+          <div class="form-group"><label>Company / brand</label><div id="co-recap-company" class="creative-status-pill">—</div></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>Email</label><input id="f-email" type="email" placeholder="jon@acme.com"></div>
-          <div class="form-group"><label>Phone</label><input id="f-phone" type="tel" placeholder="(479) 555-0100"></div>
+          <div class="form-group"><label>Email</label><div id="co-recap-email" class="creative-status-pill">—</div></div>
+          <div class="form-group"><label>Phone <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="f-phone" type="tel" placeholder="(479) 555-0100"></div>
+        </div>
+        <div class="form-row full" style="margin-top:2px">
+          <button onclick="goTo(2)" style="font-size:11px;font-weight:600;color:var(--accent2);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer">← Edit your details</button>
         </div>
       </div>
 
@@ -2561,17 +2628,6 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
         ✓ No payment now — we'll send a secure payment link once we confirm availability. Most campaigns go live within 24 hours of payment.
       </div>
 
-      <!-- Proposal link generator -->
-      <div class="proposal-section">
-        <h5>📋 Send as proposal</h5>
-        <p>Generate a shareable link with this campaign pre-loaded. The recipient can review pricing and screens — and book with one click once Stripe is connected.</p>
-        <button class="btn-gen-proposal" onclick="generateProposalLink()">Generate proposal link</button>
-        <div class="proposal-link-wrap" id="proposal-link-wrap" style="display:none;margin-top:10px">
-          <input class="proposal-link-input" id="proposal-link-input" readonly>
-          <button class="btn-copy-link" id="btn-copy-link" onclick="copyProposalLink()">Copy link</button>
-        </div>
-      </div>
-
       <div style="height:16px"></div>
 
       <button class="btn-next" onclick="submitBooking()" style="width:100%;justify-content:center;">
@@ -2598,8 +2654,8 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   </div>
 </div>
 
-<!-- ═══ STEP 5 — BOOKING CONFIRMED ═══ -->
-<div class="panel panel-scroll" id="panel-5">
+<!-- ═══ STEP 8 — BOOKING CONFIRMED ═══ -->
+<div class="panel panel-scroll" id="panel-8">
 
   <!-- Confirmation hero -->
   <div class="conf-hero">
@@ -13580,7 +13636,8 @@ const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
 /* ══ Walmart Buyer Target Zones ══
    Three concentration areas where Walmart/Sam's Club buyers live & work.
    Intentionally tight radii — demographic cluster targeting, not individual tracking.
-   Excludes gas stations (employees use Walmart's own); focuses on billboard, cinema, gym, dining. */
+   Excludes gas stations (employees use Walmart's own); focuses on WMT_ALLOWED_TYPES
+   (billboard, cinema, gym, dining, sports & entertainment, recreation). */
 const WMT_ZONES = [
   { name: 'Walmart Home Office',    lat: 36.3729, lng: -94.2192, radius: 2.0,
     color: '#1f3d2a',
@@ -13592,7 +13649,20 @@ const WMT_ZONES = [
     color: '#8b4513',
     desc: 'Pinnacle Hills & Country Club — high-income residential & retail' },
 ];
-const WMT_ALLOWED_TYPES = new Set(['billboard', 'cinema', 'gym', 'dining']);
+const WMT_ALLOWED_TYPES = new Set(['billboard', 'cinema', 'gym', 'dining', 'sportsentertainment', 'recreationalnew']);
+
+/* Shared zone check for the Walmart-buyer goal — used by both the map
+   visibility gate (isVisible) and the optimizer (fallbackRecommend) so
+   they never disagree on what counts as "in zone". */
+function inWmtTargetZone(s) {
+  if (haversineMiles(WALMART_HQ.lat, WALMART_HQ.lng, s.lat, s.lng) <= 5.0) return true;
+  if (typeof WMT_ZONES !== 'undefined') {
+    return WMT_ZONES.some(z =>
+      haversineMiles(z.lat, z.lng, s.lat, s.lng) <= z.radius
+    );
+  }
+  return false;
+}
 
 let hiddenTypes = new Set();
 function isVisible(s) {
@@ -13600,11 +13670,9 @@ function isVisible(s) {
   if (hiddenTypes && hiddenTypes.has(s.type)) return false;
   if (ST.filter === 'all') return true;
   if (ST.filter === 'walmart_hq_2mi' || ST.goal === "Reach Walmart & Sam's Club buyers") {
-    if (s.type !== 'billboard' && s.type !== 'airport') return false;
-    if (s.type === 'billboard') {
-      return haversineMiles(WALMART_HQ.lat, WALMART_HQ.lng, s.lat, s.lng) <= 5.0;
-    }
-    return true;
+    if (s.type === 'airport') return true;
+    if (!WMT_ALLOWED_TYPES.has(s.type)) return false;
+    return inWmtTargetZone(s);
   }
   if (ST.filter === 'walmart') return s.tags && s.tags.includes('walmart');
   // 'digital' was the old billboard cat name — support both for backwards compat
@@ -13862,6 +13930,12 @@ function refreshMarkers() {
     bindDirectionTooltip(s, m);
     if (isVisible(s)) toAdd.push(m);
   });
+  // Hard fallback: the map must never render empty. If goal/filter logic
+  // ever computes zero visible screens, fall back to showing full inventory
+  // rather than a blank map.
+  if (toAdd.length === 0 && INV.length > 0) {
+    INV.forEach(s => { const m = markers[s.id]; if (m) toAdd.push(m); });
+  }
   markerCluster.addLayers(toAdd);
 }
 
@@ -13972,7 +14046,7 @@ function renderList() {
           ${cheapestVisible ? `The lowest-cost option is <strong>${cheapestVisible.name}</strong>
           at <strong>$${cheapestVisible._r.toLocaleString()}/wk</strong>.` : ''}
         </div>
-        <button onclick="goTo(1)"
+        <button onclick="goTo(3)"
           style="background:transparent;border:1.5px solid #c8440a;color:#c8440a;
           border-radius:20px;padding:8px 18px;font-size:12px;font-weight:600;
           cursor:pointer;font-family:inherit">
@@ -14087,10 +14161,8 @@ function toggleCart(id) { toggleScreen(id); }
 function showState(state) {
   const rec = document.getElementById('sb-rec');
   const browse = document.getElementById('sb-browse');
-  const cartReview = document.getElementById('sb-cart-review');
   if (rec)        rec.style.display        = state === 'rec'    ? 'flex' : 'none';
   if (browse)     browse.style.display     = state === 'browse' ? 'flex' : 'none';
-  if (cartReview) cartReview.style.display = state === 'cart'   ? 'flex' : 'none';
 
   if (state === 'browse') {
     const countEl = document.getElementById('sb-browse-count');
@@ -14112,6 +14184,8 @@ function renderCart() {
   const noteEl    = document.getElementById('cart-cta-note');
   const reviewBtn = document.getElementById('btn-s2');
   const chDisc    = document.getElementById('ch-discount');
+  const propSection = document.getElementById('proposal-section-wrap');
+  if (propSection) propSection.style.display = keys.length ? 'block' : 'none';
 
   if (!keys.length) {
     if (tableWrap) tableWrap.innerHTML = `
@@ -14431,8 +14505,8 @@ function loadProposalFromURL() {
     document.getElementById('proposal-banner').classList.add('visible');
     document.getElementById('proposal-cta').classList.add('visible');
 
-    // Jump to step 4 (proposal view)
-    goTo(4);
+    // Jump to checkout step (proposal view)
+    goTo(7);
     populateCheckoutFromProposal(p);
 
   } catch(e) {
@@ -14477,7 +14551,7 @@ function submitBooking() {
     alert('Please fill in your name and email to continue.');
     return;
   }
-  goTo(5);
+  goTo(8);
 }
 
 function updateNavSel() {
@@ -14523,9 +14597,9 @@ function updateNavSel() {
 }
 
 /* ══════════════ NAVIGATION ══════════════ */
-function goTo(step) {
+function goToPanel(step) {
   updateNavSel();
-  for (let i=1;i<=5;i++) {
+  for (let i=1;i<=8;i++) {
     document.getElementById('panel-'+i)?.classList.remove('active');
     const nav = document.getElementById('nav-s'+i);
     const dot = document.getElementById('dot-'+i);
@@ -14538,20 +14612,42 @@ function goTo(step) {
   const panel = document.getElementById('panel-'+step);
   if (panel) panel.classList.add('active');
   window.scrollTo(0,0);
+}
 
-  if (step===2) {
-    // Require business name before advancing
-    if (!ST.advertiserName || ST.advertiserName.trim() === '') {
-      const nameInput = document.getElementById('advertiser-name');
-      if (nameInput) {
-        nameInput.style.borderColor = '#c8440a';
-        nameInput.placeholder = 'Please enter your business name to continue';
-        nameInput.focus();
-        nameInput.style.animation = 'shake 0.3s ease';
-        setTimeout(() => { nameInput.style.animation = ''; }, 400);
+function goTo(step) {
+  // Require business + contact details (Step 2) before advancing to Step 3+
+  if (step >= 3) {
+    const reqFields = [
+      {id:'advertiser-name', ph:'Please enter your business name to continue'},
+      {id:'f-fname', ph:'Please enter your first name'},
+      {id:'f-lname', ph:'Please enter your last name'},
+      {id:'f-email', ph:'Please enter a valid email', email:true},
+    ];
+    let firstInvalid = null;
+    reqFields.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      const val = (el.value||'').trim();
+      const invalid = !val || (f.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val));
+      el.style.borderColor = invalid ? '#c8440a' : '#e2ddd6';
+      if (invalid) {
+        el.placeholder = f.ph;
+        el.style.animation = 'shake 0.3s ease';
+        setTimeout(() => { el.style.animation = ''; }, 400);
+        if (!firstInvalid) firstInvalid = el;
       }
+    });
+    if (firstInvalid) {
+      goToPanel(2);
+      firstInvalid.focus();
       return;
     }
+    ST.advertiserName = document.getElementById('advertiser-name').value.trim();
+  }
+
+  goToPanel(step);
+
+  if (step===4) {
     document.getElementById('cb-goal').textContent = ST.goal||'—';
     const incShort = {'daily':'day','weekly':'wk','monthly':'mo'};
     document.getElementById('cb-bud').textContent = '$'+ST.budget.toLocaleString()+'/'+incShort[ST.inc];
@@ -14562,7 +14658,7 @@ function goTo(step) {
     const s2hint  = document.getElementById('s2-hint-text');
     if (ST.goal === "Reach Walmart & Sam's Club buyers") {
       if (s2title) s2title.textContent = 'Screens near Walmart & Sam\'s Club HQ';
-      if (s2hint)  s2hint.textContent  = 'Screens filtered to 3 buyer zones: Home Office area, Downtown Bentonville, and Pinnacle Hills — billboard, cinema, gym & dining only';
+      if (s2hint)  s2hint.textContent  = 'Screens filtered to 3 buyer zones: Home Office area, Downtown Bentonville, and Pinnacle Hills — billboard, cinema, gym, dining, sports & recreation';
       ST.filter = 'walmart_hq_2mi';
     } else if (ST.goal === 'Drive customers through your door') {
       if (s2title) s2title.textContent = 'Screens closest to your location';
@@ -14587,6 +14683,10 @@ function goTo(step) {
     renderList();
     renderCart();
     initMap();
+    // Idempotent: re-run every time step 2 becomes active (not just on first
+    // map init) so the marker set always matches the current goal/filter and
+    // the map is never left blank on repeat visits.
+    refreshMarkers();
     setView('map');
     showOptimizer();
     // Invalidate map size after layout settles on mobile
@@ -14628,13 +14728,28 @@ function goTo(step) {
       }, 400);
     }
   }
-  if (step===3) updateCreativeSummary();
-  if (step===4) {
+  if (step===5) renderCart();
+  if (step===6) updateCreativeSummary();
+  if (step===7) {
     renderSummary();
     const coAdv = document.getElementById('co-advertiser-display');
     if (coAdv) coAdv.textContent = ST.advertiserName || 'Campaign summary';
+    renderCheckoutRecap();
   }
-  if (step===5) renderConfirm();
+  if (step===8) renderConfirm();
+}
+
+function renderCheckoutRecap() {
+  const fname = document.getElementById('f-fname')?.value.trim() || '';
+  const lname = document.getElementById('f-lname')?.value.trim() || '';
+  const email = document.getElementById('f-email')?.value.trim() || '';
+  const company = document.getElementById('advertiser-name')?.value.trim() || '';
+  const nameEl = document.getElementById('co-recap-name');
+  const companyEl = document.getElementById('co-recap-company');
+  const emailEl = document.getElementById('co-recap-email');
+  if (nameEl) nameEl.textContent = (fname || lname) ? (fname + ' ' + lname).trim() : '—';
+  if (companyEl) companyEl.textContent = company || '—';
+  if (emailEl) emailEl.textContent = email || '—';
 }
 
 /* ══════════════ VIEW TOGGLE (map ↔ list) ══════════════ */
@@ -15716,48 +15831,61 @@ function fallbackRecommend() {
   /* ── OBJECTIVE 1: Reach Walmart & Sam's Club buyers ── */
   if (goal === "Reach Walmart & Sam's Club buyers") {
     const HQ = WALMART_HQ;
+    const inTargetZone = inWmtTargetZone;
 
-    function inTargetZone(s) {
-      if (haversineMiles(HQ.lat, HQ.lng, s.lat, s.lng) <= 5.0) return true;
-      if (typeof WMT_ZONES !== 'undefined') {
-        return WMT_ZONES.some(z =>
-          haversineMiles(z.lat, z.lng, s.lat, s.lng) <= z.radius
-        );
-      }
-      return false;
+    // Candidate pool: every WMT_ALLOWED_TYPES screen that falls inside any
+    // WMT_ZONES zone (or the 5mi HQ radius) — not just billboards.
+    function zoneOf(s) {
+      if (typeof WMT_ZONES === 'undefined') return null;
+      const z = WMT_ZONES.find(z => haversineMiles(z.lat, z.lng, s.lat, s.lng) <= z.radius);
+      return z ? z.name : (haversineMiles(HQ.lat, HQ.lng, s.lat, s.lng) <= 5.0 ? 'Walmart Home Office' : null);
     }
 
-    let billboards = INV
-      .filter(s => s.type === 'billboard' && inTargetZone(s))
-      .map(s => ({ ...s, _rate: screenRate(s), _dist: d(s, HQ.lat, HQ.lng) }))
+    let candidates = INV
+      .filter(s => WMT_ALLOWED_TYPES.has(s.type) && inTargetZone(s))
+      .map(s => ({ ...s, _rate: screenRate(s), _dist: d(s, HQ.lat, HQ.lng), _zone: zoneOf(s) }))
       .filter(s => s._rate > 0);
 
-    // Expand to 10mi if none found in zone
-    if (billboards.length === 0) {
-      billboards = INV
+    // Expand billboards to 10mi if the zone-restricted pool is empty
+    if (candidates.length === 0) {
+      candidates = INV
         .filter(s => s.type === 'billboard')
-        .map(s => ({ ...s, _rate: screenRate(s), _dist: d(s, HQ.lat, HQ.lng) }))
+        .map(s => ({ ...s, _rate: screenRate(s), _dist: d(s, HQ.lat, HQ.lng), _zone: null }))
         .filter(s => s._rate > 0 && s._dist <= 10.0);
     }
 
     // Sort: priority units first, then by distance
-    billboards.sort((a, b) => {
+    candidates.sort((a, b) => {
       if (a._priority && !b._priority) return -1;
       if (!a._priority && b._priority) return 1;
       return a._dist - b._dist;
     });
 
-    // Fill to 70% of budget with billboards
     const picks = [];
     let spent = 0;
-    for (const s of billboards) {
+    const usedIds = new Set();
+    function tryPick(s, cap) {
+      if (usedIds.has(s.id)) return false;
+      const first = picks.length === 0;
+      if (first || spent + s._rate <= budget * cap) {
+        picks.push(s); spent += s._rate; usedIds.add(s.id);
+        return true;
+      }
+      return false;
+    }
+
+    // Pass 1: reserve one slot per WMT_ZONES zone (simple 1-per-zone fill)
+    if (typeof WMT_ZONES !== 'undefined') {
+      for (const zone of WMT_ZONES) {
+        const best = candidates.find(s => s._zone === zone.name && !usedIds.has(s.id));
+        if (best) tryPick(best, 0.70);
+      }
+    }
+
+    // Pass 2: fill remaining budget with nearest/priority candidates (max 3 total)
+    for (const s of candidates) {
       if (picks.length >= 3) break;
-      if (picks.length === 0) {
-        picks.push(s); spent += s._rate; continue;
-      }
-      if (spent + s._rate <= budget * 0.70) {
-        picks.push(s); spent += s._rate;
-      }
+      tryPick(s, 0.70);
     }
 
     // Add 1 airport screen with remaining budget
@@ -16388,7 +16516,7 @@ function renderWmtHeatmap() {
       <!-- CTAs -->
       <div class="sum-cta-row">
         <button class="btn-sum-back" onclick="closeSummary()">← Edit selections</button>
-        <button class="btn-sum-confirm" onclick="closeSummary();goTo(3)">
+        <button class="btn-sum-confirm" onclick="closeSummary();goTo(6)">
           Looks good — upload creative →
         </button>
       </div>
