@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NWA Ads — Admin Console</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  // Supabase config — publishable/anon key only. Safe to expose client-side;
+  // access is enforced server-side via Row Level Security policies.
+  window.SUPABASE_CONFIG = {
+    url: 'https://etytgvxkjqjnriflktzv.supabase.co',
+    publishableKey: 'sb_publishable_6T9Ikbmq5ldlzNB_Bncheg_C8K52sB8',
+  };
+</script>
 <style>
 :root {
   /* NWA Ads brand system */
@@ -142,6 +151,18 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .pill.live{background:var(--green-dim);color:#166030;font-weight:700}
 .pill.creative_review{background:var(--purple-dim);color:#5b21b6;font-weight:700}
 .pill.cancelled{background:var(--red-dim);color:#b91c1c;font-weight:700}
+.pill.draft{background:var(--border);color:var(--text2);font-weight:700}
+.pill.pending_confirmation{background:var(--gold-dim);color:#7a5800;font-weight:700}
+.pill.completed{background:var(--surface2);color:var(--text3);font-weight:700}
+.admin-auth-overlay{display:none;position:fixed;inset:0;background:rgba(14,26,14,0.6);z-index:5000;align-items:center;justify-content:center;padding:20px}
+.admin-auth-overlay.open{display:flex}
+.admin-auth-box{background:var(--surface);border-radius:16px;padding:32px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.admin-auth-box h2{font-family:'Fraunces',serif;font-size:22px;margin-bottom:8px;color:var(--text)}
+.admin-auth-box p{font-size:13px;color:var(--text3);margin-bottom:18px;line-height:1.5}
+.admin-auth-box input[type=email]{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:16px;font-family:inherit;margin-bottom:14px;outline:none;box-sizing:border-box}
+.admin-auth-box button{width:100%;padding:12px;border:none;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.admin-auth-box button:disabled{opacity:0.6;cursor:default}
+.admin-auth-status{margin-top:14px;font-size:13px;text-align:center;color:var(--accent)}
 
 /* Card */
 .card{
@@ -311,6 +332,17 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
       onkeydown="if(event.key==='Enter')checkPw()">
     <button class="gate-btn" onclick="checkPw()">Enter console →</button>
     <div class="gate-error" id="gate-error">Incorrect passphrase. Try again.</div>
+  </div>
+</div>
+
+<!-- ── ADMIN SUPABASE AUTH ── -->
+<div class="admin-auth-overlay" id="admin-auth-overlay">
+  <div class="admin-auth-box" id="admin-auth-box">
+    <h2>Admin sign-in</h2>
+    <p>Campaign status changes are written to the live database and require a verified admin account. Enter your admin email to get a sign-in link.</p>
+    <input type="email" id="admin-auth-email" placeholder="you@nwa-ads.com" autocomplete="email" />
+    <button id="admin-auth-send-btn" onclick="sendAdminMagicLink()">Send magic link</button>
+    <div class="admin-auth-status" id="admin-auth-status"></div>
   </div>
 </div>
 
@@ -11812,12 +11844,15 @@ let editedRates = {};
 /* ══════════════ AUTH ══════════════ */
 const PASSPHRASE = 'nwaads2026';
 
+const sbClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.publishableKey);
+const ADMIN_ALLOWLIST = ['andrew@nwa-ads.com'];
+let ADMIN_SESSION = null;
+
 function checkPw() {
   const val = document.getElementById('gate-pw').value;
   if (val === PASSPHRASE) {
     document.getElementById('gate').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    init();
+    ensureAdminAuth();
   } else {
     const err = document.getElementById('gate-error');
     err.style.display = 'block';
@@ -11829,6 +11864,126 @@ function logout() {
   document.getElementById('app').style.display = 'none';
   document.getElementById('gate').style.display = 'flex';
   document.getElementById('gate-pw').value = '';
+  sbClient.auth.signOut();
+}
+
+function isAllowedAdmin(session) {
+  return !!session && ADMIN_ALLOWLIST.includes((session.user.email || '').toLowerCase());
+}
+
+function ensureAdminAuth() {
+  if (isAllowedAdmin(ADMIN_SESSION)) {
+    document.getElementById('admin-auth-overlay').classList.remove('open');
+    document.getElementById('app').style.display = 'flex';
+    init();
+    return;
+  }
+  document.getElementById('admin-auth-overlay').classList.add('open');
+  document.getElementById('admin-auth-box').innerHTML = `
+    <h2>Admin sign-in</h2>
+    <p>Campaign status changes are written to the live database and require a verified admin account. Enter your admin email to get a sign-in link.</p>
+    <input type="email" id="admin-auth-email" placeholder="you@nwa-ads.com" autocomplete="email" />
+    <button id="admin-auth-send-btn" onclick="sendAdminMagicLink()">Send magic link</button>
+    <div class="admin-auth-status" id="admin-auth-status"></div>
+  `;
+}
+
+async function sendAdminMagicLink() {
+  const input = document.getElementById('admin-auth-email');
+  const status = document.getElementById('admin-auth-status');
+  const btn = document.getElementById('admin-auth-send-btn');
+  const email = (input?.value || '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    status.textContent = 'Please enter a valid email address.';
+    return;
+  }
+  if (!ADMIN_ALLOWLIST.includes(email)) {
+    status.textContent = 'This email is not on the admin allowlist.';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  status.textContent = '';
+  try {
+    const { error } = await sbClient.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) throw error;
+    document.getElementById('admin-auth-box').innerHTML = `
+      <h2>Check your email</h2>
+      <p>We sent a sign-in link to <strong>${email}</strong>. Click it to come back here signed in as admin.</p>
+    `;
+  } catch (err) {
+    status.textContent = err.message || 'Something went wrong. Please try again.';
+    btn.disabled = false;
+    btn.textContent = 'Send magic link';
+  }
+}
+
+sbClient.auth.onAuthStateChange((_event, session) => {
+  ADMIN_SESSION = session;
+  // Only proceed automatically if the passphrase gate has already been passed
+  // (app container has been unhidden or is about to be) — avoids popping the
+  // admin auth flow before the passphrase step on a fresh page load.
+  if (document.getElementById('gate').style.display === 'none') {
+    ensureAdminAuth();
+  }
+});
+sbClient.auth.getSession().then(({ data }) => { ADMIN_SESSION = data.session; });
+
+/* ══════════════ SUPABASE CAMPAIGNS ══════════════ */
+const SB_STATUS_LABELS = {
+  draft: 'Draft',
+  pending_confirmation: 'Pending confirmation',
+  confirmed: 'Confirmed',
+  live: 'Live',
+  completed: 'Completed',
+};
+
+function mapSupabaseCampaign(row) {
+  const screens = row.screens && typeof row.screens === 'object'
+    ? Object.values(row.screens).map(s => (s && (s.name || s.label)) || 'Screen')
+    : [];
+  return {
+    id: row.id,
+    _supabase: true,
+    status: row.status || 'draft',
+    submitted: row.created_at ? new Date(row.created_at).toLocaleString() : '',
+    name: row.company_name || 'Untitled campaign',
+    contact: row.contact_name || '',
+    email: row.contact_email || '',
+    goal: '—',
+    screens,
+    duration: (row.flight_start && row.flight_end) ? `${row.flight_start} → ${row.flight_end}` : 'TBD',
+    total: Number(row.budget) || 0,
+    creative: 'pending',
+    notes: '',
+  };
+}
+
+async function fetchSupabaseCampaigns() {
+  if (!isAllowedAdmin(ADMIN_SESSION)) return;
+  const { data, error } = await sbClient.from('campaigns').select('*').order('created_at', { ascending: false });
+  if (error) {
+    log('Could not load live campaigns from Supabase: ' + error.message);
+    return;
+  }
+  const live = (data || []).map(mapSupabaseCampaign);
+  // Merge: real Supabase campaigns replace/augment the local dummy list,
+  // keyed by id so re-fetching doesn't duplicate rows.
+  const liveIds = new Set(live.map(c => c.id));
+  campaigns = live.concat(campaigns.filter(c => !liveIds.has(c.id)));
+  renderCampaigns();
+  renderPipeline();
+}
+
+async function pushStatusToSupabase(id, status) {
+  const { error } = await sbClient.from('campaigns').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) {
+    log('Failed to sync status to Supabase for ' + id + ': ' + error.message);
+    alert('Status updated locally, but failed to sync to the database: ' + error.message);
+  }
 }
 
 /* ══════════════ INIT ══════════════ */
@@ -11840,6 +11995,7 @@ function init() {
   renderHealth();
   initPricing();
   initRateConfig();
+  fetchSupabaseCampaigns();
 }
 
 function startClock() {
@@ -11907,8 +12063,10 @@ function renderCampaigns() {
           ${c.status==='pending' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Confirm →</button>` : ''}
           ${c.status==='creative_review' ? `<button class="btn sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Approve</button>` : ''}
           ${c.status==='confirmed' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Go live →</button>` : ''}
+          ${c.status==='pending_confirmation' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Confirm →</button>` : ''}
+          ${c._supabase && c.status==='live' ? `<button class="btn sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Complete</button>` : ''}
           <button class="btn sm" onclick="event.stopPropagation();openDetail('${c.id}')">View</button>
-          <button class="btn sm" style="color:var(--accent);border-color:var(--accent)" onclick="event.stopPropagation();deleteCampaign('${c.id}')">✕</button>
+          ${c._supabase ? '' : `<button class="btn sm" style="color:var(--accent);border-color:var(--accent)" onclick="event.stopPropagation();deleteCampaign('${c.id}')">✕</button>`}
         </div>
       </td>
     </tr>`).join('');
@@ -11944,9 +12102,15 @@ function clearTestCampaigns() {
   log((before - campaigns.length) + ' test/dummy campaign(s) removed');
 }
 function statusLabel(s) {
-  const m = {pending:'⏳ Pending',confirmed:'✓ Confirmed',live:'🟢 Live',creative_review:'🎨 Creative',cancelled:'✗ Cancelled'};
+  const m = {
+    pending:'⏳ Pending', confirmed:'✓ Confirmed', live:'🟢 Live', creative_review:'🎨 Creative', cancelled:'✗ Cancelled',
+    draft:'📝 Draft', pending_confirmation:'⏳ Pending confirmation', completed:'✓ Completed',
+  };
   return m[s] || s;
 }
+
+const SB_STATUS_FLOW = ['pending_confirmation', 'confirmed', 'live', 'completed'];
+const SB_NEXT_LABELS = {pending_confirmation:'Confirm availability →', confirmed:'Mark as live →', live:'Mark as completed →'};
 
 function filterCampaigns(el, f) {
   campFilter = f;
@@ -11963,11 +12127,18 @@ function searchCampaigns(q) {
 function advanceStatus(id) {
   const c = campaigns.find(x => x.id === id);
   if (!c) return;
-  const flow = ['pending','creative_review','confirmed','live'];
+  const flow = c._supabase ? SB_STATUS_FLOW : ['pending','creative_review','confirmed','live'];
   const idx = flow.indexOf(c.status);
-  if (idx < flow.length - 1) c.status = flow[idx + 1];
-  saveCampaigns();
+  if (idx < flow.length - 1) {
+    c.status = flow[idx + 1];
+    if (c._supabase) {
+      pushStatusToSupabase(c.id, c.status);
+    } else {
+      saveCampaigns();
+    }
+  }
   renderCampaigns();
+  renderPipeline();
   if (document.getElementById('detail-panel').classList.contains('open')) openDetail(id);
 }
 
@@ -12002,12 +12173,12 @@ function openDetail(id) {
     ${c.notes ? `<div class="dp-section"><div class="dp-section-title">Notes</div><div style="font-size:12px;color:var(--text2);line-height:1.6;font-style:italic">"${c.notes}"</div></div>` : ''}
   `;
 
-  const flow = ['pending','creative_review','confirmed','live'];
-  const nextLabels = {pending:'Confirm availability →',creative_review:'Approve creative →',confirmed:'Mark as live →'};
+  const flow = c._supabase ? SB_STATUS_FLOW : ['pending','creative_review','confirmed','live'];
+  const nextLabels = c._supabase ? SB_NEXT_LABELS : {pending:'Confirm availability →',creative_review:'Approve creative →',confirmed:'Mark as live →'};
   document.getElementById('dp-footer').innerHTML = `
     ${flow.indexOf(c.status) < flow.length-1 ? `<button class="btn green" style="flex:1" onclick="advanceStatus('${c.id}');renderCampaigns()">${nextLabels[c.status]||'Advance →'}</button>` : ''}
     <button class="btn" onclick="window.open('mailto:${c.email}?subject=Re: ${c.id} — Your NWAAds campaign','_blank')">✉ Email advertiser</button>
-    <button class="btn" style="color:var(--accent);border-color:var(--accent);margin-left:auto" onclick="deleteCampaign('${c.id}')">✕ Delete</button>
+    ${c._supabase ? '' : `<button class="btn" style="color:var(--accent);border-color:var(--accent);margin-left:auto" onclick="deleteCampaign('${c.id}')">✕ Delete</button>`}
   `;
 
   document.getElementById('detail-panel').classList.add('open');
@@ -12246,7 +12417,7 @@ function exportRates() {
 function renderPipeline() {
   const total = campaigns.reduce((a,c) => a+c.total, 0);
   const live  = campaigns.filter(c=>c.status==='live').reduce((a,c)=>a+c.total,0);
-  const pend  = campaigns.filter(c=>c.status==='pending').reduce((a,c)=>a+c.total,0);
+  const pend  = campaigns.filter(c=>c.status==='pending'||c.status==='pending_confirmation').reduce((a,c)=>a+c.total,0);
   const conf  = campaigns.filter(c=>c.status==='confirmed').reduce((a,c)=>a+c.total,0);
   const margin = Math.round(total * 0.2);
 
