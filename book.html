@@ -1656,7 +1656,10 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   /* ── NAV ── */
   .nav { padding: 0 14px; }
   .steps { gap: 0; }
-  .step { padding: 4px 6px; font-size: 11px; gap: 5px; }
+  /* .step keeps the full 64px nav height as its tap target (align-items:center
+     on .steps centers this), so height is already ~44px+ even though the
+     visible padding/text look compact */
+  .step { padding: 4px 6px; font-size: 11px; gap: 5px; min-height: 44px; box-sizing: border-box; }
   .step-dot { width: 18px; height: 18px; font-size: 9px; }
   .step-sep { width: 10px; }
   .nav-status { display: none; } /* hide on mobile — too cramped */
@@ -1685,8 +1688,11 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     gap: 8px;
   }
   .s2-top-left { width: 100%; }
-  .filter-bar { flex-wrap: wrap; gap: 5px; }
-  .f-chip { font-size: 10px; padding: 4px 10px; }
+  .filter-bar { flex-wrap: wrap; gap: 6px; }
+  /* Bumped from font-size:10px/padding:4px 10px — that combo landed well
+     under the 44px touch-target minimum. min-height + larger padding gets
+     chips to ~40px tall without blowing out the filter bar layout. */
+  .f-chip { font-size: 12px; padding: 9px 14px; min-height: 40px; box-sizing: border-box; }
   .map-view-toggle { align-self: flex-end; }
 
   /* On mobile: let the whole panel grow with content so the page scrolls */
@@ -1814,10 +1820,25 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   .upload-zone { padding: 24px 16px; }
 
   /* ── STEP 4 ── */
-  .s4-layout { display: flex; flex-direction: column; padding: 16px; gap: 16px; }
-  .checkout-form { max-width: 100%; }
+  /* Desktop .s4-layout sets min-height: calc(100vh - 64px) — on mobile that
+     100vh figure jumps as the browser chrome (address bar) shows/hides. We
+     stack the layout into a natural-flow column instead of relying on a
+     fixed viewport height at all, which sidesteps the jump entirely. */
+  .s4-layout { display: flex; flex-direction: column; padding: 16px; gap: 16px; min-height: auto; }
+  .checkout-form { max-width: 100%; padding: 0; overflow-y: visible; }
   .form-row { flex-direction: column; gap: 10px; }
-  .os-panel { max-width: 100%; }
+  /* Desktop .os-panel is sticky with a fixed calc(100vh - 64px) height —
+     both break in a stacked mobile layout (clipped content, jumpy chrome).
+     Let it flow naturally below the form instead. */
+  .os-panel {
+    max-width: 100%; position: static; top: auto;
+    height: auto; overflow-y: visible;
+    border-left: none; border-top: 1px solid var(--border);
+  }
+  .form-group input, .form-group select {
+    /* Anything under 16px triggers iOS Safari's zoom-on-focus. */
+    font-size: 16px;
+  }
 
   /* ── STEP 5 ── */
   .conf-hero { padding: 20px 16px; }
@@ -1844,9 +1865,30 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 /* Extra small phones */
 @media (max-width: 380px) {
   .step span:not(.step-dot) { display: none; } /* show dots only */
+  /* With only the dot visible, grow it (and its padding) so the tap
+     target is still close to the 44px minimum instead of an 18px dot. */
+  .step { padding: 9px 9px; }
+  .step-dot { width: 26px; height: 26px; font-size: 11px; }
   .sum-stats { grid-template-columns: 1fr 1fr; }
   .sum-detail-row { grid-template-columns: 1fr; }
   .specs-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Touch-friendly tap targets for small icon-only buttons ──
+   These stay visually compact on desktop (mouse precision is fine there)
+   but get an invisible enlarged hit area on touch devices via a
+   pseudo-element, so a fingertip tap reliably lands on them. */
+@media (max-width: 768px), (pointer: coarse) {
+  .sc-add-btn, .ct-rm, .ci-rm, .summary-close, .cs-clear {
+    position: relative;
+  }
+  .sc-add-btn::after, .ct-rm::after, .ci-rm::after, .summary-close::after, .cs-clear::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 40px; height: 40px;
+    transform: translate(-50%, -50%);
+  }
 }
 
 
@@ -16414,6 +16456,10 @@ function renderWmtHeatmap() {
     const label = i === 0 ? 'Walmart Home Office' : 'Executive Residential Corridor';
     circle.bindTooltip(label, { permanent: false, direction: 'top', className: 'wmt-zone-tip', offset: [0, -8] });
     inner.bindTooltip(label, { permanent: false, direction: 'top', className: 'wmt-zone-tip', offset: [0, -4] });
+    // Tooltips only open on :hover by default — there's no hover on touch
+    // devices, so bind a tap/click to open (and toggle closed on a second tap).
+    circle.on('click', () => { circle.isTooltipOpen() ? circle.closeTooltip() : circle.openTooltip(); });
+    inner.on('click', () => { inner.isTooltipOpen() ? inner.closeTooltip() : inner.openTooltip(); });
 
     window._wmtHeatLayers.push(circle, inner);
   });
