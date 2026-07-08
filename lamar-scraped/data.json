@@ -34,11 +34,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Right Video Drive-By"
+        "East / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -319,7 +319,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #14591\n5500 W Sunset N/S at 1120 Mathias\nLocation #1\n \nWEEKLY IMPRESSIONS:\t194,451 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t371376\nLAT/LONG:\t36.17578889 / -94.19151944\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tEast / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #14591\n5500 W Sunset N/S at 1120 Mathias\nLocation #1\n \nWEEKLY IMPRESSIONS:\t194,451 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t371376\nLAT/LONG:\t36.17578889 / -94.19151944\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "5500 W Sunset N/S at 1120 Mathias",
@@ -329,7 +329,7 @@
       "geopathId": "371376",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "East / Right Video Drive-By",
+      "facing": "East / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "194,451 per spot*",
@@ -359,7 +359,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_14591_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/14591/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "16121",
@@ -396,11 +398,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 24' 6\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 24' 6\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -681,7 +683,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #16121\nHwy 71 B S E/S, 0.10 mi N/O Porter St, Springdale, AR (Bowling Alley), N/F, SB\nLocation #1\n \nWEEKLY IMPRESSIONS:\t86,935 per spot*\nMEDIA TYPE/STYLE:\tPoster - Digital\nGEOPATH ID:\t371510\nLAT/LONG:\t36.170769 / -94.138857\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 24' 6\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #16121\nHwy 71 B S E/S, 0.10 mi N/O Porter St, Springdale, AR (Bowling Alley), N/F, SB\nLocation #1\n \nWEEKLY IMPRESSIONS:\t86,935 per spot*\nMEDIA TYPE/STYLE:\tPoster - Digital\nGEOPATH ID:\t371510\nLAT/LONG:\t36.170769 / -94.138857\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 24' 6\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 71 B S E/S, 0.10 mi N/O Porter St, Springdale, AR (Bowling Alley), N/F, SB",
@@ -691,7 +693,7 @@
       "geopathId": "371510",
       "size": "12' 0\" x 24' 6\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Poster - Digital",
       "traffic": "",
       "weeklyImpressions": "86,935 per spot*",
@@ -721,7 +723,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_16121_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/16121/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "52821",
@@ -758,11 +762,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Right Video Drive-By"
+        "North / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -1043,7 +1047,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #52821\nI-49 W/S, AT MM 73.5, 4774 Elm Springs Rd., Springdale, AR (1F-\nLocation #1\n \nWEEKLY IMPRESSIONS:\t232,636 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609719\nLAT/LONG:\t36.19877477 / -94.18195134\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tNorth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #52821\nI-49 W/S, AT MM 73.5, 4774 Elm Springs Rd., Springdale, AR (1F-\nLocation #1\n \nWEEKLY IMPRESSIONS:\t232,636 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609719\nLAT/LONG:\t36.19877477 / -94.18195134\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 73.5, 4774 Elm Springs Rd., Springdale, AR (1F-",
@@ -1053,7 +1057,7 @@
       "geopathId": "30609719",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "North / Right Video Drive-By",
+      "facing": "North / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "232,636 per spot*",
@@ -1083,7 +1087,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_52821_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/52821/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "63582",
@@ -1120,11 +1126,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -1405,7 +1411,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #63582\nWalton Blvd E/S, 0.50 mi N/O SH 102, Bentonville, AR, SB, N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t68,834 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t618974\nLAT/LONG:\t36.361985 / -94.217264\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #63582\nWalton Blvd E/S, 0.50 mi N/O SH 102, Bentonville, AR, SB, N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t68,834 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t618974\nLAT/LONG:\t36.361985 / -94.217264\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Walton Blvd E/S, 0.50 mi N/O SH 102, Bentonville, AR, SB, N/F",
@@ -1415,7 +1421,7 @@
       "geopathId": "618974",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "68,834 per spot*",
@@ -1445,7 +1451,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_63582_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/63582/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "64482",
@@ -1482,11 +1490,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -1767,7 +1775,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #64482\nWalton Blvd E/S, 0.50 mi N/O SH 102, Bentonville, AR, NB, S/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t166,823 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t618976\nLAT/LONG:\t36.361985 / -94.217264\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #64482\nWalton Blvd E/S, 0.50 mi N/O SH 102, Bentonville, AR, NB, S/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t166,823 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t618976\nLAT/LONG:\t36.361985 / -94.217264\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Walton Blvd E/S, 0.50 mi N/O SH 102, Bentonville, AR, NB, S/F",
@@ -1777,7 +1785,7 @@
       "geopathId": "618976",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "166,823 per spot*",
@@ -1807,7 +1815,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_64482_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/64482/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "65002",
@@ -1844,11 +1854,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -2129,7 +2139,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #65002\nI-49 E/S, 0.30 mi S/O SH 102, Bentonville, AR, N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t110,538 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t371920\nLAT/LONG:\t36.352892 / -94.178432\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #65002\nI-49 E/S, 0.30 mi S/O SH 102, Bentonville, AR, N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t110,538 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t371920\nLAT/LONG:\t36.352892 / -94.178432\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S, 0.30 mi S/O SH 102, Bentonville, AR, N/F",
@@ -2139,7 +2149,7 @@
       "geopathId": "371920",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "110,538 per spot*",
@@ -2169,7 +2179,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_65002_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/65002/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "65012",
@@ -2206,11 +2218,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -2491,7 +2503,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #65012\nI-49 E/S, 0.30 mi S/O SH 102, Bentonville, AR, S/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t215,231 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t371921\nLAT/LONG:\t36.352892 / -94.178432\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #65012\nI-49 E/S, 0.30 mi S/O SH 102, Bentonville, AR, S/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t215,231 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t371921\nLAT/LONG:\t36.352892 / -94.178432\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S, 0.30 mi S/O SH 102, Bentonville, AR, S/F",
@@ -2501,7 +2513,7 @@
       "geopathId": "371921",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "215,231 per spot*",
@@ -2531,7 +2543,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_65012_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/65012/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "66201",
@@ -2568,11 +2582,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Left Video Drive-By"
+        "South / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -2853,7 +2867,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #66201\nI-49 W/S .5 MI N/O Don Tyson Pkwy SF\nLocation #1\n \nWEEKLY IMPRESSIONS:\t343,228 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30747083\nLAT/LONG:\t36.160742 / -94.187075\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tSouth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #66201\nI-49 W/S .5 MI N/O Don Tyson Pkwy SF\nLocation #1\n \nWEEKLY IMPRESSIONS:\t343,228 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30747083\nLAT/LONG:\t36.160742 / -94.187075\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S .5 MI N/O Don Tyson Pkwy SF",
@@ -2863,7 +2877,7 @@
       "geopathId": "30747083",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "South / Left Video Drive-By",
+      "facing": "South / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "343,228 per spot*",
@@ -2893,7 +2907,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_66201_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/66201/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "66202",
@@ -2930,11 +2946,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Right Video Drive-By"
+        "North / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -3215,7 +3231,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #66202\nI-49 W/S .5 MI N/O Don Tyson Pkwy NF\nLocation #1\n \nWEEKLY IMPRESSIONS:\t239,663 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30747084\nLAT/LONG:\t36.160742 / -94.187075\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tNorth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #66202\nI-49 W/S .5 MI N/O Don Tyson Pkwy NF\nLocation #1\n \nWEEKLY IMPRESSIONS:\t239,663 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30747084\nLAT/LONG:\t36.160742 / -94.187075\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S .5 MI N/O Don Tyson Pkwy NF",
@@ -3225,7 +3241,7 @@
       "geopathId": "30747084",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "North / Right Video Drive-By",
+      "facing": "North / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "239,663 per spot*",
@@ -3255,7 +3271,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_66202_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/66202/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "66220",
@@ -3292,11 +3310,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 6\" x 36' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 6\" x 36' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -3577,7 +3595,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #66220\nHwy 71 E/S .1 MI N/O N. Walton BLVD SF\nLocation #1\nADVERTISING STRENGTHS:   This panel is in close proximity to the Wal-Mart Headquarters as well as several golf courses. This panel also targets commuters traveling on I-49 in proximity to NWA Children's Hospital, J.B. Hunt, Tyson, Arvest Park, and the University of Arkansas.\n \nWEEKLY IMPRESSIONS:\t410,174 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30829990\nLAT/LONG:\t36.41947 / -94.22223\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 6\" x 36' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #66220\nHwy 71 E/S .1 MI N/O N. Walton BLVD SF\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 This panel is in close proximity to the Wal-Mart Headquarters as well as several golf courses. This panel also targets commuters traveling on I-49 in proximity to NWA Children's Hospital, J.B. Hunt, Tyson, Arvest Park, and the University of Arkansas.\n \nWEEKLY IMPRESSIONS:\t410,174 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30829990\nLAT/LONG:\t36.41947 / -94.22223\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 6\" x 36' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 71 E/S .1 MI N/O N. Walton BLVD SF",
@@ -3587,7 +3605,7 @@
       "geopathId": "30829990",
       "size": "10' 6\" x 36' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "410,174 per spot*",
@@ -3617,7 +3635,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_66220_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/66220/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "66221",
@@ -3654,11 +3674,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 6\" x 36' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 6\" x 36' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -3939,7 +3959,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #66221\nHwy 71 E/S .1 MI N/O N. Walton BLVD NF\nLocation #1\nADVERTISING STRENGTHS:   This panel is in close proximity to the Wal-Mart Headquarters as well as several golf courses. This panel also targets commuters traveling on I-49 in proximity to NWA Children's Hospital, J.B. Hunt, Tyson, Arvest Park, and the University of Arkansas.\n \nWEEKLY IMPRESSIONS:\t112,744 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30829989\nLAT/LONG:\t36.41947 / -94.22223\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 6\" x 36' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #66221\nHwy 71 E/S .1 MI N/O N. Walton BLVD NF\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 This panel is in close proximity to the Wal-Mart Headquarters as well as several golf courses. This panel also targets commuters traveling on I-49 in proximity to NWA Children's Hospital, J.B. Hunt, Tyson, Arvest Park, and the University of Arkansas.\n \nWEEKLY IMPRESSIONS:\t112,744 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30829989\nLAT/LONG:\t36.41947 / -94.22223\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 6\" x 36' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 71 E/S .1 MI N/O N. Walton BLVD NF",
@@ -3949,7 +3969,7 @@
       "geopathId": "30829989",
       "size": "10' 6\" x 36' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "112,744 per spot*",
@@ -3979,7 +3999,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_66221_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/66221/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "68122",
@@ -4016,11 +4038,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Right Video Drive-By"
+        "North / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -4301,7 +4323,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #68122\nI-49 W/S, 0.60 mi S/O SH 264, Lowell, AR, N/F\nLocation #1\nADVERTISING STRENGTHS:   Digital Specs: 1400x400 pixels\n \nWEEKLY IMPRESSIONS:\t223,110 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30969563\nLAT/LONG:\t36.245328 / -94.151877\nMARKET:\tLOWELL\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tNorth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #68122\nI-49 W/S, 0.60 mi S/O SH 264, Lowell, AR, N/F\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Digital Specs: 1400x400 pixels\n \nWEEKLY IMPRESSIONS:\t223,110 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30969563\nLAT/LONG:\t36.245328 / -94.151877\nMARKET:\tLOWELL\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, 0.60 mi S/O SH 264, Lowell, AR, N/F",
@@ -4311,7 +4333,7 @@
       "geopathId": "30969563",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "North / Right Video Drive-By",
+      "facing": "North / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "223,110 per spot*",
@@ -4341,7 +4363,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_68122_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/68122/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "68132",
@@ -4378,11 +4402,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Left Video Drive-By"
+        "South / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -4663,7 +4687,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #68132\nI-49 W/S, 0.60 mi S/O SH 264, Lowell, AR, S/F\nLocation #1\nADVERTISING STRENGTHS:   Digital Specs: 1400x400 pixels\n \nWEEKLY IMPRESSIONS:\t168,763 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30969556\nLAT/LONG:\t36.245328 / -94.151877\nMARKET:\tLOWELL\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tSouth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #68132\nI-49 W/S, 0.60 mi S/O SH 264, Lowell, AR, S/F\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Digital Specs: 1400x400 pixels\n \nWEEKLY IMPRESSIONS:\t168,763 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30969556\nLAT/LONG:\t36.245328 / -94.151877\nMARKET:\tLOWELL\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, 0.60 mi S/O SH 264, Lowell, AR, S/F",
@@ -4673,7 +4697,7 @@
       "geopathId": "30969556",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "South / Left Video Drive-By",
+      "facing": "South / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "168,763 per spot*",
@@ -4703,7 +4727,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_68132_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/68132/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "70511",
@@ -4740,11 +4766,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -5025,7 +5051,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #70511\nHwy 71B 300 South of W Lakeview Dr., 4915 S. Thompson E/S, Springdale, AR, N/F (D05N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t49,021 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609721\nLAT/LONG:\t36.13917985 / -94.14371063\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #70511\nHwy 71B 300 South of W Lakeview Dr., 4915 S. Thompson E/S, Springdale, AR, N/F (D05N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t49,021 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609721\nLAT/LONG:\t36.13917985 / -94.14371063\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 71B 300 South of W Lakeview Dr., 4915 S. Thompson E/S, Springdale, AR, N/F (D05N1)",
@@ -5035,7 +5061,7 @@
       "geopathId": "30609721",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "49,021 per spot*",
@@ -5065,7 +5091,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_70511_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/70511/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "70521",
@@ -5102,11 +5130,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -5387,7 +5415,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #70521\nHwy 71B 300 South of W Lakeview Dr., 4915 S. Thompson E/S, Springdale, AR, S/F (D05S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t139,565 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609722\nLAT/LONG:\t36.13917985 / -94.14371063\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #70521\nHwy 71B 300 South of W Lakeview Dr., 4915 S. Thompson E/S, Springdale, AR, S/F (D05S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t139,565 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609722\nLAT/LONG:\t36.13917985 / -94.14371063\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 71B 300 South of W Lakeview Dr., 4915 S. Thompson E/S, Springdale, AR, S/F (D05S1)",
@@ -5397,7 +5425,7 @@
       "geopathId": "30609722",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "139,565 per spot*",
@@ -5427,7 +5455,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_70521_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/70521/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "70702",
@@ -5464,11 +5494,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 24' 5\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 24' 5\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -5749,7 +5779,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #70702\nHwy 71 B E/S, 0.10 mi N/O Porter Rd, Springdale, AR (Bowling Alley), S/F, NB\nLocation #1\n \nWEEKLY IMPRESSIONS:\t123,495 per spot*\nMEDIA TYPE/STYLE:\tPoster - Digital\nGEOPATH ID:\t372294\nLAT/LONG:\t36.170769 / -94.138857\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 24' 5\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #70702\nHwy 71 B E/S, 0.10 mi N/O Porter Rd, Springdale, AR (Bowling Alley), S/F, NB\nLocation #1\n \nWEEKLY IMPRESSIONS:\t123,495 per spot*\nMEDIA TYPE/STYLE:\tPoster - Digital\nGEOPATH ID:\t372294\nLAT/LONG:\t36.170769 / -94.138857\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 24' 5\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 71 B E/S, 0.10 mi N/O Porter Rd, Springdale, AR (Bowling Alley), S/F, NB",
@@ -5759,7 +5789,7 @@
       "geopathId": "372294",
       "size": "12' 0\" x 24' 5\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Poster - Digital",
       "traffic": "",
       "weeklyImpressions": "123,495 per spot*",
@@ -5789,7 +5819,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_70702_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/70702/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "70712",
@@ -5826,11 +5858,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Left Video Drive-By"
+        "South / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -6111,7 +6143,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #70712\nI-49 W/S, AT MM 70, 4201 S. 56th St., Springdale, AR, S/F (D07S)\nLocation #1\nADVERTISING STRENGTHS:   Digital Specs: 1400x400\n \nWEEKLY IMPRESSIONS:\t179,468 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30916393\nLAT/LONG:\t36.14827782 / -94.18623471\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tSouth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #70712\nI-49 W/S, AT MM 70, 4201 S. 56th St., Springdale, AR, S/F (D07S)\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Digital Specs: 1400x400\n \nWEEKLY IMPRESSIONS:\t179,468 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30916393\nLAT/LONG:\t36.14827782 / -94.18623471\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 70, 4201 S. 56th St., Springdale, AR, S/F (D07S)",
@@ -6121,7 +6153,7 @@
       "geopathId": "30916393",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "South / Left Video Drive-By",
+      "facing": "South / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "179,468 per spot*",
@@ -6151,7 +6183,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_70712_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/70712/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "70713",
@@ -6188,11 +6222,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Right Video Drive-By"
+        "North / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -6473,7 +6507,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #70713\nI-49 W/S, AT MM 70, 4201 S. 56th St., Springdale, AR, N/F (D07N)\nLocation #1\nADVERTISING STRENGTHS:   Digital Specs: 1200x400\n \nWEEKLY IMPRESSIONS:\t223,019 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30916391\nLAT/LONG:\t36.14827782 / -94.18623471\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tNorth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #70713\nI-49 W/S, AT MM 70, 4201 S. 56th St., Springdale, AR, N/F (D07N)\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Digital Specs: 1200x400\n \nWEEKLY IMPRESSIONS:\t223,019 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30916391\nLAT/LONG:\t36.14827782 / -94.18623471\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 70, 4201 S. 56th St., Springdale, AR, N/F (D07N)",
@@ -6483,7 +6517,7 @@
       "geopathId": "30916391",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "North / Right Video Drive-By",
+      "facing": "North / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "223,019 per spot*",
@@ -6513,7 +6547,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_70713_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/70713/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "70741",
@@ -6550,11 +6586,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -6835,7 +6871,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #70741\nI-49 E/S 100' N/O Don Tyson Parkway N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t142,518 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30916021\nLAT/LONG:\t36.157169 / -94.185754\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #70741\nI-49 E/S 100' N/O Don Tyson Parkway N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t142,518 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30916021\nLAT/LONG:\t36.157169 / -94.185754\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S 100' N/O Don Tyson Parkway N/F",
@@ -6845,7 +6881,7 @@
       "geopathId": "30916021",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "142,518 per spot*",
@@ -6875,7 +6911,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_70741_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/70741/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "70742",
@@ -6912,11 +6950,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -7197,7 +7235,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #70742\nI-49 E/S 100' N/O Don Tyson Parkway S/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t168,090 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30915963\nLAT/LONG:\t36.157169 / -94.185754\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #70742\nI-49 E/S 100' N/O Don Tyson Parkway S/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t168,090 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30915963\nLAT/LONG:\t36.157169 / -94.185754\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S 100' N/O Don Tyson Parkway S/F",
@@ -7207,7 +7245,7 @@
       "geopathId": "30915963",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "168,090 per spot*",
@@ -7237,7 +7275,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_70742_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/70742/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "71011",
@@ -7274,11 +7314,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -7559,7 +7599,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #71011\nI-49 E/S, AT MM 71.5, 5001 Kaylee Ave, Springdale, AR, N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t158,484 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50670189\nLAT/LONG:\t36.16641944 / -94.18617222\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #71011\nI-49 E/S, AT MM 71.5, 5001 Kaylee Ave, Springdale, AR, N/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t158,484 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50670189\nLAT/LONG:\t36.16641944 / -94.18617222\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S, AT MM 71.5, 5001 Kaylee Ave, Springdale, AR, N/F",
@@ -7569,7 +7609,7 @@
       "geopathId": "50670189",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "158,484 per spot*",
@@ -7599,7 +7639,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_71011_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/71011/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "71931",
@@ -7636,11 +7678,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "West / Left Video Drive-By"
+        "West / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -7921,7 +7963,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #71931\n4282 W. Sunset N/S, AT Rieff, Springdale, AR, W/F, (Lowes) (D19W1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t175,432 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609701\nLAT/LONG:\t36.17553086 / -94.17775948\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tWest / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #71931\n4282 W. Sunset N/S, AT Rieff, Springdale, AR, W/F, (Lowes) (D19W1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t175,432 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609701\nLAT/LONG:\t36.17553086 / -94.17775948\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tWest / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "4282 W. Sunset N/S, AT Rieff, Springdale, AR, W/F, (Lowes) (D19W1)",
@@ -7931,7 +7973,7 @@
       "geopathId": "30609701",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "West / Left Video Drive-By",
+      "facing": "West / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "175,432 per spot*",
@@ -7961,7 +8003,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_71931_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/71931/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "71941",
@@ -7998,11 +8042,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Right Video Drive-By"
+        "East / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -8283,7 +8327,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #71941\n4282 W. Sunset N/S, AT Rieff, Springdale, AR (Lowes), E/F (D19E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t160,814 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609702\nLAT/LONG:\t36.17553086 / -94.17775948\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tEast / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #71941\n4282 W. Sunset N/S, AT Rieff, Springdale, AR (Lowes), E/F (D19E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t160,814 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609702\nLAT/LONG:\t36.17553086 / -94.17775948\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "4282 W. Sunset N/S, AT Rieff, Springdale, AR (Lowes), E/F (D19E1)",
@@ -8293,7 +8337,7 @@
       "geopathId": "30609702",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "East / Right Video Drive-By",
+      "facing": "East / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "160,814 per spot*",
@@ -8323,7 +8367,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_71941_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/71941/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "72511",
@@ -8360,11 +8406,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -8645,7 +8691,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #72511\nI-49 E/S, AT MM 72.5, 651 Rio Bravo Dr., Springdale, AR, N/F (D25N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t167,957 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609713\nLAT/LONG:\t36.17993567 / -94.17991695\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #72511\nI-49 E/S, AT MM 72.5, 651 Rio Bravo Dr., Springdale, AR, N/F (D25N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t167,957 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609713\nLAT/LONG:\t36.17993567 / -94.17991695\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S, AT MM 72.5, 651 Rio Bravo Dr., Springdale, AR, N/F (D25N1)",
@@ -8655,7 +8701,7 @@
       "geopathId": "30609713",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "167,957 per spot*",
@@ -8685,7 +8731,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_72511_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/72511/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "72521",
@@ -8722,11 +8770,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 6\" x 36' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 6\" x 36' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -9007,7 +9055,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #72521\nI-49 E/S, AT MM 72.5, 651 Rio Bravo Dr., Springdale, AR, S/F ((D25S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t179,864 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609714\nLAT/LONG:\t36.17993567 / -94.17991695\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t10' 6\" x 36' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #72521\nI-49 E/S, AT MM 72.5, 651 Rio Bravo Dr., Springdale, AR, S/F ((D25S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t179,864 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609714\nLAT/LONG:\t36.17993567 / -94.17991695\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t10' 6\" x 36' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S, AT MM 72.5, 651 Rio Bravo Dr., Springdale, AR, S/F ((D25S1)",
@@ -9017,7 +9065,7 @@
       "geopathId": "30609714",
       "size": "10' 6\" x 36' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "179,864 per spot*",
@@ -9047,7 +9095,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_72521_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/72521/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "72821",
@@ -9084,11 +9134,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Left Video Drive-By"
+        "South / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -9369,7 +9419,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #72821\nI-49 W/S, AT MM 73.5, 4774 Elm Springs Rd., Springdale, AR, S/F (D28S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t196,743 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609720\nLAT/LONG:\t36.19877477 / -94.18195134\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tSouth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #72821\nI-49 W/S, AT MM 73.5, 4774 Elm Springs Rd., Springdale, AR, S/F (D28S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t196,743 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609720\nLAT/LONG:\t36.19877477 / -94.18195134\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 73.5, 4774 Elm Springs Rd., Springdale, AR, S/F (D28S1)",
@@ -9379,7 +9429,7 @@
       "geopathId": "30609720",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "South / Left Video Drive-By",
+      "facing": "South / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "196,743 per spot*",
@@ -9409,7 +9459,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_72821_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/72821/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "73831",
@@ -9446,11 +9498,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 35' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 35' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "West / Right Video Drive-By"
+        "West / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -9731,7 +9783,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #73831\n1015 SW Regional Airport Blvd S/S, Bentonville, AR-1 (1F-F38W1)\nLocation #1\nADVERTISING STRENGTHS:   Top panel\n \nWEEKLY IMPRESSIONS:\t331,458 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50670221\nLAT/LONG:\t36.33548334 / -94.22374061\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 35' 0\" View Spec Sheet\nFACING/READ:\tWest / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #73831\n1015 SW Regional Airport Blvd S/S, Bentonville, AR-1 (1F-F38W1)\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Top panel\n \nWEEKLY IMPRESSIONS:\t331,458 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50670221\nLAT/LONG:\t36.33548334 / -94.22374061\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 35' 0\"\u00a0View Spec Sheet\nFACING/READ:\tWest / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "1015 SW Regional Airport Blvd S/S, Bentonville, AR-1 (1F-F38W1)",
@@ -9741,7 +9793,7 @@
       "geopathId": "50670221",
       "size": "12' 0\" x 35' 0\"",
       "illuminated": "YES",
-      "facing": "West / Right Video Drive-By",
+      "facing": "West / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "331,458 per spot*",
@@ -9771,7 +9823,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_73831_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/73831/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "73841",
@@ -9808,11 +9862,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 6\" x 36' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 6\" x 36' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Left Video Drive-By"
+        "East / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -10093,7 +10147,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #73841\n1015 SW Regional Airport Blvd S/S, Bentonville, AR, E/F (D38E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t125,816 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609535\nLAT/LONG:\t36.33548334 / -94.22374061\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 6\" x 36' 0\" View Spec Sheet\nFACING/READ:\tEast / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #73841\n1015 SW Regional Airport Blvd S/S, Bentonville, AR, E/F (D38E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t125,816 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609535\nLAT/LONG:\t36.33548334 / -94.22374061\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 6\" x 36' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "1015 SW Regional Airport Blvd S/S, Bentonville, AR, E/F (D38E1)",
@@ -10103,7 +10157,7 @@
       "geopathId": "30609535",
       "size": "10' 6\" x 36' 0\"",
       "illuminated": "YES",
-      "facing": "East / Left Video Drive-By",
+      "facing": "East / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "125,816 per spot*",
@@ -10133,7 +10187,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_73841_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/73841/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "76211",
@@ -10170,11 +10226,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Right Video Drive-By"
+        "North / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -10455,7 +10511,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #76211\nI-49 W/S, AT MM 85, 3609 Moberly Lane, Bentonville, AR (D62N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t184,024 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609568\nLAT/LONG:\t36.33389195 / -94.18483746\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tNorth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #76211\nI-49 W/S, AT MM 85, 3609 Moberly Lane, Bentonville, AR (D62N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t184,024 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609568\nLAT/LONG:\t36.33389195 / -94.18483746\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 85, 3609 Moberly Lane, Bentonville, AR (D62N1)",
@@ -10465,7 +10521,7 @@
       "geopathId": "30609568",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "North / Right Video Drive-By",
+      "facing": "North / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "184,024 per spot*",
@@ -10495,7 +10551,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_76211_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/76211/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "76221",
@@ -10532,11 +10590,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 40' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 40' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Left Video Drive-By"
+        "South / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -10817,7 +10875,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #76221\nI-49 W/S, AT MM 85, 3609 Moberly Lane, Bentonville, AR (D62S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t74,188 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609569\nLAT/LONG:\t36.33389195 / -94.18483746\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\" View Spec Sheet\nFACING/READ:\tSouth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #76221\nI-49 W/S, AT MM 85, 3609 Moberly Lane, Bentonville, AR (D62S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t74,188 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609569\nLAT/LONG:\t36.33389195 / -94.18483746\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t12' 0\" x 40' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 85, 3609 Moberly Lane, Bentonville, AR (D62S1)",
@@ -10827,7 +10885,7 @@
       "geopathId": "30609569",
       "size": "12' 0\" x 40' 0\"",
       "illuminated": "YES",
-      "facing": "South / Left Video Drive-By",
+      "facing": "South / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "74,188 per spot*",
@@ -10857,7 +10915,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_76221_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/76221/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "76311",
@@ -10894,11 +10954,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -11179,7 +11239,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #76311\n14th and S. Walton E/S, Bentonville, AR, N/F (D63N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t206,166 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609570\nLAT/LONG:\t36.35672137 / -94.21256944\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #76311\n14th and S. Walton E/S, Bentonville, AR, N/F (D63N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t206,166 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609570\nLAT/LONG:\t36.35672137 / -94.21256944\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "14th and S. Walton E/S, Bentonville, AR, N/F (D63N1)",
@@ -11189,7 +11249,7 @@
       "geopathId": "30609570",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "206,166 per spot*",
@@ -11219,7 +11279,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_76311_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/76311/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "76321",
@@ -11256,11 +11318,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -11541,7 +11603,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #76321\n14th and S. Walton E/S, Bentonville, AR, S/F (D63S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t184,507 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609571\nLAT/LONG:\t36.35672137 / -94.21256944\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #76321\n14th and S. Walton E/S, Bentonville, AR, S/F (D63S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t184,507 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609571\nLAT/LONG:\t36.35672137 / -94.21256944\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "14th and S. Walton E/S, Bentonville, AR, S/F (D63S1)",
@@ -11551,7 +11613,7 @@
       "geopathId": "30609571",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "184,507 per spot*",
@@ -11581,7 +11643,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_76321_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/76321/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "76341",
@@ -11618,11 +11682,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 22' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 22' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Left Video Drive-By"
+        "East / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -11903,7 +11967,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #76341\n14th and S. Walton E/S, Bentonville, AR, E/F (D63E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t211,224 per spot*\nMEDIA TYPE/STYLE:\tPoster - Digital\nGEOPATH ID:\t30722602\nLAT/LONG:\t36.35672137 / -94.21256944\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 22' 0\" View Spec Sheet\nFACING/READ:\tEast / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #76341\n14th and S. Walton E/S, Bentonville, AR, E/F (D63E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t211,224 per spot*\nMEDIA TYPE/STYLE:\tPoster - Digital\nGEOPATH ID:\t30722602\nLAT/LONG:\t36.35672137 / -94.21256944\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 22' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "14th and S. Walton E/S, Bentonville, AR, E/F (D63E1)",
@@ -11913,7 +11977,7 @@
       "geopathId": "30722602",
       "size": "10' 0\" x 22' 0\"",
       "illuminated": "YES",
-      "facing": "East / Left Video Drive-By",
+      "facing": "East / Left\u00a0Video Drive-By",
       "type": "Poster - Digital",
       "traffic": "",
       "weeklyImpressions": "211,224 per spot*",
@@ -11943,7 +12007,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_76341_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/76341/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "76512",
@@ -11980,11 +12046,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Right Video Drive-By"
+        "North / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -12265,7 +12331,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #76512\n92 US 71, Jane, MO W/S, N/F (D65N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t104,373 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50786553\nLAT/LONG:\t36.50315434 / -94.27662134\nMARKET:\tJANE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tNorth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #76512\n92 US 71, Jane, MO W/S, N/F (D65N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t104,373 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50786553\nLAT/LONG:\t36.50315434 / -94.27662134\nMARKET:\tJANE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "92 US 71, Jane, MO W/S, N/F (D65N1)",
@@ -12275,7 +12341,7 @@
       "geopathId": "50786553",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "NO",
-      "facing": "North / Right Video Drive-By",
+      "facing": "North / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "104,373 per spot*",
@@ -12305,7 +12371,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_76512_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/76512/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "77831",
@@ -12342,11 +12410,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "West / Left Video Drive-By"
+        "West / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -12627,7 +12695,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #77831\n6006 W. Sunset N/S, Springdale, AR (Crain GMC), W/F (D78W1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t70,111 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609729\nLAT/LONG:\t36.17582778 / -94.19714722\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tWest / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #77831\n6006 W. Sunset N/S, Springdale, AR (Crain GMC), W/F (D78W1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t70,111 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609729\nLAT/LONG:\t36.17582778 / -94.19714722\nMARKET:\tSPRINGDALE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tWest / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "6006 W. Sunset N/S, Springdale, AR (Crain GMC), W/F (D78W1)",
@@ -12637,7 +12705,7 @@
       "geopathId": "30609729",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "West / Left Video Drive-By",
+      "facing": "West / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "70,111 per spot*",
@@ -12667,7 +12735,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_77831_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/77831/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "77911",
@@ -12704,11 +12774,11 @@
       ],
       [
         "PANEL SIZE:",
-        "14' 0\" x 48' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "14' 0\" x 48' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Right Video Drive-By"
+        "North / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -12989,7 +13059,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #77911\nI-49 W/S, AT MM 78, Lowell, AR, N/F (D79N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t268,655 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609572\nLAT/LONG:\t36.2678335 / -94.15085122\nMARKET:\tROGERS\nPANEL SIZE:\t14' 0\" x 48' 0\" View Spec Sheet\nFACING/READ:\tNorth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #77911\nI-49 W/S, AT MM 78, Lowell, AR, N/F (D79N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t268,655 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609572\nLAT/LONG:\t36.2678335 / -94.15085122\nMARKET:\tROGERS\nPANEL SIZE:\t14' 0\" x 48' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 78, Lowell, AR, N/F (D79N1)",
@@ -12999,7 +13069,7 @@
       "geopathId": "30609572",
       "size": "14' 0\" x 48' 0\"",
       "illuminated": "YES",
-      "facing": "North / Right Video Drive-By",
+      "facing": "North / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "268,655 per spot*",
@@ -13029,7 +13099,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_77911_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/77911/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "77921",
@@ -13066,11 +13138,11 @@
       ],
       [
         "PANEL SIZE:",
-        "12' 0\" x 42' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "12' 0\" x 42' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Left Video Drive-By"
+        "South / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -13351,7 +13423,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #77921\nI-49 W/S, AT MM 78, Lowell, AR, SF (F79S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t203,949 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50670220\nLAT/LONG:\t36.2678335 / -94.15085122\nMARKET:\tROGERS\nPANEL SIZE:\t12' 0\" x 42' 0\" View Spec Sheet\nFACING/READ:\tSouth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #77921\nI-49 W/S, AT MM 78, Lowell, AR, SF (F79S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t203,949 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t50670220\nLAT/LONG:\t36.2678335 / -94.15085122\nMARKET:\tROGERS\nPANEL SIZE:\t12' 0\" x 42' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 W/S, AT MM 78, Lowell, AR, SF (F79S1)",
@@ -13361,7 +13433,7 @@
       "geopathId": "50670220",
       "size": "12' 0\" x 42' 0\"",
       "illuminated": "YES",
-      "facing": "South / Left Video Drive-By",
+      "facing": "South / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "203,949 per spot*",
@@ -13391,7 +13463,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_77921_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/77921/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78111",
@@ -13428,11 +13502,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 36' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 36' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "North / Left Video Drive-By"
+        "North / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -13713,7 +13787,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78111\nI-49 E/S, AT MM 82, Rogers, AR, N/F (D81N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t156,374 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609576\nLAT/LONG:\t36.28887922 / -94.16001514\nMARKET:\tROGERS\nPANEL SIZE:\t10' 0\" x 36' 0\" View Spec Sheet\nFACING/READ:\tNorth / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78111\nI-49 E/S, AT MM 82, Rogers, AR, N/F (D81N1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t156,374 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609576\nLAT/LONG:\t36.28887922 / -94.16001514\nMARKET:\tROGERS\nPANEL SIZE:\t10' 0\" x 36' 0\"\u00a0View Spec Sheet\nFACING/READ:\tNorth / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S, AT MM 82, Rogers, AR, N/F (D81N1)",
@@ -13723,7 +13797,7 @@
       "geopathId": "30609576",
       "size": "10' 0\" x 36' 0\"",
       "illuminated": "YES",
-      "facing": "North / Left Video Drive-By",
+      "facing": "North / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "156,374 per spot*",
@@ -13753,7 +13827,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78111_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78111/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78121",
@@ -13790,11 +13866,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 36' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 36' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "South / Right Video Drive-By"
+        "South / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -14075,7 +14151,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78121\nI-49 E/S, AT MM 82, Rogers, AR, S/F (D81S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t219,436 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609577\nLAT/LONG:\t36.28887922 / -94.16001514\nMARKET:\tROGERS\nPANEL SIZE:\t10' 0\" x 36' 0\" View Spec Sheet\nFACING/READ:\tSouth / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78121\nI-49 E/S, AT MM 82, Rogers, AR, S/F (D81S1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t219,436 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609577\nLAT/LONG:\t36.28887922 / -94.16001514\nMARKET:\tROGERS\nPANEL SIZE:\t10' 0\" x 36' 0\"\u00a0View Spec Sheet\nFACING/READ:\tSouth / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "I-49 E/S, AT MM 82, Rogers, AR, S/F (D81S1)",
@@ -14085,7 +14161,7 @@
       "geopathId": "30609577",
       "size": "10' 0\" x 36' 0\"",
       "illuminated": "YES",
-      "facing": "South / Right Video Drive-By",
+      "facing": "South / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "219,436 per spot*",
@@ -14115,7 +14191,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78121_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78121/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78231",
@@ -14152,11 +14230,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "West / Left Video Drive-By"
+        "West / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -14437,7 +14515,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78231\n401 SE Walton N/S, Bentonville, AR, W/F (D82W1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t109,581 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609578\nLAT/LONG:\t36.33566111 / -94.20545833\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tWest / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78231\n401 SE Walton N/S, Bentonville, AR, W/F (D82W1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t109,581 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609578\nLAT/LONG:\t36.33566111 / -94.20545833\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tWest / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "401 SE Walton N/S, Bentonville, AR, W/F (D82W1)",
@@ -14447,7 +14525,7 @@
       "geopathId": "30609578",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "West / Left Video Drive-By",
+      "facing": "West / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "109,581 per spot*",
@@ -14477,7 +14555,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78231_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78231/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78241",
@@ -14514,11 +14594,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Right Video Drive-By"
+        "East / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -14799,7 +14879,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78241\n401 SE Walton N/S, Bentonville, AR, E/F (D82E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t109,946 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609579\nLAT/LONG:\t36.33566111 / -94.20545833\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tEast / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78241\n401 SE Walton N/S, Bentonville, AR, E/F (D82E1)\nLocation #1\n \nWEEKLY IMPRESSIONS:\t109,946 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30609579\nLAT/LONG:\t36.33566111 / -94.20545833\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "401 SE Walton N/S, Bentonville, AR, E/F (D82E1)",
@@ -14809,7 +14889,7 @@
       "geopathId": "30609579",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "East / Right Video Drive-By",
+      "facing": "East / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "109,946 per spot*",
@@ -14839,7 +14919,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78241_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78241/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78531",
@@ -14876,11 +14958,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "West / Right Video Drive-By"
+        "West / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -15161,7 +15243,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78531\n1080 SE 14th St S/S, Bentonville, AR, W/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t143,571 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899915\nLAT/LONG:\t36.35646027 / -94.19786173\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tWest / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78531\n1080 SE 14th St S/S, Bentonville, AR, W/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t143,571 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899915\nLAT/LONG:\t36.35646027 / -94.19786173\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tWest / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "1080 SE 14th St S/S, Bentonville, AR, W/F",
@@ -15171,7 +15253,7 @@
       "geopathId": "30899915",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "West / Right Video Drive-By",
+      "facing": "West / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "143,571 per spot*",
@@ -15201,7 +15283,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78531_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78531/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78541",
@@ -15238,11 +15322,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Left Video Drive-By"
+        "East / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -15523,7 +15607,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78541\n1080 SE 14th St S/S, Bentonville, AR, E/F\nLocation #1\nADVERTISING STRENGTHS:   Digital Specs: 1200x400 pixels\n \nWEEKLY IMPRESSIONS:\t120,643 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899914\nLAT/LONG:\t36.35646027 / -94.19786173\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tEast / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78541\n1080 SE 14th St S/S, Bentonville, AR, E/F\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Digital Specs: 1200x400 pixels\n \nWEEKLY IMPRESSIONS:\t120,643 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899914\nLAT/LONG:\t36.35646027 / -94.19786173\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "1080 SE 14th St S/S, Bentonville, AR, E/F",
@@ -15533,7 +15617,7 @@
       "geopathId": "30899914",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "East / Left Video Drive-By",
+      "facing": "East / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "120,643 per spot*",
@@ -15563,7 +15647,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78541_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78541/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78631",
@@ -15600,11 +15686,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "West / Right Video Drive-By"
+        "West / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -15885,7 +15971,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78631\n3158 SE 14th St, Bentonville, AR S/S, W/F\nLocation #1\nADVERTISING STRENGTHS:   Digital Specs: 1200x400 pixels\n \nWEEKLY IMPRESSIONS:\t105,123 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899917\nLAT/LONG:\t36.356029 / -94.175094\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tWest / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78631\n3158 SE 14th St, Bentonville, AR S/S, W/F\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Digital Specs: 1200x400 pixels\n \nWEEKLY IMPRESSIONS:\t105,123 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899917\nLAT/LONG:\t36.356029 / -94.175094\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tWest / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "3158 SE 14th St, Bentonville, AR S/S, W/F",
@@ -15895,7 +15981,7 @@
       "geopathId": "30899917",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "West / Right Video Drive-By",
+      "facing": "West / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "105,123 per spot*",
@@ -15925,7 +16011,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78631_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78631/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "78641",
@@ -15962,11 +16050,11 @@
       ],
       [
         "PANEL SIZE:",
-        "10' 0\" x 30' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "10' 0\" x 30' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Left Video Drive-By"
+        "East / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -16247,7 +16335,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #78641\n3158 SE 14th St, Bentonville, AR S/S, E/F\nLocation #1\nADVERTISING STRENGTHS:   Digital Specs: 1200x400 pixels\n \nWEEKLY IMPRESSIONS:\t227,848 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899916\nLAT/LONG:\t36.356029 / -94.175094\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\" View Spec Sheet\nFACING/READ:\tEast / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #78641\n3158 SE 14th St, Bentonville, AR S/S, E/F\nLocation #1\nADVERTISING STRENGTHS:\u00a0\u00a0 Digital Specs: 1200x400 pixels\n \nWEEKLY IMPRESSIONS:\t227,848 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t30899916\nLAT/LONG:\t36.356029 / -94.175094\nMARKET:\tBENTONVILLE\nPANEL SIZE:\t10' 0\" x 30' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "3158 SE 14th St, Bentonville, AR S/S, E/F",
@@ -16257,7 +16345,7 @@
       "geopathId": "30899916",
       "size": "10' 0\" x 30' 0\"",
       "illuminated": "YES",
-      "facing": "East / Left Video Drive-By",
+      "facing": "East / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "227,848 per spot*",
@@ -16287,7 +16375,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_78641_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/78641/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "121210",
@@ -16324,11 +16414,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "East / Left Video Drive-By"
+        "East / Left\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -16609,7 +16699,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #121210\nHwy 62 S/S, 0.70 mi E/O SH 170, 245 E. Main St, Farmington, AR, E/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t78,687 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t31031317\nLAT/LONG:\t36.04522207 / -94.22941474\nMARKET:\tFARMINGTON\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tEast / Left \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #121210\nHwy 62 S/S, 0.70 mi E/O SH 170, 245 E. Main St, Farmington, AR, E/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t78,687 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t31031317\nLAT/LONG:\t36.04522207 / -94.22941474\nMARKET:\tFARMINGTON\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tEast / Left\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 62 S/S, 0.70 mi E/O SH 170, 245 E. Main St, Farmington, AR, E/F",
@@ -16619,7 +16709,7 @@
       "geopathId": "31031317",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "East / Left Video Drive-By",
+      "facing": "East / Left\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "78,687 per spot*",
@@ -16649,7 +16739,9 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_121210_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/121210/PhotosheetApproach/?width=900"
   },
   {
     "panelNumber": "121310",
@@ -16686,11 +16778,11 @@
       ],
       [
         "PANEL SIZE:",
-        "9' 0\" x 32' 0\" View Spec Sheet\n                        Request Spec Sheet"
+        "9' 0\" x 32' 0\"\u00a0View Spec Sheet\n                        Request Spec Sheet"
       ],
       [
         "FACING/READ:",
-        "West / Right Video Drive-By"
+        "West / Right\u00a0Video Drive-By"
       ],
       [
         "ILLUMINATED:",
@@ -16971,7 +17063,7 @@
         ""
       ]
     ],
-    "allText": "PANEL #121310\nHwy 62 S/S, 0.70 mi E/O SH 170, 245 E. Main St, Farmington, AR, W/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t229,629 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t31031318\nLAT/LONG:\t36.04522207 / -94.22941474\nMARKET:\tFARMINGTON\nPANEL SIZE:\t9' 0\" x 32' 0\" View Spec Sheet\nFACING/READ:\tWest / Right \nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:  Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
+    "allText": "PANEL #121310\nHwy 62 S/S, 0.70 mi E/O SH 170, 245 E. Main St, Farmington, AR, W/F\nLocation #1\n \nWEEKLY IMPRESSIONS:\t229,629 per spot*\nMEDIA TYPE/STYLE:\tPermanent Bulletin - Digital\nGEOPATH ID:\t31031318\nLAT/LONG:\t36.04522207 / -94.22941474\nMARKET:\tFARMINGTON\nPANEL SIZE:\t9' 0\" x 32' 0\"\u00a0View Spec Sheet\nFACING/READ:\tWest / Right\u00a0\nSLOTS/DWELL:\t8 slots / 8 seconds\n*Impression values based on:\u00a0 Total Population\nLAMAR ADVERTISING OF NORTHWEST ARKANSAS, AR\n479.442.0300\nlamar.com",
     "error": null,
     "parsed": {
       "address": "Hwy 62 S/S, 0.70 mi E/O SH 170, 245 E. Main St, Farmington, AR, W/F",
@@ -16981,7 +17073,7 @@
       "geopathId": "31031318",
       "size": "9' 0\" x 32' 0\"",
       "illuminated": "YES",
-      "facing": "West / Right Video Drive-By",
+      "facing": "West / Right\u00a0Video Drive-By",
       "type": "Permanent Bulletin - Digital",
       "traffic": "",
       "weeklyImpressions": "229,629 per spot*",
@@ -17011,6 +17103,8 @@
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/Images/nopic.jpg",
       "https://apps.lamar.com/salesmarketing/webresources/images/ajax-loader.gif"
-    ]
+    ],
+    "approachPhotoFile": "images/panel_121310_approach.jpg",
+    "approachPhotoUrl": "https://resources.lamar.com/SMCoreServices/public/materials/photos/photo/byPlantPanel/434/121310/PhotosheetApproach/?width=900"
   }
 ]
