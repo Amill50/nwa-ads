@@ -1,0 +1,73 @@
+
+name: Log push to NWA Ads Tracker
+ 
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  log-to-tracker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # need parent commit to diff files
+ 
+      - name: Get changed files
+        id: files
+        run: |
+          # Get list of files changed in this push
+          FILES=$(git diff --name-only HEAD~1 HEAD | head -30 | jq -R . | jq -s .)
+          echo "changed_files=$FILES" >> $GITHUB_OUTPUT
+ 
+      - name: Build payload
+        id: payload
+        run: |
+          # Escape commit message for JSON
+          MSG=$(echo '${{ github.event.head_commit.message }}' | head -c 500)
+          SHA='${{ github.event.head_commit.id }}'
+          PUSHED='${{ github.event.head_commit.timestamp }}'
+          BRANCH='${{ github.ref_name }}'
+          FILES='${{ steps.files.outputs.changed_files }}'
+ 
+          PAYLOAD=$(jq -n \
+            --arg msg "$MSG" \
+            --arg sha "$SHA" \
+            --arg pushed "$PUSHED" \
+            --arg branch "$BRANCH" \
+            --argjson files "$FILES" \
+            '{
+              commit_message: $msg,
+              commit_sha: $sha,
+              pushed_at: $pushed,
+              branch: $branch,
+              files_changed: $files,
+              repo: "Amill50/nwa-ads"
+            }')
+ 
+          echo "payload=$PAYLOAD" >> $GITHUB_OUTPUT
+ 
+      - name: POST to Google Sheet tracker
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '${{ steps.payload.outputs.payload }}' \
+            "${{ secrets.TRACKER_WEBHOOK_URL }}")
+ 
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+ 
+          echo "Response: $BODY"
+          echo "HTTP Status: $HTTP_CODE"
+ 
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "⚠️ Tracker webhook returned $HTTP_CODE — push still succeeded"
+            # Don't fail the push if tracker is down
+            exit 0
+          fi
+ 
+          echo "✅ Logged to NWA Ads Product Tracker"
+ 
