@@ -19,7 +19,7 @@ jobs:
         id: files
         run: |
           # Get list of files changed in this push
-          FILES=$(git diff --name-only HEAD~1 HEAD | head -30 | jq -R . | jq -s .)
+          FILES=$(git diff --name-only HEAD~1 HEAD | head -30 | jq -R . | jq -cs .)
           echo "changed_files=$FILES" >> $GITHUB_OUTPUT
  
       - name: Build payload
