@@ -368,7 +368,11 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
 .s2-top-left { display: flex; align-items: center; gap: 20px; }
-.s2-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: #fff; }
+.s2-top-row1 { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+.s2-top-row2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-bottom: 4px; }
+.s2-row2-count { font-size: 11.5px; color: rgba(255,255,255,0.5); }
+.s2-row2-sep { color: rgba(255,255,255,0.2); font-size: 13px; line-height: 1; }
+.s2-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: #fff; }
 .s2-count { font-size: 12px; color: rgba(255,255,255,0.85); }
 .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; }
 .f-chip {
@@ -386,6 +390,10 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 .f-chip.on:hover { color: #fff; }
 
 /* VIEW TOGGLE */
+.sc-rate-badge { display:inline-block; font-size:10px; font-weight:600; border-radius:4px; padding:2px 5px; margin-top:4px; }
+.sc-rate-badge.verified { background:rgba(34,197,94,0.12); color:#16a34a; border:1px solid rgba(34,197,94,0.25); }
+.sc-rate-badge.estimated { background:rgba(107,101,96,0.1); color:#6b6560; border:1px solid rgba(107,101,96,0.2); }
+
 .view-toggle {
   display: flex; border: 1.5px solid var(--border); border-radius: 10px;
   overflow: hidden; flex-shrink: 0;
@@ -2534,36 +2542,42 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 
 <!-- ═══ STEP 4: MAP ═══ -->
 <div class="panel" id="panel-4">
-  <!-- Top bar -->
+  <!-- Top bar — two-row redesign -->
   <div class="s2-top">
-    <div class="s2-top-left">
-      <div>
-        <div class="s2-title" id="s2-title-text">Pick your screens</div>
-        <div class="s2-count" id="s2-count">82 screens across NWA</div>
-        <div id="s2-hint-text" style="font-size:12px;color:rgba(255,255,255,0.9);font-weight:500;margin-top:3px;max-width:480px;"></div>
-        <div id="s2-targeting-line" style="font-size:11.5px;color:rgba(255,255,255,0.75);font-weight:500;margin-top:2px;max-width:480px;"></div>
-      </div>
-      <div class="filter-bar">
-        <div class="f-chip on" id="chip-all" onclick="doFilter(this,'all')">All formats</div>
-        <div class="f-chip" onclick="doFilter(this,'billboard')">🪧 Billboard</div>
-        <div class="f-chip" onclick="doFilter(this,'gasstation')">⛽ Gas Station</div>
-        <div class="f-chip" onclick="doFilter(this,'healthcare')">🏥 Healthcare</div>
-        <div class="f-chip" onclick="doFilter(this,'dining')">🍽️ Dining</div>
-        <div class="f-chip" onclick="doFilter(this,'grocery')">🛒 Grocery</div>
-        <div class="f-chip" onclick="doFilter(this,'gym')">🏋️ Gym</div>
-        <div class="f-chip" onclick="doFilter(this,'cinema')">🎬 Cinema</div>
-        <div class="f-chip" onclick="doFilter(this,'rideshare')">🚗 Rideshare</div>
-        <div class="f-chip" onclick="doFilter(this,'airport')">✈️ Airport</div>
-        <div class="f-chip" id="chip-walmart-2mi" onclick="doFilter(this,'walmart_hq_2mi')" style="display:none">📍 Within 2mi of HQ</div>
+    <!-- Row 1: goal title + Map/List toggle -->
+    <div class="s2-top-row1">
+      <div class="s2-title" id="s2-title-text">Pick your screens</div>
+      <div class="view-toggle" id="view-toggle-bar">
+        <div class="vt-btn on" id="vt-map" onclick="setView('map')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><path d="M3 7l6-4 6 4 6-4v14l-6 4-6-4-6 4V7"/></svg>Map
+        </div>
+        <div class="vt-btn" id="vt-list" onclick="setView('list')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>List
+        </div>
       </div>
     </div>
-    <div class="view-toggle" id="view-toggle-bar">
-      <div class="vt-btn on" id="vt-map" onclick="setView('map')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><path d="M3 7l6-4 6 4 6-4v14l-6 4-6-4-6 4V7"/></svg>Map
-      </div>
-      <div class="vt-btn" id="vt-list" onclick="setView('list')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:5px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>List
-      </div>
+    <!-- Row 2: screen count + zone pills + targeting reminder -->
+    <div class="s2-top-row2">
+      <span class="s2-row2-count" id="screen-count">82 screens</span>
+      <div id="header-zone-pills" style="display:contents"></div>
+    </div>
+    <!-- Hidden backwards-compat: existing JS writes to these -->
+    <div id="s2-count" style="display:none"></div>
+    <div id="s2-hint-text" style="display:none"></div>
+    <div id="s2-targeting-line" style="display:none"></div>
+    <!-- Filter chips kept hidden so doFilter() refs don't break -->
+    <div class="filter-bar" style="display:none" aria-hidden="true">
+      <div class="f-chip on" id="chip-all" onclick="doFilter(this,'all')">All formats</div>
+      <div class="f-chip" onclick="doFilter(this,'billboard')">🪧 Billboard</div>
+      <div class="f-chip" onclick="doFilter(this,'gasstation')">⛽ Gas Station</div>
+      <div class="f-chip" onclick="doFilter(this,'healthcare')">🏥 Healthcare</div>
+      <div class="f-chip" onclick="doFilter(this,'dining')">🍽️ Dining</div>
+      <div class="f-chip" onclick="doFilter(this,'grocery')">🛒 Grocery</div>
+      <div class="f-chip" onclick="doFilter(this,'gym')">🏋️ Gym</div>
+      <div class="f-chip" onclick="doFilter(this,'cinema')">🎬 Cinema</div>
+      <div class="f-chip" onclick="doFilter(this,'rideshare')">🚗 Rideshare</div>
+      <div class="f-chip" onclick="doFilter(this,'airport')">✈️ Airport</div>
+      <div class="f-chip" id="chip-walmart-2mi" onclick="doFilter(this,'walmart_hq_2mi')" style="display:none">📍 Within 2mi of HQ</div>
     </div>
   </div>
 
@@ -2998,11 +3012,30 @@ function renderNavAccount() {
   const el = document.getElementById('nav-account');
   if (!el) return;
   if (AUTH_SESSION) {
+    const email = AUTH_SESSION.user.email || '';
+    const initial = email ? email[0].toUpperCase() : '?';
     el.innerHTML = `
-      <span class="nav-account-email">${AUTH_SESSION.user.email}</span>
-      <button class="nav-account-link" onclick="showMyCampaigns()">My campaigns</button>
-      <button class="nav-account-link" onclick="signOut()">Sign out</button>
+      <div style="display:flex;flex-direction:column;align-items:stretch;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;overflow:hidden;min-width:220px">
+        <div style="display:flex;align-items:center;gap:9px;padding:9px 14px 9px 10px;border-bottom:1px solid rgba(255,255,255,0.1)">
+          <div style="width:26px;height:26px;border-radius:50%;background:#c8440a;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${initial}</div>
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0">
+            <div style="font-size:11.5px;color:rgba(255,255,255,0.85);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${email}</div>
+            <div style="display:flex;gap:10px">
+              <a style="font-size:10.5px;color:rgba(255,255,255,0.5);text-decoration:underline;cursor:pointer" onclick="showMyCampaigns()">My campaigns</a>
+              <a style="font-size:10.5px;color:rgba(255,255,255,0.5);text-decoration:underline;cursor:pointer" onclick="signOut()">Sign out</a>
+            </div>
+          </div>
+        </div>
+        <div id="nav-cart-row" style="display:flex;align-items:center;gap:9px;padding:9px 14px 9px 10px;background:#c8440a;cursor:pointer" onclick="openCartSidebar()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <div>
+            <div id="cart-summary" style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap;line-height:1.2">No screens added yet</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.75);white-space:nowrap">Tap to review cart</div>
+          </div>
+        </div>
+      </div>
     `;
+    updateNavCartSummary();
   } else {
     el.innerHTML = `<button class="nav-account-link" onclick="openAuthModal()">Sign in</button>`;
   }
@@ -29456,6 +29489,8 @@ function renderList() {
   const countSuffix = ST.goal === "Reach Walmart & Sam's Club buyers"
     ? ' · in Walmart buyer zones'
     : hasProxTarget ? ' · sorted by proximity' : ' across NWA';
+  const _scEl = document.getElementById('screen-count');
+  if (_scEl) _scEl.textContent = visible.length + ' screens' + countSuffix;
   document.getElementById('s2-count').textContent = visible.length + ' screens' + countSuffix;
   const sortNote = document.getElementById('prox-sort-note');
   if (sortNote) sortNote.classList.toggle('visible', hasProxTarget);
@@ -29576,6 +29611,7 @@ function renderList() {
       </div>
       <div class="sc-right">
         <div class="sc-price">$${displayPrice.toLocaleString()}<span class="sc-unit">/wk</span></div>
+        ${(() => { const _conf = (s.rate_source||'').endsWith('_confirmed') || s.rate_source==='lamar_scraped_real_impressions'; return `<span class="sc-rate-badge ${_conf?'verified':'estimated'}">${_conf?'✓ Verified':'≈ Est.'}</span>`; })()}
         <div class="sc-btns">
           <button class="sc-x${sel ? ' show' : ''}" id="scx-${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')">✕</button>
           <button class="sc-add sc-add-btn${sel ? ' added' : ''}" id="sca-${s.id}" data-id="${s.id}" onclick="event.stopPropagation();toggleScreen('${s.id}')">${sel ? '✓ Added' : '+ Add'}</button>
@@ -29737,6 +29773,75 @@ function clearAllCart() {
   updateNavSel();
 }
 
+function updateNavCartSummary() {
+  const el  = document.getElementById('cart-summary');
+  const row = document.getElementById('nav-cart-row');
+  if (!el) return;
+  const keys = Object.keys(ST.cart);
+  if (!keys.length) {
+    el.textContent = 'No screens added yet';
+    if (row) { row.style.opacity = '0.55'; row.style.cursor = 'default'; row.onclick = null; }
+    return;
+  }
+  const total = keys.reduce((a, id) => a + unitRate(ST.cart[id]), 0);
+  el.textContent = keys.length + ' screen' + (keys.length !== 1 ? 's' : '') + ' · $' + Math.round(total).toLocaleString() + rateLabel();
+  if (row) { row.style.opacity = '1'; row.style.cursor = 'pointer'; row.onclick = openCartSidebar; }
+}
+
+function openCartSidebar() {
+  const panel = document.getElementById('panel-4');
+  const isPanel4 = panel && panel.classList.contains('active');
+  if (isPanel4) {
+    const sidebar = document.getElementById('sb-cart');
+    if (sidebar) {
+      sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    setView('list');
+  } else {
+    goTo(5);
+  }
+}
+
+/* Minimal HTML escaper — prevents XSS when inserting user-typed values */
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderHeaderZonePills() {
+  const container = document.getElementById('header-zone-pills');
+  if (!container) return;
+  const goal    = ST.goal || '';
+  const product = (ST.product || '').trim();
+  const subInt  = (ST.subIntent || '').trim();
+  let html = '';
+  if (goal === "Reach Walmart & Sam's Club buyers") {
+    const zones = [
+      { label: 'Home Office',          color: '#1f3d2a' },
+      { label: 'Downtown Bentonville', color: '#c8440a' },
+      { label: 'Pinnacle Hills',       color: '#c8440a' },
+    ];
+    html += '<span class="s2-row2-sep">·</span>';
+    html += zones.map(z => `<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:100px;padding:4px 10px;font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.85);white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:${z.color};display:inline-block;flex-shrink:0"></span>${z.label}</div>`).join('');
+  } else if (goal === 'Drive customers through your door' && ST.proximityTarget) {
+    const rawName = (ST.proximityTarget.name || '').split('–')[0].trim() || ST.advertiserName;
+    if (rawName) {
+      html += '<span class="s2-row2-sep">·</span>';
+      html += `<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.35);border-radius:100px;padding:4px 10px;font-size:11.5px;font-weight:600;color:rgba(190,160,255,0.95);white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:#7c3aed;display:inline-block;flex-shrink:0"></span>${escHtml(rawName)}</div>`;
+    }
+  }
+  if (product && subInt) {
+    html += '<span class="s2-row2-sep">·</span>';
+    html += `<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(200,68,10,0.2);border:1px solid rgba(200,68,10,0.4);border-radius:100px;padding:4px 10px;font-size:11.5px;font-weight:600;color:#e8935f;white-space:nowrap">🎯 ${escHtml(product)} · ${escHtml(subInt)}</div>`;
+  }
+  container.innerHTML = html;
+}
+
 function updateCartHeader() {
   const n = Object.keys(ST.cart).length;
   const badge    = document.getElementById('cart-icon-badge');
@@ -29744,6 +29849,7 @@ function updateCartHeader() {
   const countEl  = document.getElementById('sbf-count');
   if (badge) { badge.textContent = n; badge.style.display = n ? 'flex' : 'none'; }
   if (countEl) countEl.textContent = n ? n + ' screen' + (n!==1?'s':'') : '0 screens';
+  updateNavCartSummary();
   if (!sub) return;
   if (!n) { sub.textContent = 'No screens added yet'; return; }
   const total = Object.values(ST.cart).reduce((a,s) => a+unitRate(s), 0);
@@ -30201,6 +30307,8 @@ function goTo(step) {
     }
 
     updateBreadcrumb();
+    renderHeaderZonePills();
+    updateNavCartSummary();
 
     renderList();
     renderCart();
