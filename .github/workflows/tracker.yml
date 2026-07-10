@@ -32,7 +32,7 @@ jobs:
           BRANCH='${{ github.ref_name }}'
           FILES='${{ steps.files.outputs.changed_files }}'
  
-          PAYLOAD=$(jq -n \
+          PAYLOAD=$(jq -cn \
             --arg msg "$MSG" \
             --arg sha "$SHA" \
             --arg pushed "$PUSHED" \
