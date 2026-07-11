@@ -1,6 +1,20 @@
 [build]
+  command = "node scripts/build-check.js"
   publish = "."
   functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/book"
+  to = "/book.html"
+  status = 200
+
+[[redirects]]
+  from = "/proposal"
+  to = "/proposals/index.html"
+  status = 200
 
 [[headers]]
   for = "/admin.html"
@@ -11,3 +25,8 @@
   for = "/book.html"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
+
+# Branch deploy for proposals branch
+[context.proposals]
+  command = "echo 'Proposals branch — no build needed'"
+  publish = "."
