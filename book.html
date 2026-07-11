@@ -2186,16 +2186,6 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
             <span style="font-size:12px;font-weight:600;color:#1f3d2a">🗺 Map shows 3 buyer concentration zones · Billboard, cinema, gym, dining, sports &amp; recreation</span>
           </div>
         </div>
-        <div class="insight-subintent">
-          <div class="insight-subintent-label">When are you targeting buyers?</div>
-          <div class="ft-status-row">
-            <div class="ft-status-pill on" onclick="selSubIntent(this,'walmart')">Line review season</div>
-            <div class="ft-status-pill" onclick="selSubIntent(this,'walmart')">Year-round presence</div>
-            <div class="ft-status-pill" onclick="selSubIntent(this,'walmart')">Shareholders Week</div>
-            <div class="ft-status-pill" onclick="selSubIntent(this,'walmart')">Product launch</div>
-          </div>
-          <div id="walmart-subflow" class="walmart-subflow"></div>
-        </div>
       </div>
 
       <!-- BRAND AWARENESS insight -->
@@ -2459,6 +2449,18 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
     </div>
     <input type="range" class="budget-slider" id="bslider" min="500" max="50000" step="500" value="2000" oninput="updBudget(this)">
     <div class="budget-hints" id="budget-hints"></div>
+
+    <!-- Walmart: "When are you targeting buyers?" — only visible for Walmart goal -->
+    <div id="p3-walmart-timing" style="display:none;margin-bottom:28px">
+      <div style="margin-bottom:10px;font-size:13px;font-weight:500;color:var(--ink2)">When are you targeting buyers?</div>
+      <div class="ft-status-row">
+        <div class="ft-status-pill on" onclick="selSubIntent(this,'walmart')">Line review season</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'walmart')">Year-round presence</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'walmart')">Shareholders Week</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'walmart')">Product launch</div>
+      </div>
+      <div id="walmart-subflow" class="walmart-subflow"></div>
+    </div>
 
     <div style="margin-bottom:10px;font-size:13px;font-weight:500;color:var(--ink2)">Campaign duration</div>
 
@@ -28961,10 +28963,10 @@ function makeIconHtml(typeOrVenueType, size) {
   const svgSz = Math.round(s * 0.58);
   const color = venueColor(typeOrVenueType);
   const svgRaw = VENUE_SVG[typeOrVenueType] || VENUE_SVG.billboard;
-  const svg = svgRaw.replace('<svg ', '<svg width="' + svgSz + '" height="' + svgSz + '" ');
+  const svg = svgRaw.replace('<svg ', '<svg style="pointer-events:none" width="' + svgSz + '" height="' + svgSz + '" ');
   return '<div style="width:' + s + 'px;height:' + s + 'px;border-radius:50%;background:' + color
        + ';border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 3px 14px rgba(0,0,0,0.28)'
-       + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + svg + '</div>';
+       + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none">' + svg + '</div>';
 }
 
 function makeIcon(typeOrVenueType, size) {
@@ -29031,7 +29033,7 @@ function makePinIcon(s) {
     const color = s._direction === 'inbound' ? '#1f3d2a' : '#c8440a';
     return L.divIcon({
       className: '',
-      html: '<div style="background:' + color + ';color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.25);font-family:inherit;line-height:1.4;border:2px solid #fff;">'
+      html: '<div style="background:' + color + ';color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.25);font-family:inherit;line-height:1.4;border:2px solid #fff;pointer-events:none;">'
         + badge
         + '<br><span style="font-size:8px;font-weight:400;opacity:0.85">' + arrow + '</span></div>',
       iconSize:   [60, 32],
@@ -29706,16 +29708,23 @@ async function generateProposalLink() {
   const origText = btn ? btn.textContent : '';
   if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
 
-  const screens = {};
-  cartKeys.forEach(id => { screens[id] = ST.cart[id]; });
+  const proposalId = crypto.randomUUID();
+
+  const cart = {};
+  cartKeys.forEach(id => {
+    const s = ST.cart[id];
+    cart[id] = Object.assign({}, s, { weeklyRate: Math.round(unitRate(s)) });
+  });
 
   const { data, error } = await sbClient.from('campaigns').insert({
+    id:            proposalId,
     status:        'proposal',
     company_name:  ST.advertiserName || null,
+    contact_email: AUTH_SESSION?.user?.email || null,
     goal:          ST.goal || null,
     product:       ST.product || null,
     sub_intent:    ST.subIntent || null,
-    screens:       screens,
+    cart:          cart,
     budget:        ST.budget || null,
     flight_start:  ST.schedStart || null,
     flight_end:    ST.schedEnd || null,
@@ -29729,14 +29738,12 @@ async function generateProposalLink() {
   if (btn) { btn.textContent = origText; btn.disabled = false; }
 
   if (error || !data) {
-    console.error('Proposal save error:', error);
-    alert('Could not save proposal. Please try again.');
+    console.error('Proposal save error (full):', error);
+    alert('Could not save proposal. Error: ' + (error?.code || error?.message || 'unknown'));
     return;
   }
 
-  const proposalId = data.id;
-  const url = 'https://nwa-ads.com/proposal?id=' + proposalId;
-
+  const url = 'https://proposals.nwa-ads.com?id=' + proposalId;
   document.getElementById('proposal-link-input').value = url;
   document.getElementById('proposal-link-wrap').style.display = 'flex';
 }
@@ -29952,6 +29959,21 @@ function goTo(step) {
   }
 
   goToPanel(step);
+
+  if (step===3) {
+    const p3timing = document.getElementById('p3-walmart-timing');
+    if (p3timing) {
+      const isWalmart = ST.goal === "Reach Walmart & Sam's Club buyers";
+      p3timing.style.display = isWalmart ? '' : 'none';
+      if (isWalmart) {
+        p3timing.querySelectorAll('.ft-status-pill').forEach(p => {
+          p.classList.toggle('on', p.textContent.trim() === ST.subIntent);
+        });
+        if (ST.subIntent) renderWalmartSubflow(ST.subIntent);
+        else renderWalmartSubflow('Line review season');
+      }
+    }
+  }
 
   if (step===4) {
     document.getElementById('cb-goal').textContent = ST.goal||'—';
@@ -31676,8 +31698,8 @@ function renderWalmartSubflow(intent) {
       { startMonth: 2, startDay: 15, endMonth: 3, endDay: 15 },
       { startMonth: 8, startDay: 15, endMonth: 9, endDay: 15 },
     ]);
-    wrap.innerHTML = `<div class="walmart-subflow-note">Next Line Review season: <strong>${fmtFlowDate(win.start)} – ${fmtFlowDate(win.end)}</strong>.
-      <button type="button" class="walmart-subflow-btn" onclick="applyWalmartFlightDates(new Date(${win.start.getFullYear()},${win.start.getMonth()},${win.start.getDate()}),new Date(${win.end.getFullYear()},${win.end.getMonth()},${win.end.getDate()}))">Set my flight to these dates</button></div>`;
+    applyWalmartFlightDates(win.start, win.end);
+    wrap.innerHTML = `<div class="walmart-subflow-note">Flight auto-set to next Line Review season: <strong>${fmtFlowDate(win.start)} – ${fmtFlowDate(win.end)}</strong>. You can override the dates below.</div>`;
   } else if (intent === 'Year-round presence') {
     selInc(document.querySelector('#inc-pills .dur-pill:nth-child(3)'), 'monthly');
     selQty(document.querySelector('#qty-pills .dur-pill:nth-child(5)'), 12);
@@ -31686,10 +31708,10 @@ function renderWalmartSubflow(intent) {
     // Walmart's Annual Shareholders Meeting week is traditionally the first
     // full week of June.
     const win = nearestUpcomingWindow([{ startMonth: 6, startDay: 1, endMonth: 6, endDay: 7 }]);
-    wrap.innerHTML = `<div class="walmart-subflow-note">Nearest Shareholders Week: <strong>${fmtFlowDate(win.start)} – ${fmtFlowDate(win.end)}</strong>, when the highest volume of visiting executives, investors &amp; press pass through NWA.
-      <button type="button" class="walmart-subflow-btn" onclick="applyWalmartFlightDates(new Date(${win.start.getFullYear()},${win.start.getMonth()},${win.start.getDate()}),new Date(${win.end.getFullYear()},${win.end.getMonth()},${win.end.getDate()}))">Set my flight to this week</button></div>`;
+    applyWalmartFlightDates(win.start, win.end);
+    wrap.innerHTML = `<div class="walmart-subflow-note">Dates auto-set to Shareholders Week: <strong>${fmtFlowDate(win.start)} – ${fmtFlowDate(win.end)}</strong>, when the highest volume of visiting executives, investors &amp; press pass through NWA.</div>`;
   } else if (intent === 'Product launch') {
-    wrap.innerHTML = `<div class="walmart-subflow-note">When does your product launch or go up for buyer review?
+    wrap.innerHTML = `<div class="walmart-subflow-note">Enter your product launch date:
       <input type="date" id="walmart-launch-date" onchange="walmartLaunchDateChanged(this.value)"></div>`;
   } else {
     wrap.innerHTML = '';
@@ -31700,7 +31722,7 @@ function walmartLaunchDateChanged(val) {
   if (!val) return;
   const launch = new Date(val + 'T00:00:00');
   const start = new Date(launch); start.setDate(start.getDate() - 14);
-  const end = new Date(launch); end.setDate(end.getDate() + 14);
+  const end = new Date(launch); end.setDate(end.getDate() + 28);
   applyWalmartFlightDates(start, end);
   const wrap = document.getElementById('walmart-subflow');
   const note = document.createElement('div');
