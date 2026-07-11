@@ -1,579 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NWA Ads — The Easiest Way to Advertise Locally</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --ink:#0e1a0e;--ink2:#3a4a3a;
-  --green:#1f3d2a;--green-d:#163020;--green-m:#2d5a3d;--green-l:#eaf2ec;
-  --orange:#c8440a;--orange-d:#a03308;--orange-l:#fdf1eb;--orange-r:#f0905a;
-  --gold:#9a7b00;--gold-l:#fefbe8;
-  --muted:#7a7570;--border:#e2ddd6;--border2:#cac4b4;
-  --off:#f6f4ef;--off2:#ede9e3;--cream:#fffef9;
-  --blue:#1b6e8c;--blue-l:#e6f3f8;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NWA Ads — Campaign Proposal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    :root {
+      --green:       #1f3d2a;
+      --green-mid:   #2d5c3f;
+      --accent:      #c8440a;
+      --rust-light:  #e8935f;
+      --ink:         #1a1714;
+      --ink2:        #4a4540;
+      --muted:       #8a8378;
+      --border:      #ece7dd;
+      --white:       #fffef9;
+      --bg:          #f4f0e8;
+      --warm:        #f9f6ee;
+      --gold-border: #f0d9a8;
+      --gold-bg:     #fffbf2;
+      --gold-ink:    #5c4a1e;
+      --serif:       Georgia, 'Times New Roman', serif;
+      --sans:        'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-pill: 100px;
+      --sh-sm: 0 1px 3px rgba(26,23,20,0.07),0 1px 2px rgba(26,23,20,0.06);
+      --sh-md: 0 4px 16px rgba(26,23,20,0.09),0 2px 6px rgba(26,23,20,0.06);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; line-height: 1.5; }
 
-@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.u1{animation:up 0.6s 0.05s ease both}
-.u2{animation:up 0.6s 0.15s ease both}
-.u3{animation:up 0.6s 0.28s ease both}
-.u4{animation:up 0.6s 0.42s ease both}
+    /* ── Loading ── */
+    #loading {
+      position: fixed; inset: 0; background: var(--green);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .loading-logo { font-family: var(--serif); font-size: 22px; color: #fff; margin-bottom: 28px; letter-spacing: 0.02em; }
+    .loading-logo em { font-style: normal; color: var(--rust-light); }
+    .spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-/* NAV */
-nav{
-  position:sticky;top:0;z-index:200;height:60px;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 48px;
-  background:var(--green);
-  border-bottom:1px solid var(--green-m);
-}
-.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-wordmark{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--cream);letter-spacing:-0.3px;line-height:1}
-.nav-wordmark span{color:var(--orange-r)}
-.nav-tagline{font-size:9px;font-weight:500;color:rgba(255,255,255,0.3);letter-spacing:0.05em;margin-top:2px}
-.nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none;transition:color 0.15s;font-weight:500}
-.nav-links a:hover{color:rgba(255,255,255,0.9)}
-.btn-book{
-  font-size:13px;font-weight:600;
-  background:var(--orange);color:#fff!important;
-  padding:8px 20px;border-radius:6px;
-  text-decoration:none;transition:all 0.18s;
-}
-.btn-book:hover{background:var(--orange-d)!important;transform:translateY(-1px)}
+    /* ── Invalid ── */
+    #invalid {
+      display: none; min-height: 100vh; background: var(--white);
+      flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 24px;
+    }
+    .invalid-logo { font-family: var(--serif); font-size: 20px; color: var(--ink); margin-bottom: 32px; text-decoration: none; display: block; }
+    .invalid-logo em { font-style: normal; color: var(--rust-light); }
+    .invalid-h { font-family: var(--serif); font-size: 22px; margin-bottom: 10px; }
+    .invalid-p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+    .invalid-back { color: var(--accent); font-weight: 600; font-size: 13px; text-decoration: none; }
 
-/* HERO */
-.hero{max-width:760px;margin:0 auto;padding:88px 48px 68px;text-align:center}
-.hero-tag{
-  display:inline-flex;align-items:center;gap:10px;
-  font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;
-  color:var(--orange);margin-bottom:26px;
-}
-.hero-tag::before,.hero-tag::after{content:'';width:24px;height:1.5px;background:var(--orange);opacity:0.45}
-h1{
-  font-family:'Fraunces',serif;
-  font-size:clamp(40px,6vw,66px);font-weight:700;
-  line-height:1.0;letter-spacing:-2px;color:var(--ink);margin-bottom:22px;
-}
-h1 em{font-style:italic;color:var(--orange)}
-.hero-sub{font-size:17px;font-weight:400;color:var(--ink2);line-height:1.75;max-width:560px;margin:0 auto 40px}
-.hero-btns{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
-.btn-primary{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:'Instrument Sans',sans-serif;font-size:15px;font-weight:600;
-  background:var(--green);color:var(--cream);
-  padding:15px 36px;border-radius:8px;text-decoration:none;transition:all 0.2s;
-}
-.btn-primary:hover{background:var(--green-d);transform:translateY(-2px)}
-.btn-primary svg{transition:transform 0.2s}
-.btn-primary:hover svg{transform:translateX(3px)}
-.btn-text{
-  font-size:14px;color:var(--ink2);text-decoration:none;font-weight:400;
-  border-bottom:1px solid var(--border2);padding-bottom:2px;transition:all 0.15s;
-}
-.btn-text:hover{color:var(--ink);border-color:var(--ink2)}
+    /* ── Proposal wrapper ── */
+    #proposal { display: none; }
 
-/* BETA BADGE */
-.beta-badge{
-  display:inline-flex;align-items:center;gap:7px;
-  font-size:11px;font-weight:600;letter-spacing:0.3px;
-  background:var(--green-l);color:var(--green);
-  padding:5px 14px;border-radius:20px;
-  border:1px solid rgba(31,61,42,0.2);margin-bottom:28px;
-}
+    /* 1. Header */
+    .p-header { background: var(--green); padding: 32px 24px 36px; }
+    .p-header-inner { max-width: 900px; margin: 0 auto; }
+    .p-logo { font-family: var(--serif); font-size: 17px; color: #fff; margin-bottom: 24px; letter-spacing: 0.02em; text-decoration: none; display: inline-block; }
+    .p-logo em { font-style: normal; color: var(--rust-light); }
+    .p-h1 { font-family: var(--serif); font-size: clamp(22px,4vw,30px); color: #fff; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .p-subhead { font-size: 13.5px; color: rgba(255,255,255,0.65); line-height: 1.55; }
+    .p-expires { font-size: 11px; color: rgba(255,255,255,0.38); margin-top: 8px; }
 
-/* PRODUCT PREVIEW */
-.preview-outer{max-width:1100px;margin:0 auto;padding:0 48px 80px}
-.preview-frame{
-  border-radius:14px;overflow:hidden;border:1px solid var(--border);
-  box-shadow:0 2px 4px rgba(14,26,14,0.04),0 10px 36px rgba(14,26,14,0.09),0 28px 72px rgba(14,26,14,0.06);
-  background:var(--cream);
-}
-.browser-bar{display:flex;align-items:center;gap:14px;padding:11px 18px;background:var(--off2);border-bottom:1px solid var(--border)}
-.bdots{display:flex;gap:6px}
-.bdot{width:11px;height:11px;border-radius:50%}
-.bd1{background:#ff5f57}.bd2{background:#febc2e}.bd3{background:#28c840}
-.burl{
-  flex:1;background:var(--cream);border:1px solid var(--border);
-  border-radius:5px;padding:4px 14px;font-size:11px;
-  color:var(--muted);max-width:280px;margin:0 auto;
-  font-family:'Instrument Sans',sans-serif;
-}
+    /* 2. Summary strip */
+    .p-summary { display: grid; grid-template-columns: repeat(4,1fr); background: var(--white); border-bottom: 1px solid var(--border); }
+    .sum-cell { padding: 18px 20px; border-right: 1px solid var(--border); }
+    .sum-cell:last-child { border-right: none; }
+    .sum-lbl { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); margin-bottom: 5px; }
+    .sum-val { font-family: var(--serif); font-size: 19px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .sum-val.hi { color: var(--accent); }
+    @media (max-width: 640px) {
+      .p-summary { grid-template-columns: 1fr 1fr; }
+      .sum-cell:nth-child(2) { border-right: none; }
+      .sum-cell:nth-child(3) { border-top: 1px solid var(--border); }
+      .sum-cell:nth-child(4) { border-top: 1px solid var(--border); }
+    }
 
-/* APP GRID */
-.app-grid{display:grid;grid-template-columns:280px 1fr 200px;min-height:420px}
-.aside{border-right:1px solid var(--border);background:var(--cream);display:flex;flex-direction:column}
-.aside-head{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
-.aside-head-title{font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:2px;color:var(--ink)}
-.aside-head-sub{font-size:10px;color:var(--muted)}
-.chips{display:flex;gap:4px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid var(--border)}
-.chip{font-size:10px;font-weight:500;padding:3px 9px;border-radius:11px;border:1px solid var(--border);color:var(--ink2);background:var(--off)}
-.chip.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
-.screen-row{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;cursor:pointer;transition:background 0.15s}
-.screen-row:hover{background:var(--off)}
-.screen-row.sel{background:var(--orange-l);border-left:2px solid var(--orange)}
-.sr-ico{width:32px;height:32px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.sr-ico.r{background:var(--off2)}.sr-ico.a{background:#e4f0f6}.sr-ico.g{background:var(--gold-l)}.sr-ico.c{background:#f0eafa}
-.sr-info{flex:1;min-width:0}
-.sr-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;color:var(--ink)}
-.sr-area{font-size:9px;color:var(--muted)}
-.sr-price{font-family:'Fraunces',serif;font-size:13px;font-weight:700;color:var(--orange);flex-shrink:0}
-.sr-price small{font-size:8px;color:var(--muted);font-family:'Instrument Sans',sans-serif;font-weight:400}
+    /* 3. Objective banner */
+    .p-obj { background: var(--warm); border-bottom: 1px solid var(--border); padding: 16px 24px; }
+    .p-obj-inner { max-width: 900px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-start; }
+    .obj-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+    .obj-text { font-size: 13px; color: var(--ink2); line-height: 1.55; }
+    .obj-text strong { color: var(--ink); }
 
-/* MAP */
-.map-area{position:relative;background:#e6e2d8;overflow:hidden}
-.map-area::before{
-  content:'';position:absolute;inset:0;
-  background:
-    repeating-linear-gradient(0deg,transparent,transparent 43px,rgba(190,184,170,0.45) 43px,rgba(190,184,170,0.45) 44px),
-    repeating-linear-gradient(90deg,transparent,transparent 43px,rgba(190,184,170,0.45) 43px,rgba(190,184,170,0.45) 44px);
-}
-.rh{position:absolute;left:0;right:0}.rv{position:absolute;top:0;bottom:0}
-.r-main{background:rgba(168,162,148,0.8)}.r-sec{background:rgba(185,178,162,0.6)}
-.rh.main{height:9px}.rh.sec{height:5px}.rv.main{width:9px}.rv.sec{width:5px}
-.city-lbl{position:absolute;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:rgba(44,38,24,0.32);font-family:'Instrument Sans',sans-serif;pointer-events:none;user-select:none}
-.mpin{position:absolute;transform:translate(-50%,-100%);cursor:pointer}
-.pbub{padding:4px 8px;border-radius:14px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.22);border:1.5px solid rgba(255,255,255,0.85);transition:transform 0.15s;letter-spacing:0.2px}
-.pbub:hover{transform:scale(1.1)}
-.ptail{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;margin:-1px auto 0}
-.pbub.rd{background:var(--orange)}.ptail.rd{border-top:6px solid var(--orange)}
-.pbub.ar{background:var(--blue)}.ptail.ar{border-top:6px solid var(--blue)}
-.pbub.gs{background:#b45309}.ptail.gs{border-top:6px solid #b45309}
-.pbub.cn{background:#6b21a8}.ptail.cn{border-top:6px solid #6b21a8}
-.pbub.sel{outline:2px solid #fff;transform:scale(1.18)}
-.hq-pin{position:absolute;transform:translate(-50%,-50%);text-align:center;z-index:5}
-.hq-circle{width:30px;height:30px;border-radius:50%;background:var(--gold);border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;margin:0 auto 3px;box-shadow:0 2px 10px rgba(0,0,0,0.25);animation:pulse 2.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{box-shadow:0 2px 10px rgba(0,0,0,0.25),0 0 0 0 rgba(154,123,0,0.4)}50%{box-shadow:0 2px 10px rgba(0,0,0,0.25),0 0 0 10px rgba(154,123,0,0)}}
-.hq-lbl{background:rgba(0,0,0,0.6);color:var(--gold);font-size:7.5px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:0.5px;white-space:nowrap;font-family:'Instrument Sans',sans-serif}
-.pring{position:absolute;border-radius:50%;border:1.5px dashed rgba(200,68,10,0.25);transform:translate(-50%,-50%);pointer-events:none}
-.mlegend{position:absolute;bottom:48px;right:10px;background:rgba(255,254,249,0.93);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Instrument Sans',sans-serif}
-.ml-title{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:7px}
-.ml-row{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--ink2);margin-bottom:4px}
-.ml-row:last-child{margin-bottom:0}
-.ml-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.cart-bar{position:absolute;bottom:0;left:0;right:0;background:var(--cream);border-top:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.cart-info{font-size:11px;color:var(--ink2)}
-.cart-info b{font-family:'Fraunces',serif;font-size:14px;color:var(--orange)}
-.cart-go{font-size:11px;font-weight:600;padding:6px 14px;background:var(--orange);color:#fff;border-radius:5px}
-.photo-panel{border-left:1px solid var(--border);display:flex;flex-direction:column;background:var(--cream)}
-.photo-panel-head{padding:10px 12px 8px;border-bottom:1px solid var(--border)}
-.photo-panel-title{font-size:11px;font-weight:600;color:var(--ink);margin-bottom:2px}
-.photo-panel-sub{font-size:9px;color:var(--muted)}
-.photo-thumb{position:relative;overflow:hidden;flex:1;min-height:160px;background:var(--off2)}
-.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.photo-thumb-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.65));padding:20px 10px 8px}
-.photo-thumb-name{font-size:10px;font-weight:600;color:#fff;margin-bottom:1px}
-.photo-thumb-loc{font-size:9px;color:rgba(255,255,255,0.7)}
-.sv-btn{display:flex;align-items:center;gap:6px;padding:9px 12px;border-top:1px solid var(--border);font-size:10px;font-weight:600;color:var(--blue);cursor:pointer;transition:background 0.15s;text-decoration:none;background:var(--cream)}
-.sv-btn:hover{background:var(--blue-l)}
-.photo-meta{padding:10px 12px}
-.pm-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px}
-.pm-row .l{color:var(--muted)}.pm-row .v{font-weight:600;color:var(--ink)}
-.pm-add{display:block;width:100%;margin-top:8px;padding:8px;background:var(--orange);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;font-family:'Instrument Sans',sans-serif;cursor:pointer;text-align:center;transition:background 0.15s}
-.pm-add:hover{background:var(--orange-d)}
+    /* ── Inner sections ── */
+    .p-body { max-width: 900px; margin: 0 auto; padding: 28px 24px; }
+    .p-body + .p-body { padding-top: 0; }
+    .sec-head { font-family: var(--serif); font-size: 20px; font-weight: 700; margin-bottom: 16px; }
 
-/* OBJECTIVES */
-.objectives{max-width:1100px;margin:0 auto;padding:0 48px 80px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.obj{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:30px 26px;transition:all 0.2s;position:relative;overflow:hidden}
-.obj::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transform-origin:left;transition:transform 0.3s ease}
-.obj:hover::before{transform:scaleX(1)}
-.obj:hover{box-shadow:0 6px 28px rgba(14,26,14,0.09);transform:translateY(-3px)}
-.obj.blue::before{background:var(--blue)}
-.obj.clay::before{background:var(--orange)}
-.obj.forest::before{background:var(--green)}
-.obj-emoji{font-size:30px;margin-bottom:14px;display:block}
-.obj-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;margin-bottom:10px;line-height:1.25;color:var(--green)}
-.obj-desc{font-size:13px;color:var(--ink2);line-height:1.72;font-weight:400}
+    /* 4. Map */
+    .map-card { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--sh-md); }
+    .map-hdr { background: var(--green); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .map-hdr-title { font-family: var(--serif); font-size: 17px; color: #fff; }
+    .map-toggle { display: flex; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; overflow: hidden; }
+    .map-toggle-btn { border: none; background: transparent; padding: 5px 14px; font-size: 11.5px; font-weight: 600; font-family: inherit; color: rgba(255,255,255,0.55); cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .map-toggle-btn.on { background: rgba(255,255,255,0.16); color: #fff; }
+    #prop-map { height: 380px; }
+    .map-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media (max-width: 500px) { .map-foot { grid-template-columns: 1fr; } }
+    .map-foot-card { background: var(--warm); border-radius: var(--r-md); padding: 14px 18px; box-shadow: var(--sh-sm); }
+    .mfc-lbl { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); margin-bottom: 10px; }
+    .mfc-stat { font-family: var(--serif); font-size: 26px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+    .mfc-sub  { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .legend-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .legend-dot { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink2); }
+    .legend-dot::before { content: ''; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--c, #888); }
 
-/* HOW IT WORKS */
-.how-outer{border-top:1px solid var(--border);background:var(--off)}
-.how-inner{max-width:1100px;margin:0 auto;padding:72px 48px}
-.section-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:12px;margin-bottom:44px}
-.section-eyebrow::after{content:'';flex:1;height:1px;background:var(--border)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.step{padding:38px 32px;border-right:1px solid var(--border);transition:background 0.2s;background:var(--cream)}
-.step:last-child{border-right:none}
-.step:hover{background:var(--off)}
-.step-n{font-family:'Fraunces',serif;font-size:46px;font-weight:700;color:var(--border);line-height:1;margin-bottom:18px;transition:color 0.2s}
-.step:hover .step-n{color:var(--orange)}
-.step-title{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--ink)}
-.step-desc{font-size:13px;color:var(--ink2);line-height:1.72;font-weight:400}
-.step-tag{display:inline-block;margin-top:14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--orange)}
+    /* 5. Inventory grid */
+    .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+    .inv-card { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--sh-sm); }
+    .inv-img { width: 100%; height: 108px; object-fit: cover; display: block; background: var(--warm); }
+    .inv-img-fb { width: 100%; height: 108px; display: flex; align-items: center; justify-content: center; background: var(--warm); }
+    .inv-body { padding: 10px 12px 12px; }
+    .inv-eyebrow { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+    .inv-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .inv-type { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+    .inv-name { font-family: var(--serif); font-size: 13px; font-weight: 700; line-height: 1.25; margin-bottom: 3px; }
+    .inv-area { font-size: 10.5px; color: var(--muted); margin-bottom: 8px; }
+    .inv-price { font-family: var(--serif); font-size: 14px; font-weight: 700; color: var(--accent); border-top: 1px solid #f0ece5; padding-top: 7px; display: flex; align-items: baseline; gap: 4px; }
+    .inv-price small { font-family: var(--sans); font-size: 10px; font-weight: 400; color: var(--muted); }
+    .inv-feats { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+    .inv-feat { font-size: 9px; font-weight: 600; background: var(--warm); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
 
-/* OOH STATS */
-.effectiveness{background:var(--green);padding:56px 48px}
-.eff-inner{max-width:1100px;margin:0 auto}
-.eff-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px;flex-wrap:wrap;gap:16px}
-.eff-title{font-family:'Fraunces',serif;font-size:clamp(24px,3vw,36px);font-weight:700;color:var(--cream);letter-spacing:-1px;line-height:1.1}
-.eff-title em{font-style:italic;color:var(--orange-r)}
-.eff-src{font-size:11px;color:rgba(255,255,255,0.3)}
-.eff-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.eff-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:22px 20px;transition:background 0.2s}
-.eff-card:hover{background:rgba(255,255,255,0.1)}
-.eff-num{font-family:'Fraunces',serif;font-size:38px;font-weight:700;color:var(--cream);display:block;line-height:1;margin-bottom:6px;letter-spacing:-1px}
-.eff-num em{color:var(--orange-r);font-style:normal}
-.eff-label{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.55;font-weight:400}
-.eff-source{font-size:9px;color:rgba(255,255,255,0.25);margin-top:6px;font-style:italic}
+    /* 6. Cost summary */
+    .cost-box { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r-md); padding: 20px 24px; box-shadow: var(--sh-sm); }
+    .cost-line { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #f0ece5; font-size: 13px; color: var(--ink2); }
+    .cost-line:last-child { border-bottom: none; }
+    .cost-line strong { color: var(--ink); font-weight: 600; }
+    .cost-total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 2px; border-top: 2px solid var(--border); margin-top: 4px; }
+    .cost-total-lbl { font-family: var(--serif); font-size: 15px; font-weight: 700; }
+    .cost-total-val { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--accent); }
+    .disclaimer { background: var(--gold-bg); border: 1px solid var(--gold-border); border-left: 4px solid #c8860a; border-radius: var(--r-sm); padding: 14px 16px; font-size: 12.5px; line-height: 1.6; color: var(--gold-ink); margin-top: 14px; }
 
-/* GATE / ACCESS */
-.gate-section{background:var(--green-d);padding:72px 48px}
-.gate-inner{max-width:620px;margin:0 auto;text-align:center}
-.gate-eyebrow{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-bottom:16px}
-.gate-title{font-family:'Fraunces',serif;font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--cream);letter-spacing:-1px;line-height:1.1;margin-bottom:12px}
-.gate-title em{font-style:italic;color:var(--orange-r)}
-.gate-sub{font-size:15px;color:rgba(255,255,255,0.6);line-height:1.72;margin-bottom:36px;font-weight:400}
-.gate-form{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:32px;text-align:left}
-.gf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.gf-row.full{grid-template-columns:1fr}
-.gf-group label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:6px}
-.gf-group input,.gf-group select,.gf-group textarea{width:100%;padding:10px 13px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:7px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:#fff;outline:none;transition:border-color 0.15s;-webkit-appearance:none}
-.gf-group input::placeholder,.gf-group textarea::placeholder{color:rgba(255,255,255,0.28)}
-.gf-group input:focus,.gf-group select:focus,.gf-group textarea:focus{border-color:rgba(240,144,90,0.55)}
-.gf-group select option{background:var(--green-d)}
-.gf-group textarea{resize:none;height:76px}
-.btn-request{width:100%;padding:14px;background:var(--orange);color:#fff;border:none;border-radius:8px;font-family:'Fraunces',serif;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.18s;margin-top:4px;letter-spacing:0.2px}
-.btn-request:hover{background:var(--orange-d);transform:translateY(-1px)}
-.gf-note{text-align:center;font-size:11px;color:rgba(255,255,255,0.3);margin-top:13px;line-height:1.6}
-.thank-you{display:none;text-align:center;padding:48px 0}
-.ty-icon{font-size:44px;display:block;margin-bottom:14px}
-.ty-title{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--cream);margin-bottom:10px}
-.ty-sub{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;max-width:380px;margin:0 auto}
+    /* 7. CTA footer */
+    .cta-wrap { background: var(--green); border-radius: var(--r-xl); padding: 36px 32px 40px; text-align: center; }
+    .cta-h { font-family: var(--serif); font-size: 22px; color: #fff; margin-bottom: 8px; }
+    .cta-p { color: rgba(255,255,255,0.62); font-size: 13.5px; margin-bottom: 24px; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-approve { background: var(--accent); color: #fff; border: none; border-radius: var(--r-pill); padding: 14px 28px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
+    .btn-approve:hover { opacity: 0.88; }
+    .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-ask { background: transparent; color: rgba(255,255,255,0.8); border: 1.5px solid rgba(255,255,255,0.28); border-radius: var(--r-pill); padding: 13px 26px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; }
+    .cta-success { display: none; color: rgba(255,255,255,0.95); font-size: 15px; font-weight: 600; padding: 4px 0 2px; }
 
-/* FOOTER */
-footer{background:var(--ink);border-top:1px solid var(--green-m);padding:24px 48px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.4)}
-footer a{color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.15s}
-footer a:hover{color:rgba(255,255,255,0.8)}
-.footer-logo{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--cream)}
-.footer-logo span{color:var(--orange-r)}
-
-/* RESPONSIVE */
-@media(max-width:900px){
-  nav{padding:0 20px}
-  .nav-links a:not(.btn-book){display:none}
-  .nav-tagline{display:none}
-  .hero{padding:56px 20px 40px}
-  .preview-outer{padding:0 16px 48px}
-  .app-grid{grid-template-columns:1fr}
-  .aside,.photo-panel{display:none}
-  .objectives{grid-template-columns:1fr;padding:0 20px 48px}
-  .how-inner{padding:48px 20px}
-  .steps{grid-template-columns:1fr}
-  .step{border-right:none;border-bottom:1px solid var(--border)}
-  .step:last-child{border-bottom:none}
-  .eff-grid{grid-template-columns:1fr 1fr}
-  .effectiveness,.gate-section{padding:40px 20px}
-  footer{padding:20px;flex-direction:column;gap:8px;text-align:center}
-}
-</style>
+    /* Leaflet overrides */
+    .leaflet-container { font-family: var(--sans) !important; }
+    .leaflet-popup-content-wrapper { border-radius: var(--r-md) !important; box-shadow: var(--sh-md) !important; padding: 0 !important; overflow: hidden; }
+    .leaflet-popup-content { margin: 0 !important; min-width: 160px; }
+    .popup-inner { padding: 12px 14px; }
+    .popup-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+    .popup-area { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .popup-price { font-family: var(--serif); font-size: 14px; font-weight: 700; color: var(--accent); }
+    .leaflet-popup-tip { display: none; }
+  </style>
 </head>
 <body>
 
-<nav>
-  <a href="/" class="nav-logo">
-    <svg width="30" height="30" viewBox="0 0 64 64">
-      <rect width="64" height="64" rx="14" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <line x1="14" y1="26" x2="50" y2="26" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/>
-      <line x1="14" y1="32" x2="50" y2="32" stroke="#f0905a" stroke-width="3.5" stroke-linecap="round"/>
-      <line x1="14" y1="38" x2="50" y2="38" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-    <div>
-      <div class="nav-wordmark">NWA <span>Ads</span></div>
-      <div class="nav-tagline">The Easiest Way to Advertise Locally</div>
-    </div>
-  </a>
-  <div class="nav-links">
-    <a href="#how">How it works</a>
-    <a href="#inventory">Inventory</a>
-    <a href="#why-ooh">Why OOH</a>
-    <a href="#gate-access" class="btn-book">Request access →</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-tag u1">Hyperlocal advertising · Northwest Arkansas</div>
-  <h1 class="u2">Get noticed in<br><em>Northwest Arkansas.</em></h1>
-  <p class="hero-sub u3">The best real-world ad inventory in Northwest Arkansas — digital billboards, gas stations, and airport screens — all bookable in a few clicks. Whether you want Walmart and Sam's Club buyers to know your name, customers walking through your door, or the NWA tech scene talking about you — book it in minutes, not weeks.</p>
-  <div class="beta-badge u3">🔒 Currently in beta — request access below</div>
-  <div class="hero-btns u4">
-    <a href="#gate-access" class="btn-primary">
-      Request early access
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
-  </div>
+<!-- Loading -->
+<div id="loading">
+  <a href="https://nwa-ads.com" class="loading-logo">NWA <em>Ads</em></a>
+  <div class="spinner"></div>
 </div>
 
-<!-- PRODUCT PREVIEW -->
-<div class="preview-outer">
-  <div class="preview-frame">
-    <div class="browser-bar">
-      <div class="bdots"><div class="bdot bd1"></div><div class="bdot bd2"></div><div class="bdot bd3"></div></div>
-      <div class="burl">nwa-ads.com/book</div>
-    </div>
-    <div class="app-grid">
-      <!-- SIDEBAR -->
-      <div class="aside">
-        <div class="aside-head">
-          <div class="aside-head-title">NWA inventory</div>
-          <div class="aside-head-sub">15 screens · 3 formats</div>
-        </div>
-        <div class="chips">
-          <div class="chip on">All</div>
-          <div class="chip">Billboard</div>
-          <div class="chip">Gas station</div>
-          <div class="chip">Airport</div>
-        </div>
-        <div class="screen-row sel">
-          <div class="sr-ico r">🛣</div>
-          <div class="sr-info"><div class="sr-name">I-49 @ Don Tyson Pkwy</div><div class="sr-area">Springdale · Digital billboard</div></div>
-          <div class="sr-price">$1,844<small>/4wk</small></div>
-        </div>
-        <div class="screen-row">
-          <div class="sr-ico r">🛣</div>
-          <div class="sr-info"><div class="sr-name">Walton Blvd E/S</div><div class="sr-area">Bentonville · Digital billboard</div></div>
-          <div class="sr-price">$1,320<small>/4wk</small></div>
-        </div>
-        <div class="screen-row">
-          <div class="sr-ico a">✈</div>
-          <div class="sr-info"><div class="sr-name">XNA Airport — Billboard</div><div class="sr-area">XNA Airport · Digital</div></div>
-          <div class="sr-price">$3,000<small>/4wk</small></div>
-        </div>
-        <div class="screen-row">
-          <div class="sr-ico g">⛽</div>
-          <div class="sr-info"><div class="sr-name">Gas Station Network</div><div class="sr-area">Bentonville · 16 screens</div></div>
-          <div class="sr-price">$3,035<small>/4wk</small></div>
-        </div>
-        <div class="screen-row">
-          <div class="sr-ico c">🎬</div>
-          <div class="sr-info"><div class="sr-name">Pinnacle Hills 12</div><div class="sr-area">Rogers · Cinema lobby</div></div>
-          <div class="sr-price">$147<small>/4wk</small></div>
-        </div>
-      </div>
-      <!-- MAP -->
-      <div class="map-area" id="inventory">
-        <div class="rh main r-main" style="top:38%"></div>
-        <div class="rh sec r-sec" style="top:22%"></div>
-        <div class="rh sec r-sec" style="top:58%"></div>
-        <div class="rv main r-main" style="left:48%"></div>
-        <div class="rv sec r-sec" style="left:28%"></div>
-        <div class="rv sec r-sec" style="left:68%"></div>
-        <div class="city-lbl" style="top:14%;left:52%">Bentonville</div>
-        <div class="city-lbl" style="top:44%;left:55%">Rogers</div>
-        <div class="city-lbl" style="top:64%;left:20%">Springdale</div>
-        <div class="city-lbl" style="top:78%;left:52%">Fayetteville</div>
-        <div class="pring" style="top:38%;left:48%;width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
-        <div class="pring" style="top:38%;left:48%;width:200px;height:200px;margin-left:-100px;margin-top:-100px"></div>
-        <div class="mpin" style="top:22%;left:62%"><div class="pbub ar">✈ XNA</div><div class="ptail ar"></div></div>
-        <div class="mpin" style="top:30%;left:44%"><div class="pbub rd">Walton Blvd</div><div class="ptail rd"></div></div>
-        <div class="mpin" style="top:38%;left:70%"><div class="pbub rd sel">I-49 Springdale</div><div class="ptail rd"></div></div>
-        <div class="mpin" style="top:50%;left:52%"><div class="pbub rd">I-49 Rogers</div><div class="ptail rd"></div></div>
-        <div class="mpin" style="top:44%;left:30%"><div class="pbub gs">Gas Network</div><div class="ptail gs"></div></div>
-        <div class="mpin" style="top:58%;left:58%"><div class="pbub cn">Cinema</div><div class="ptail cn"></div></div>
-        <div class="hq-pin" style="top:26%;left:42%">
-          <div class="hq-circle">★</div>
-          <div class="hq-lbl">WALMART HQ</div>
-        </div>
-        <div class="mlegend">
-          <div class="ml-title">Screen types</div>
-          <div class="ml-row"><div class="ml-dot" style="background:var(--orange)"></div>Billboard</div>
-          <div class="ml-row"><div class="ml-dot" style="background:var(--blue)"></div>Airport</div>
-          <div class="ml-row"><div class="ml-dot" style="background:#b45309"></div>Gas station</div>
-          <div class="ml-row"><div class="ml-dot" style="background:#6b21a8"></div>Cinema</div>
-        </div>
-        <div class="cart-bar">
-          <div class="cart-info">1 screen selected · <b>$1,844</b> / 4 weeks</div>
-          <div class="cart-go">Continue →</div>
-        </div>
-      </div>
-      <!-- PHOTO PANEL -->
-      <div class="photo-panel">
-        <div class="photo-panel-head">
-          <div class="photo-panel-title">I-49 @ Don Tyson Pkwy</div>
-          <div class="photo-panel-sub">Springdale · Southbound</div>
-        </div>
-        <div class="photo-thumb">
-          <div style="width:100%;height:100%;background:linear-gradient(160deg,#c8d4b8 0%,#a0b090 40%,#7a9070 100%);display:flex;align-items:center;justify-content:center">
-            <div style="text-align:center;opacity:0.35">
-              <div style="font-size:32px;margin-bottom:4px">🛣</div>
-              <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--ink)">BILLBOARD PHOTO</div>
-            </div>
-          </div>
-          <div class="photo-thumb-overlay">
-            <div class="photo-thumb-name">I-49 @ Don Tyson Pkwy</div>
-            <div class="photo-thumb-loc">Springdale, AR</div>
-          </div>
-        </div>
-        <a class="sv-btn" href="#">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1"/><path d="M6 3v3l2 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
-          View location
-        </a>
-        <div class="photo-meta">
-          <div class="pm-row"><span class="l">Weekly impr.</span><span class="v">35,000</span></div>
-          <div class="pm-row"><span class="l">CPM</span><span class="v">$10.14</span></div>
-          <div class="pm-row"><span class="l">Format</span><span class="v">Digital 14×48</span></div>
-          <button class="pm-add">Add to campaign</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Invalid / not found -->
+<div id="invalid">
+  <a href="https://nwa-ads.com" class="invalid-logo">NWA <em>Ads</em></a>
+  <div class="invalid-h">This proposal is no longer available.</div>
+  <p class="invalid-p">The link may have expired or been removed.<br>Contact us to request a new proposal.</p>
+  <a href="https://nwa-ads.com" class="invalid-back">← Back to nwa-ads.com</a>
 </div>
 
-<!-- OBJECTIVES -->
-<div class="objectives">
-  <div class="obj blue">
-    <span class="obj-emoji">🏪</span>
-    <div class="obj-title">Reach Walmart &amp; Sam's Club Buyers</div>
-    <p class="obj-desc">Hyperlocal targeting along the exact corridors Walmart and Sam's Club buyers travel — I-49, Walton Blvd, and XNA Airport — all within miles of the Home Office.</p>
-  </div>
-  <div class="obj clay">
-    <span class="obj-emoji">📍</span>
-    <div class="obj-title">Drive Customers Through Your Door</div>
-    <p class="obj-desc">Pin your exact address and we surface every screen within driving distance — sorted by proximity, sorted for your neighborhood. Hyperlocal by design. $500 to start.</p>
-  </div>
-  <div class="obj forest">
-    <span class="obj-emoji">🚀</span>
-    <div class="obj-title">Build Your Brand Across NWA</div>
-    <p class="obj-desc">NWA's startup scene is one of the fastest-growing in the South. Reach founders, investors, and talent hyperlocally — on the commute routes and corridors they use every day.</p>
-  </div>
-</div>
-
-<!-- HOW IT WORKS -->
-<div class="how-outer" id="how">
-  <div class="how-inner">
-    <div class="section-eyebrow">How it works</div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-n">01</div>
-        <div class="step-title">Pick your screens</div>
-        <p class="step-desc">Browse real inventory on a live map. Filter by location, format, and budget. See verified weekly impression counts and CPM for every screen.</p>
-        <span class="step-tag">Real inventory →</span>
-      </div>
-      <div class="step">
-        <div class="step-n">02</div>
-        <div class="step-title">Set your dates</div>
-        <p class="step-desc">Choose a 1-week or 4-week flight. Pricing is transparent — no hidden fees, no negotiation, no minimum spend surprises.</p>
-        <span class="step-tag">From $500 →</span>
-      </div>
-      <div class="step">
-        <div class="step-n">03</div>
-        <div class="step-title">Upload &amp; go live</div>
-        <p class="step-desc">Upload your creative (we'll spec it for you), confirm, and your campaign goes live. Most campaigns are live within 48 hours of booking.</p>
-        <span class="step-tag">48hr turnaround →</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- OOH STATS -->
-<div class="effectiveness" id="why-ooh">
-  <div class="eff-inner">
-    <div class="eff-top">
-      <div class="eff-title">Why hyperlocal OOH<br><em>still works.</em></div>
-      <div class="eff-src">Sources: Nielsen, OAAA, Arbitron</div>
-    </div>
-    <div class="eff-grid">
-      <div class="eff-card">
-        <span class="eff-num"><em>90</em>%</span>
-        <div class="eff-label">of consumers noticed a billboard advertisement in the past month</div>
-        <div class="eff-source">Nielsen OOH Consumer Report</div>
-      </div>
-      <div class="eff-card">
-        <span class="eff-num"><em>4×</em></span>
-        <div class="eff-label">higher return on ad spend than online-only campaigns when OOH is added to the mix</div>
-        <div class="eff-source">OAAA / Nielsen Catalina</div>
-      </div>
-      <div class="eff-card">
-        <span class="eff-num"><em>46</em>%</span>
-        <div class="eff-label">of adults searched online for a product or service after seeing an OOH ad</div>
-        <div class="eff-source">Arbitron OOH Study</div>
-      </div>
-      <div class="eff-card">
-        <span class="eff-num"><em>24/7</em></span>
-        <div class="eff-label">visibility — no ad blocker, no skip button, no feed algorithm to fight</div>
-        <div class="eff-source">Always-on media</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- REQUEST ACCESS -->
-<div class="gate-section" id="gate-access">
-  <div class="gate-inner">
-    <div class="gate-eyebrow">Beta access</div>
-    <h2 class="gate-title">Get early access to <em>NWA Ads</em></h2>
-    <p class="gate-sub">We're onboarding a small group of NWA businesses and Walmart suppliers first. Tell us about your campaign goal and we'll get you in.</p>
-    <div class="gate-form" id="gate-form-wrap">
-      <div class="gf-row">
-        <div class="gf-group"><label>First name</label><input id="g-fname" type="text" placeholder="Andrew"></div>
-        <div class="gf-group"><label>Last name</label><input id="g-lname" type="text" placeholder="Miller"></div>
-      </div>
-      <div class="gf-row">
-        <div class="gf-group"><label>Email</label><input id="g-email" type="email" placeholder="you@company.com"></div>
-        <div class="gf-group"><label>Company</label><input id="g-company" type="text" placeholder="Acme Brands LLC"></div>
-      </div>
-      <div class="gf-row full">
-        <div class="gf-group">
-          <label>Campaign goal</label>
-          <select id="g-goal">
-            <option value="">— Select your primary goal —</option>
-            <option>Reach Walmart &amp; Sam's Club buyers</option>
-            <option>Drive foot traffic to my store</option>
-            <option>Promote a grand opening</option>
-            <option>Promote an event</option>
-            <option>Build brand awareness in NWA</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="gf-row full">
-        <div class="gf-group">
-          <label>Notes <span style="font-weight:400;opacity:0.4">(optional)</span></label>
-          <textarea id="g-notes" placeholder="Tell us about your business or what you're trying to achieve…"></textarea>
-        </div>
-      </div>
-      <button class="btn-request" onclick="submitRequest()">Request access →</button>
-      <div class="gf-note">We review every request personally and respond within 24 hours.<br>No spam, no sales calls — just a link to the platform.</div>
-    </div>
-    <div class="thank-you" id="thank-you">
-      <span class="ty-icon">✉</span>
-      <div class="ty-title">Request received.</div>
-      <p class="ty-sub">We'll review your request and send access within 24 hours to the email you provided.</p>
-    </div>
-  </div>
-</div>
-
-<footer>
-  <div class="footer-logo">NWA <span>Ads</span></div>
-  <span>Northwest Arkansas · Self-serve OOH · Beta</span>
-  <a href="mailto:hello@nwa-ads.com">hello@nwa-ads.com</a>
-</footer>
+<!-- Proposal content (populated by JS) -->
+<div id="proposal"></div>
 
 <script>
-(function(){
-  const p = new URLSearchParams(window.location.search);
-  if(p.get('access')==='open'||window.location.hash==='#open') window.location.href='book.html';
-})();
-function submitRequest(){
-  const fname=document.getElementById('g-fname').value.trim();
-  const email=document.getElementById('g-email').value.trim();
-  if(!fname||!email){alert('Please enter your name and email.');return;}
-  if(!email.includes('@')){alert('Please enter a valid email address.');return;}
-  const lname=document.getElementById('g-lname').value.trim();
-  const company=document.getElementById('g-company').value.trim();
-  const goal=document.getElementById('g-goal').value;
-  const notes=document.getElementById('g-notes').value.trim();
-  const subject=encodeURIComponent('NWA Ads Access Request — '+fname+' '+lname);
-  const body=encodeURIComponent('New access request from NWAAds.com\n\nName: '+fname+' '+lname+'\nEmail: '+email+'\nCompany: '+(company||'—')+'\nGoal: '+(goal||'—')+'\nNotes: '+(notes||'—')+'\n\n---\nDirect access link:\nhttps://nwa-ads.com/?access=open');
-  window.location.href='mailto:andrew@nwa-ads.com?subject='+subject+'&body='+body;
-  document.getElementById('gate-form-wrap').style.display='none';
-  document.getElementById('thank-you').style.display='block';
+/* ══════════════ CONFIG ══════════════ */
+const SB_URL  = 'https://etytgvxkjqjnriflktzv.supabase.co';
+const SB_KEY  = 'sb_publishable_6T9Ikbmq5ldlzNB_Bncheg_C8K52sB8';
+const sbClient = window.supabase.createClient(SB_URL, SB_KEY);
+
+/* ══════════════ VENUE COLORS ══════════════ */
+const VENUE_COLORS = {
+  'Digital Billboard':'#c8440a','Grocery Store':'#1f3d2a','Cinema (In-Theater)':'#8b5cf6',
+  'Gym':'#4a5da8','Casual Dining':'#b5843c','Quick Service Restaurant':'#b5843c',
+  'Bar/Restaurant TV':'#b5843c','Sports Entertainment':'#2a8a5c','Recreational (NEW)':'#2a8a5c',
+  'Airport':'#0d7377','Doctors Office':'#e07830','Taxi / Rideshare Interior':'#6b6560',
+  'Salon & Spa':'#6b6560','Gas Station':'#b45309','Convenience Store':'#b45309',
+  'Apartment Building':'#92400e','College Campus':'#0369a1','School (NEW)':'#0369a1',
+  'Office Building (NEW)':'#57534e',
+  billboard:'#c8440a',digital:'#c8440a',static:'#c8440a',grocery:'#1f3d2a',
+  cinema:'#8b5cf6',gym:'#4a5da8',dining:'#b5843c',sports:'#2a8a5c',recreation:'#2a8a5c',
+  airport:'#0d7377',healthcare:'#e07830',rideshare:'#6b6560',gasstation:'#b45309',
+  residential:'#92400e',retail:'#4f46e5',education:'#0369a1',office:'#57534e',
+};
+const VENUE_SVG = {
+  'Digital Billboard':'<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="12.5" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="22" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="2" y="3.5" width="24" height="13" rx="1"/><line x1="8" y1="16.5" x2="8" y2="24"/><line x1="20" y1="16.5" x2="20" y2="24"/><line x1="8" y1="20" x2="20" y2="20"/><line x1="5" y1="24" x2="11" y2="24"/><line x1="17" y1="24" x2="23" y2="24"/></svg>',
+  'Grocery Store':'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+  'Cinema (In-Theater)':'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>',
+  'Gym':'<svg viewBox="0 0 28 28" fill="white" stroke="none"><rect x="1" y="9" width="4" height="10" rx="1.5"/><rect x="5" y="11" width="2.5" height="6" rx="1"/><rect x="7.5" y="12.5" width="13" height="3" rx="1"/><rect x="20.5" y="11" width="2.5" height="6" rx="1"/><rect x="23" y="9" width="4" height="10" rx="1.5"/></svg>',
+  'Casual Dining':'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h2Zm0 0v7"/></svg>',
+  'Gas Station':'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"/><path d="M3 22h12"/><rect x="6" y="9" width="5" height="4" rx="1"/></svg>',
+  'Airport':'<svg viewBox="0 0 28 28" fill="white" stroke="none"><path d="M13 24 L16 8 C16.3 6.5 15.5 5 14 5 C12.5 5 11.7 6.5 12 8 Z"/><path d="M5 19 L14 14 L23 19 L21 20 L14 17 L7 20 Z"/><path d="M10 23 L14 20 L18 23 L17 24 L14 22 L11 24 Z"/></svg>',
+  'Sports Entertainment':'<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="5.5"/><circle cx="8.5" cy="20.5" r="4.5"/><circle cx="20" cy="15" r="7"/><line x1="13" y1="15" x2="27" y2="15"/></svg>',
+  'College Campus':'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+  billboard:'<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="12.5" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="22" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="2" y="3.5" width="24" height="13" rx="1"/><line x1="8" y1="16.5" x2="8" y2="24"/><line x1="20" y1="16.5" x2="20" y2="24"/><line x1="8" y1="20" x2="20" y2="20"/><line x1="5" y1="24" x2="11" y2="24"/><line x1="17" y1="24" x2="23" y2="24"/></svg>',
+  grocery:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+  cinema:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>',
+  gym:'<svg viewBox="0 0 28 28" fill="white" stroke="none"><rect x="1" y="9" width="4" height="10" rx="1.5"/><rect x="5" y="11" width="2.5" height="6" rx="1"/><rect x="7.5" y="12.5" width="13" height="3" rx="1"/><rect x="20.5" y="11" width="2.5" height="6" rx="1"/><rect x="23" y="9" width="4" height="10" rx="1.5"/></svg>',
+  dining:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h2Zm0 0v7"/></svg>',
+};
+function venueColor(t) { return VENUE_COLORS[t] || '#4a4540'; }
+function venueSvg(t) { return VENUE_SVG[t] || VENUE_SVG.billboard; }
+function makeIconHtml(t, sz) {
+  const s = sz || 34;
+  const svgSz = Math.round(s * 0.56);
+  const color = venueColor(t);
+  const svg = venueSvg(t).replace('<svg ', `<svg style="pointer-events:none" width="${svgSz}" height="${svgSz}" `);
+  return `<div style="width:${s}px;height:${s}px;border-radius:50%;background:${color};border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 3px 14px rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;pointer-events:none">${svg}</div>`;
 }
+
+/* ══════════════ HELPERS ══════════════ */
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtMoney(n) { return '$' + Math.round(n || 0).toLocaleString(); }
+function fmtK(n) {
+  n = Math.round(n || 0);
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'') + 'M';
+  if (n >= 1000)    return (n/1000).toFixed(0) + 'K';
+  return n.toLocaleString();
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return new Date(+y, +m-1, +day).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+function fmtDateShort(d) {
+  if (!d) return null;
+  const [y,m,day] = d.split('-');
+  return new Date(+y, +m-1, +day).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+function calcWeeks(rec) {
+  if (rec.flight_start && rec.flight_end) {
+    const ms = new Date(rec.flight_end) - new Date(rec.flight_start);
+    return Math.max(1, Math.round(ms / (7 * 24 * 3600 * 1000)));
+  }
+  const qty = rec.qty || 2;
+  const inc = rec.inc || 'weekly';
+  if (inc === 'weekly')  return qty;
+  if (inc === 'monthly') return qty * 4;
+  if (inc === 'daily')   return Math.ceil(qty / 7);
+  return qty;
+}
+function flightLabel(rec) {
+  if (rec.flight_start && rec.flight_end) {
+    const s = fmtDateShort(rec.flight_start);
+    const e = fmtDateShort(rec.flight_end);
+    return (s && e) ? s + ' – ' + e : '—';
+  }
+  const qty = rec.qty || 2;
+  const inc = rec.inc || 'weekly';
+  const label = { daily:'day', weekly:'wk', monthly:'mo' };
+  return qty + ' ' + (label[inc] || inc) + (qty !== 1 ? 's' : '');
+}
+
+/* ══════════════ GOAL OBJECTIVE TEXT ══════════════ */
+function objectiveText(rec) {
+  const g = rec.goal || '';
+  const prod = rec.product ? ` for <strong>${esc(rec.product)}</strong>` : '';
+  const si = rec.sub_intent ? ` · <em>${esc(rec.sub_intent)}</em>` : '';
+  if (g.includes('Walmart')) return `🎯 Targeted at <strong>Walmart & Sam's Club decision-makers</strong>${prod}${si} — screens filtered to 3 buyer concentration zones: Home Office corridor, Downtown Bentonville, and Pinnacle Hills.`;
+  if (g.includes('Foot traffic') || g.includes('customers through')) return `📍 Drive foot traffic${prod} with hyper-local screens positioned closest to your business location.`;
+  if (g.includes('Tech') || g.includes('Startup')) return `💡 Reaching the <strong>NWA Tech & Startup Scene</strong>${prod} — billboard-first across Bentonville, Rogers & Fayetteville, with gym & dining fills.`;
+  return `📣 Multi-format brand awareness campaign${prod} across Northwest Arkansas.`;
+}
+
+/* ══════════════ MAIN ══════════════ */
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  if (!id || !/^[0-9a-f-]{36}$/i.test(id)) { showInvalid(); return; }
+
+  const { data, error } = await sbClient.from('campaigns').select('*').eq('id', id).single();
+  if (error || !data) { showInvalid(); return; }
+
+  renderProposal(data);
+}
+
+function showInvalid() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('invalid').style.display = 'flex';
+}
+
+/* ══════════════ RENDER ══════════════ */
+function renderProposal(rec) {
+  const cart = rec.cart || rec.screens || {};
+  const cartItems = Object.values(cart);
+  const weeks = calcWeeks(rec);
+  const wklyTotal = cartItems.reduce((a, s) => a + (s.weeklyRate || 0), 0);
+  const grandTotal = wklyTotal * weeks;
+  const totalImpr = cartItems.reduce((a, s) => a + (s.wkly_impr || 0), 0) * weeks;
+  const company = rec.company_name || 'Your Campaign';
+  const product = rec.product ? ` · ${rec.product}` : '';
+  const goal = rec.goal || 'Brand Awareness';
+  const propId = rec.id;
+
+  // --- expiry: 30 days from created_at ---
+  let expiryStr = '';
+  if (rec.created_at) {
+    const exp = new Date(rec.created_at);
+    exp.setDate(exp.getDate() + 30);
+    expiryStr = 'Proposal valid until ' + exp.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+  }
+
+  const prop = document.getElementById('proposal');
+  prop.innerHTML = `
+    <!-- 1. Header -->
+    <div class="p-header">
+      <div class="p-header-inner">
+        <a href="https://nwa-ads.com" class="p-logo">NWA <em>Ads</em></a>
+        <h1 class="p-h1">${esc(company)} Campaign Proposal</h1>
+        <p class="p-subhead">${esc(goal)}${esc(product)}</p>
+        ${expiryStr ? `<p class="p-expires">${esc(expiryStr)}</p>` : ''}
+      </div>
+    </div>
+
+    <!-- 2. Summary strip -->
+    <div class="p-summary">
+      <div class="sum-cell">
+        <div class="sum-lbl">Flight</div>
+        <div class="sum-val">${esc(flightLabel(rec))}</div>
+      </div>
+      <div class="sum-cell">
+        <div class="sum-lbl">Screens</div>
+        <div class="sum-val">${cartItems.length}</div>
+      </div>
+      <div class="sum-cell">
+        <div class="sum-lbl">Total Impressions</div>
+        <div class="sum-val">${fmtK(totalImpr)}</div>
+      </div>
+      <div class="sum-cell">
+        <div class="sum-lbl">Campaign Total</div>
+        <div class="sum-val hi">${fmtMoney(grandTotal)}</div>
+      </div>
+    </div>
+
+    <!-- 3. Objective -->
+    <div class="p-obj">
+      <div class="p-obj-inner">
+        <span class="obj-icon">📋</span>
+        <div class="obj-text">${objectiveText(rec)}</div>
+      </div>
+    </div>
+
+    <!-- 4. Map -->
+    <div class="p-body">
+      <div class="map-card">
+        <div class="map-hdr">
+          <span class="map-hdr-title">Screen Locations</span>
+          <div class="map-toggle">
+            <button class="map-toggle-btn on" id="mtb-pins" onclick="setMapMode('pins')">Screens</button>
+            ${rec.goal && rec.goal.includes('Walmart') ? '<button class="map-toggle-btn" id="mtb-strat" onclick="setMapMode(\'strategy\')">Strategy</button>' : ''}
+          </div>
+        </div>
+        <div id="prop-map"></div>
+      </div>
+      <div class="map-foot">
+        <div class="map-foot-card">
+          <div class="mfc-lbl">Weekly Impressions</div>
+          <div class="mfc-stat">${fmtK(totalImpr / Math.max(1, weeks))}</div>
+          <div class="mfc-sub">per week across all screens</div>
+        </div>
+        <div class="map-foot-card">
+          <div class="mfc-lbl">Venue Types</div>
+          <div id="legend-items" class="legend-row"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Inventory -->
+    <div class="p-body" style="padding-top:0">
+      <div class="sec-head">Selected Screens</div>
+      <div class="inv-grid" id="inv-grid"></div>
+    </div>
+
+    <!-- 6. Cost -->
+    <div class="p-body" style="padding-top:0">
+      <div class="sec-head">Investment Summary</div>
+      <div class="cost-box">
+        ${cartItems.map(s => `
+          <div class="cost-line">
+            <span>${esc(s.name || s.full_name || 'Screen')}</span>
+            <strong>${fmtMoney(s.weeklyRate || 0)}<small style="font-weight:400;color:var(--muted);font-size:11px"> /wk</small></strong>
+          </div>
+        `).join('')}
+        <div class="cost-line" style="margin-top:4px">
+          <span>Weekly subtotal</span>
+          <strong>${fmtMoney(wklyTotal)}/wk</strong>
+        </div>
+        <div class="cost-line">
+          <span>Duration</span>
+          <strong>${weeks} week${weeks !== 1 ? 's' : ''}</strong>
+        </div>
+        <div class="cost-total-row">
+          <span class="cost-total-lbl">Campaign Total</span>
+          <span class="cost-total-val">${fmtMoney(grandTotal)}</span>
+        </div>
+      </div>
+      <div class="disclaimer">
+        Pricing shown is estimated at standard rate card. Final invoice may vary based on venue availability, campaign length adjustments, and any custom negotiated rates. Impressions are estimates based on venue traffic data.
+      </div>
+    </div>
+
+    <!-- 7. CTA -->
+    <div class="p-body" style="padding-top:0">
+      <div class="cta-wrap">
+        <h3 class="cta-h">Ready to move forward?</h3>
+        <p class="cta-p">Approve this proposal and our team will reach out within one business day to confirm dates and begin production.</p>
+        <div class="cta-btns">
+          <button class="btn-approve" id="btn-approve" onclick="approveProposal('${esc(propId)}')">✓ Approve this proposal</button>
+          <a class="btn-ask" href="mailto:andrew@nwa-ads.com?subject=Re%3A%20${encodeURIComponent(company)}%20Proposal">Ask a question</a>
+        </div>
+        <div class="cta-success" id="cta-success">✓ Request received — we'll be in touch within one business day.</div>
+      </div>
+    </div>
+  `;
+
+  // Build legend
+  const types = [...new Set(cartItems.map(s => s.venue_type || s.type || 'billboard'))];
+  const legendEl = document.getElementById('legend-items');
+  types.forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'legend-dot';
+    span.style.setProperty('--c', venueColor(t));
+    span.textContent = t.replace(' (NEW)','').replace(/\s*\(In-Theater\)/,'');
+    legendEl.appendChild(span);
+  });
+
+  // Build inventory cards
+  const grid = document.getElementById('inv-grid');
+  cartItems.forEach(s => {
+    const vt = s.venue_type || s.type || 'billboard';
+    const color = venueColor(vt);
+    const hasImg = s.img && s.img.startsWith('http');
+    const feats = [s.video && 'Video', s.audio && 'Audio', s.impr && 'Impression-based'].filter(Boolean);
+    const div = document.createElement('div');
+    div.className = 'inv-card';
+    div.innerHTML = `
+      ${hasImg
+        ? `<img class="inv-img" src="${esc(s.img)}" alt="${esc(s.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : ''}
+      <div class="inv-img-fb" style="${hasImg ? 'display:none' : ''}">${makeIconHtml(vt, 42)}</div>
+      <div class="inv-body">
+        <div class="inv-eyebrow">
+          <span class="inv-dot" style="background:${color}"></span>
+          <span class="inv-type">${esc(vt.replace(' (NEW)',''))}</span>
+        </div>
+        <div class="inv-name">${esc(s.name || s.full_name || 'Screen')}</div>
+        <div class="inv-area">${esc(s.area || '')}</div>
+        <div class="inv-price">${fmtMoney(s.weeklyRate || 0)} <small>/wk</small></div>
+        ${feats.length ? `<div class="inv-feats">${feats.map(f=>`<span class="inv-feat">${f}</span>`).join('')}</div>` : ''}
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+
+  // Init map
+  initMap(cartItems, rec.goal || '');
+
+  // Show
+  document.getElementById('loading').style.display = 'none';
+  prop.style.display = '';
+}
+
+/* ══════════════ MAP ══════════════ */
+let propMap = null;
+let stratLayers = null;
+let pinLayers = null;
+let mapMode = 'pins';
+
+function initMap(cartItems, goal) {
+  propMap = L.map('prop-map', { zoomControl: true, scrollWheelZoom: false });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 18
+  }).addTo(propMap);
+
+  // Build pin layer
+  pinLayers = L.layerGroup();
+  const validItems = cartItems.filter(s => s.lat && s.lng);
+  validItems.forEach(s => {
+    const vt = s.venue_type || s.type || 'billboard';
+    const icon = L.divIcon({
+      className: '',
+      html: makeIconHtml(vt, 34),
+      iconSize:   [34, 34],
+      iconAnchor: [17, 17],
+    });
+    const m = L.marker([s.lat, s.lng], { icon });
+    m.bindPopup(`
+      <div class="popup-inner">
+        <div class="popup-name">${esc(s.name || 'Screen')}</div>
+        <div class="popup-area">${esc(s.area || '')}</div>
+        <div class="popup-price">${s.weeklyRate ? '$' + Math.round(s.weeklyRate).toLocaleString() + '/wk' : ''}</div>
+      </div>
+    `, { closeButton: false });
+    pinLayers.addLayer(m);
+  });
+  pinLayers.addTo(propMap);
+
+  // Build Walmart strategy layer
+  if (goal.includes('Walmart')) {
+    stratLayers = L.layerGroup();
+    const ZONES = [
+      { latlng: [36.3729, -94.2192], color: '#1f3d2a', label: 'Home Office' },
+      { latlng: [36.3720, -94.2098], color: '#c8440a', label: 'Downtown Bentonville' },
+      { latlng: [36.3085, -94.1814], color: '#c8440a', label: 'Pinnacle Hills' },
+    ];
+    ZONES.forEach(z => {
+      L.circle(z.latlng, { radius: 2800, color: z.color, fillColor: z.color, fillOpacity: 0.08, weight: 2, opacity: 0.4 }).addTo(stratLayers);
+    });
+    // Connector lines
+    L.polyline([[36.3729,-94.2192],[36.3720,-94.2098]], { color:'#1f3d2a', weight:3, opacity:0.35, dashArray:'6 4' }).addTo(stratLayers);
+    L.polyline([[36.3720,-94.2098],[36.3085,-94.1814]], { color:'#c8440a', weight:3, opacity:0.35, dashArray:'6 4' }).addTo(stratLayers);
+    // Also add pins on strategy view
+    validItems.forEach(s => {
+      const vt = s.venue_type || s.type || 'billboard';
+      const icon = L.divIcon({
+        className: '',
+        html: makeIconHtml(vt, 28),
+        iconSize:   [28, 28],
+        iconAnchor: [14, 14],
+      });
+      L.marker([s.lat, s.lng], { icon }).addTo(stratLayers);
+    });
+  }
+
+  // Fit map to pins
+  if (validItems.length > 0) {
+    const bounds = L.latLngBounds(validItems.map(s => [s.lat, s.lng]));
+    propMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+  } else {
+    propMap.setView([36.36, -94.21], 11);
+  }
+}
+
+window.setMapMode = function(mode) {
+  mapMode = mode;
+  document.querySelectorAll('.map-toggle-btn').forEach(b => b.classList.remove('on'));
+  const btn = document.getElementById('mtb-' + mode);
+  if (btn) btn.classList.add('on');
+
+  if (!propMap) return;
+  if (mode === 'pins') {
+    if (stratLayers) propMap.removeLayer(stratLayers);
+    if (pinLayers) pinLayers.addTo(propMap);
+  } else {
+    if (pinLayers) propMap.removeLayer(pinLayers);
+    if (stratLayers) stratLayers.addTo(propMap);
+    propMap.setView([36.355, -94.205], 12);
+  }
+};
+
+/* ══════════════ APPROVE ══════════════ */
+window.approveProposal = async function(id) {
+  const btn = document.getElementById('btn-approve');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
+  const { error } = await sbClient.from('campaigns').update({ status: 'pending_confirmation' }).eq('id', id);
+
+  if (btn) btn.style.display = 'none';
+  const successEl = document.getElementById('cta-success');
+  if (successEl) successEl.style.display = 'block';
+
+  if (error) console.error('Approve error:', error);
+};
+
+/* ══════════════ BOOT ══════════════ */
+init();
 </script>
 </body>
 </html>
