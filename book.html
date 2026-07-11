@@ -40,7 +40,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 /* ── NAV ── */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  background: #1f3d2a; border-bottom: 1px solid #2d5a3d;
+  background: #1f3d2a;
   padding: 0 40px; min-height: 64px;
   display: flex; align-items: center; justify-content: space-between;
 }
@@ -60,14 +60,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 }
 .nav-status:empty { display: none; }
 /* ── NAV BREADCRUMB: User / Company / Product / Goal ── */
-.nav-breadcrumb {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.75);
-  font-family: 'Instrument Sans', sans-serif;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  flex: 1 1 auto; min-width: 0; margin: 0 16px;
-}
-.nav-breadcrumb:empty { display: none; }
+.nav-breadcrumb { display: none; }
 .nav-breadcrumb .bc-item {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px;
 }
@@ -3016,22 +3009,22 @@ function renderNavAccount() {
     const email = AUTH_SESSION.user.email || '';
     const initial = email ? email[0].toUpperCase() : '?';
     el.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:stretch;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;overflow:hidden;min-width:220px">
-        <div style="display:flex;align-items:center;gap:9px;padding:9px 14px 9px 10px;border-bottom:1px solid rgba(255,255,255,0.1)">
-          <div style="width:26px;height:26px;border-radius:50%;background:#c8440a;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${initial}</div>
-          <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0">
-            <div style="font-size:11.5px;color:rgba(255,255,255,0.85);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${email}</div>
-            <div style="display:flex;gap:10px">
-              <a style="font-size:10.5px;color:rgba(255,255,255,0.5);text-decoration:underline;cursor:pointer" onclick="showMyCampaigns()">My campaigns</a>
-              <a style="font-size:10.5px;color:rgba(255,255,255,0.5);text-decoration:underline;cursor:pointer" onclick="signOut()">Sign out</a>
+      <div style="background:#c8440a;border-radius:10px;overflow:hidden;min-width:200px;margin:8px 0;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-bottom:1px solid rgba(255,255,255,0.18)">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">${initial}</div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#fff;line-height:1.2">${email}</div>
+            <div style="display:flex;gap:7px;margin-top:1px">
+              <a style="font-size:9px;color:rgba(255,255,255,0.72);text-decoration:underline;cursor:pointer" onclick="showMyCampaigns()">My campaigns</a>
+              <a style="font-size:9px;color:rgba(255,255,255,0.72);text-decoration:underline;cursor:pointer" onclick="signOut()">Sign out</a>
             </div>
           </div>
         </div>
-        <div id="nav-cart-row" style="display:flex;align-items:center;gap:9px;padding:9px 14px 9px 10px;background:#c8440a;cursor:pointer" onclick="openCartSidebar()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <div id="nav-cart-row" style="display:flex;align-items:center;gap:7px;padding:6px 11px;cursor:pointer" onclick="openCartSidebar()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.85"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <div>
-            <div id="cart-summary" style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap;line-height:1.2">No screens added yet</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.75);white-space:nowrap">Tap to review cart</div>
+            <div id="nav-cart-label" style="font-size:11px;font-weight:700;color:#fff;line-height:1.15">No screens added yet</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.78)">Tap to review cart</div>
           </div>
         </div>
       </div>
@@ -28782,7 +28775,7 @@ function initMap() {
   const legend = L.control({ position: 'bottomleft' });
   legend.onAdd = function() {
     const div = L.DomUtil.create('div');
-    div.style.cssText = 'background:#fff;padding:12px 16px;border-radius:12px;border:1px solid #e2ddd6;font-family:Instrument Sans,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,0.12);min-width:160px;max-height:60vh;overflow-y:auto';
+    div.style.cssText = 'background:#fff;padding:12px 16px;border-radius:12px;border:1px solid #e2ddd6;font-family:Instrument Sans,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,0.12);min-width:160px;max-height:calc(100vh - 200px);overflow-y:auto';
     div.innerHTML = buildLegendHtml();
     // (legend HTML is generated dynamically above)
     if (false) { div.innerHTML = `
@@ -29465,7 +29458,7 @@ function clearAllCart() {
 }
 
 function updateNavCartSummary() {
-  const el  = document.getElementById('cart-summary');
+  const el  = document.getElementById('nav-cart-label');
   const row = document.getElementById('nav-cart-row');
   if (!el) return;
   const keys = Object.keys(ST.cart);
@@ -29881,15 +29874,6 @@ function updateNavSel() {
   };
 
   let html = '';
-
-  // Always show goal pill once selected
-  if (goal) {
-    const icon = goalIcons[goal] || '📢';
-    const short = goal === "Reach Walmart & Sam's Club buyers" ? 'Walmart buyers'
-                : goal === 'Drive customers through your door' ? 'Foot traffic'
-                : 'Event';
-    html += `<span class="ns-pill goal">${icon} ${short}</span>`;
-  }
 
   // Show cart pill on step 2+ when screens are in cart
   if (keys.length > 0 && step >= 2) {
