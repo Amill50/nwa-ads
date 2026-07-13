@@ -217,11 +217,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
   background: var(--white); border: 2.5px solid var(--accent); cursor: pointer;
   box-shadow: 0 2px 8px rgba(200,68,10,0.2);
 }
-.budget-hints { position: relative; height: 20px; font-size: 11px; color: var(--muted); margin-bottom: 36px; }
-.budget-hints span { position: absolute; white-space: nowrap; }
-.budget-hints span:first-child { left: 0; transform: none; }
-.budget-hints span:last-child  { right: 0; transform: none; }
-.budget-hints span:not(:first-child):not(:last-child) { transform: translateX(-50%); }
+.budget-hints { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 36px; }
 .dur-pills { display: flex; gap: 8px; margin-bottom: 44px; flex-wrap: wrap; }
 .dur-pill {
   padding: 8px 20px; border-radius: 24px; font-size: 13px; font-weight: 500;
@@ -338,7 +334,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
    instead of #panel-4 (the actual map/pick-screens panel) — the map view
    never received its flex/height treatment, causing the whitespace, toggle
    clipping, and layout bugs reported. Fixed to target the real map panel. */
-#panel-4.active { display: flex; flex-direction: column; height: 100vh; padding-top: 64px; }
+#panel-4.active { display: flex; flex-direction: column; height: 100vh; padding-top: 96px; }
 
 .s2-top {
   background: var(--green,#1f3d2a) !important;
