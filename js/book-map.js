@@ -13,6 +13,7 @@ function initMap() {
     showCoverageOnHover: false,
     zoomToBoundsOnClick: true,
     spiderfyOnMaxZoom: true,
+    disableClusteringAtZoom: 14,
     iconCreateFunction: function(cluster) {
       const count = cluster.getChildCount();
       const size = count >= 20 ? 44 : count >= 10 ? 38 : 32;
@@ -216,7 +217,9 @@ function makeIconHtml(typeOrVenueType, size) {
   const svgSz = Math.round(s * 0.58);
   const color = venueColor(typeOrVenueType);
   const svgRaw = VENUE_SVG[typeOrVenueType] || VENUE_SVG.billboard;
-  const svg = svgRaw.replace('<svg ', '<svg style="pointer-events:none" width="' + svgSz + '" height="' + svgSz + '" ');
+  const svg = svgRaw
+    .replace('<svg ', '<svg style="pointer-events:none" width="' + svgSz + '" height="' + svgSz + '" ')
+    .replace(/<(path|line|rect|circle|polyline|polygon) /g, '<$1 pointer-events="none" ');
   return '<div style="width:' + s + 'px;height:' + s + 'px;border-radius:50%;background:' + color
        + ';border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 3px 14px rgba(0,0,0,0.28)'
        + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none">' + svg + '</div>';
