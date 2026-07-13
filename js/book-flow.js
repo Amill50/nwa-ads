@@ -57,17 +57,38 @@ function goTo(step) {
   goToPanel(step);
 
   if (step===3) {
-    const p3timing = document.getElementById('p3-walmart-timing');
-    if (p3timing) {
-      const isWalmart = ST.goal === "Reach Walmart & Sam's Club buyers";
-      p3timing.style.display = isWalmart ? '' : 'none';
-      if (isWalmart) {
-        p3timing.querySelectorAll('.ft-status-pill').forEach(p => {
-          p.classList.toggle('on', p.textContent.trim() === ST.subIntent);
-        });
-        if (ST.subIntent) renderWalmartSubflow(ST.subIntent);
-        else renderWalmartSubflow('Line review season');
-      }
+    const isWalmart = ST.goal === "Reach Walmart & Sam's Club buyers";
+    const isFoot    = ST.goal === 'Drive customers through your door';
+    const isTech    = ST.goal === 'Reach the NWA Tech & Startup Scene';
+
+    const p3walmart = document.getElementById('p3-walmart-timing');
+    const p3foot    = document.getElementById('p3-foot-timing');
+    const p3tech    = document.getElementById('p3-tech-timing');
+
+    if (p3walmart) p3walmart.style.display = isWalmart ? '' : 'none';
+    if (p3foot)    p3foot.style.display    = isFoot    ? '' : 'none';
+    if (p3tech)    p3tech.style.display    = isTech    ? '' : 'none';
+
+    if (isWalmart && p3walmart) {
+      p3walmart.querySelectorAll('.ft-status-pill').forEach(p => {
+        p.classList.toggle('on', p.textContent.trim() === ST.subIntent);
+      });
+      if (ST.subIntent) renderWalmartSubflow(ST.subIntent);
+      else { ST.subIntent = 'Line review season'; renderWalmartSubflow('Line review season'); }
+    }
+    if (isFoot && p3foot) {
+      p3foot.querySelectorAll('.ft-status-pill').forEach(p => {
+        p.classList.toggle('on', p.textContent.trim() === ST.subIntent);
+      });
+      if (ST.subIntent) renderFootSubflow(ST.subIntent);
+      else { ST.subIntent = 'Grand opening'; renderFootSubflow('Grand opening'); }
+    }
+    if (isTech && p3tech) {
+      p3tech.querySelectorAll('.ft-status-pill').forEach(p => {
+        p.classList.toggle('on', p.textContent.trim() === ST.subIntent);
+      });
+      if (ST.subIntent) renderTechSubflow(ST.subIntent);
+      else { ST.subIntent = 'Build brand awareness'; renderTechSubflow('Build brand awareness'); }
     }
   }
 
@@ -1744,6 +1765,8 @@ function selSubIntent(el, group) {
   el.classList.add('on');
   ST.subIntent = el.textContent.trim();
   if (group === 'walmart') renderWalmartSubflow(ST.subIntent);
+  else if (group === 'foot') renderFootSubflow(ST.subIntent);
+  else if (group === 'tech') renderTechSubflow(ST.subIntent);
   renderTargetingLine();
 }
 
@@ -1831,6 +1854,109 @@ function walmartLaunchDateChanged(val) {
   }
 }
 
+/* ── Goal 2: Drive customers through your door — sub-intent micro-flows ── */
+function renderFootSubflow(intent) {
+  const wrap = document.getElementById('foot-subflow');
+  if (!wrap) return;
+  const today = new Date();
+
+  if (intent === 'Grand opening') {
+    wrap.innerHTML = `<div class="walmart-subflow-note">Enter your opening date:<br>
+      <input type="date" id="foot-opening-date" style="margin-top:6px" onchange="footOpeningDateChanged(this.value)"></div>`;
+  } else if (intent === 'Ongoing foot traffic') {
+    const start = new Date(today);
+    const end   = new Date(today); end.setDate(end.getDate() + 28);
+    applyWalmartFlightDates(start, end);
+    wrap.innerHTML = `<div class="walmart-subflow-note">Your campaign will run for <strong>4 weeks</strong> starting <strong>${fmtFlowDate(start)}</strong>. You can override the dates below.</div>`;
+  } else if (intent === 'Seasonal promotion') {
+    wrap.innerHTML = `<div class="walmart-subflow-note">Enter your promotion dates:
+      <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+        <div><label style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Start</label><br>
+          <input type="date" id="foot-promo-start" style="margin-top:4px" onchange="footPromoDateChanged()"></div>
+        <div><label style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">End</label><br>
+          <input type="date" id="foot-promo-end" style="margin-top:4px" onchange="footPromoDateChanged()"></div>
+      </div></div>`;
+  } else if (intent === 'Event or sale') {
+    wrap.innerHTML = `<div class="walmart-subflow-note">Enter your event date:<br>
+      <input type="date" id="foot-event-date" style="margin-top:6px" onchange="footEventDateChanged(this.value)"></div>`;
+  } else {
+    wrap.innerHTML = '';
+  }
+}
+
+function footOpeningDateChanged(val) {
+  if (!val) return;
+  const opening = new Date(val + 'T00:00:00');
+  const start = new Date(opening); start.setDate(start.getDate() - 14);
+  const end   = new Date(opening); end.setDate(end.getDate() + 28);
+  applyWalmartFlightDates(start, end);
+  const wrap = document.getElementById('foot-subflow');
+  if (wrap) wrap.innerHTML = `<div class="walmart-subflow-note">Enter your opening date:<br>
+    <input type="date" id="foot-opening-date" value="${val}" style="margin-top:6px" onchange="footOpeningDateChanged(this.value)">
+    <div style="margin-top:6px">Flight set to 2 weeks before through 4 weeks after: <strong>${fmtFlowDate(start)} – ${fmtFlowDate(end)}</strong>. You can override the dates below.</div></div>`;
+}
+
+function footPromoDateChanged() {
+  const s = document.getElementById('foot-promo-start');
+  const e = document.getElementById('foot-promo-end');
+  if (s && e && s.value && e.value) {
+    applyWalmartFlightDates(new Date(s.value + 'T00:00:00'), new Date(e.value + 'T00:00:00'));
+  }
+}
+
+function footEventDateChanged(val) {
+  if (!val) return;
+  const evt   = new Date(val + 'T00:00:00');
+  const start = new Date(evt); start.setDate(start.getDate() - 7);
+  const end   = new Date(evt); end.setDate(end.getDate() + 3);
+  applyWalmartFlightDates(start, end);
+  const wrap = document.getElementById('foot-subflow');
+  if (wrap) wrap.innerHTML = `<div class="walmart-subflow-note">Enter your event date:<br>
+    <input type="date" id="foot-event-date" value="${val}" style="margin-top:6px" onchange="footEventDateChanged(this.value)">
+    <div style="margin-top:6px">Flight: 1 week before through 3 days after: <strong>${fmtFlowDate(start)} – ${fmtFlowDate(end)}</strong>. You can override the dates below.</div></div>`;
+}
+
+/* ── Goal 3: NWA Tech & Startup Scene — sub-intent micro-flows ── */
+function renderTechSubflow(intent) {
+  const wrap = document.getElementById('tech-subflow');
+  if (!wrap) return;
+  const today = new Date();
+
+  if (intent === 'Build brand awareness') {
+    const start = new Date(today);
+    const end   = new Date(today); end.setDate(end.getDate() + 56);
+    applyWalmartFlightDates(start, end);
+    wrap.innerHTML = `<div class="walmart-subflow-note">Your campaign will run for <strong>8 weeks</strong> starting <strong>${fmtFlowDate(start)}</strong>. You can override the dates below.</div>`;
+  } else if (intent === 'Hiring & talent') {
+    const start = new Date(today);
+    const end   = new Date(today); end.setDate(end.getDate() + 28);
+    applyWalmartFlightDates(start, end);
+    wrap.innerHTML = `<div class="walmart-subflow-note">Your campaign will run for <strong>4 weeks</strong> starting <strong>${fmtFlowDate(start)}</strong>. You can override the dates below.</div>`;
+  } else if (intent === 'Event or launch') {
+    wrap.innerHTML = `<div class="walmart-subflow-note">Enter your event date:<br>
+      <input type="date" id="tech-event-date" style="margin-top:6px" onchange="techEventDateChanged(this.value)"></div>`;
+  } else if (intent === 'Investor visibility') {
+    const start = new Date(today);
+    const end   = new Date(today); end.setDate(end.getDate() + 84);
+    applyWalmartFlightDates(start, end);
+    wrap.innerHTML = `<div class="walmart-subflow-note">Your campaign will run for <strong>12 weeks</strong> starting <strong>${fmtFlowDate(start)}</strong>. You can override the dates below.</div>`;
+  } else {
+    wrap.innerHTML = '';
+  }
+}
+
+function techEventDateChanged(val) {
+  if (!val) return;
+  const evt   = new Date(val + 'T00:00:00');
+  const start = new Date(evt); start.setDate(start.getDate() - 7);
+  const end   = new Date(evt); end.setDate(end.getDate() + 7);
+  applyWalmartFlightDates(start, end);
+  const wrap = document.getElementById('tech-subflow');
+  if (wrap) wrap.innerHTML = `<div class="walmart-subflow-note">Enter your event date:<br>
+    <input type="date" id="tech-event-date" value="${val}" style="margin-top:6px" onchange="techEventDateChanged(this.value)">
+    <div style="margin-top:6px">Flight: 1 week before through 1 week after: <strong>${fmtFlowDate(start)} – ${fmtFlowDate(end)}</strong>. You can override the dates below.</div></div>`;
+}
+
 function toggleInsightWhy(btn) {
   const open = btn.classList.toggle('open');
   btn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -1852,9 +1978,9 @@ function renderTargetingLine() {
   if (ST.goal === "Reach Walmart & Sam's Club buyers") {
     line = `Inventory targeting: Walmart & Sam's Club decision-makers${productPhrase}${ST.subIntent ? ' · ' + ST.subIntent : ''}`;
   } else if (ST.goal === 'Drive customers through your door') {
-    line = `Inventory targeting: nearby foot traffic${productPhrase}`;
+    line = `Inventory targeting: nearby foot traffic${productPhrase}${ST.subIntent ? ' · ' + ST.subIntent : ''}`;
   } else if (ST.goal === 'Reach the NWA Tech & Startup Scene') {
-    line = `Inventory targeting: NWA tech & startup audience${productPhrase}`;
+    line = `Inventory targeting: NWA tech & startup audience${productPhrase}${ST.subIntent ? ' · ' + ST.subIntent : ''}`;
   } else if (ST.goal === 'Promote an event') {
     line = `Inventory targeting: event-area awareness${productPhrase}`;
   } else if (ST.goal) {

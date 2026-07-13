@@ -429,6 +429,30 @@
       <div id="walmart-subflow" class="walmart-subflow"></div>
     </div>
 
+    <!-- Goal 2: Drive customers through your door -->
+    <div id="p3-foot-timing" style="display:none;margin-bottom:28px">
+      <div style="margin-bottom:10px;font-size:13px;font-weight:500;color:var(--ink2)">What describes your situation?</div>
+      <div class="ft-status-row">
+        <div class="ft-status-pill on" onclick="selSubIntent(this,'foot')">Grand opening</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'foot')">Ongoing foot traffic</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'foot')">Seasonal promotion</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'foot')">Event or sale</div>
+      </div>
+      <div id="foot-subflow" class="walmart-subflow"></div>
+    </div>
+
+    <!-- Goal 3: NWA Tech & Startup Scene -->
+    <div id="p3-tech-timing" style="display:none;margin-bottom:28px">
+      <div style="margin-bottom:10px;font-size:13px;font-weight:500;color:var(--ink2)">What describes your situation?</div>
+      <div class="ft-status-row">
+        <div class="ft-status-pill on" onclick="selSubIntent(this,'tech')">Build brand awareness</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'tech')">Hiring &amp; talent</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'tech')">Event or launch</div>
+        <div class="ft-status-pill" onclick="selSubIntent(this,'tech')">Investor visibility</div>
+      </div>
+      <div id="tech-subflow" class="walmart-subflow"></div>
+    </div>
+
     <div style="margin-bottom:10px;font-size:13px;font-weight:500;color:var(--ink2)">Campaign duration</div>
 
     <!-- Schedule type toggle -->
@@ -1073,6 +1097,7 @@
 <script src="/js/book-ui.js?v=20260713"></script>
 <script src="/js/book-map.js?v=20260713"></script>
 <script src="/js/book-cart.js?v=20260713"></script>
+<script src="/js/book-poi-data.js?v=20260713"></script>
 <script src="/js/book-flow.js?v=20260713"></script>
 </body>
 </html>

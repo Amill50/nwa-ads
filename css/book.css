@@ -338,7 +338,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
    instead of #panel-4 (the actual map/pick-screens panel) — the map view
    never received its flex/height treatment, causing the whitespace, toggle
    clipping, and layout bugs reported. Fixed to target the real map panel. */
-#panel-4.active { display: flex; flex-direction: column; height: 100vh; padding-top: 64px; }
+#panel-4.active { display: flex; flex-direction: column; height: 100vh; padding-top: 64px; background: #1f3d2a; }
 
 .s2-top {
   background: var(--green,#1f3d2a) !important;
