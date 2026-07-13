@@ -17,6 +17,21 @@
   status = 200
 
 [[headers]]
+  for = "/js/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/css/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
   for = "/admin.html"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
