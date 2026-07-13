@@ -1862,6 +1862,7 @@ function renderFootSubflow(intent) {
   const today = new Date();
 
   if (intent === 'Grand opening') {
+    setSchedMode('custom');
     wrap.innerHTML = `<div class="walmart-subflow-note">Enter your opening date:<br>
       <input type="date" id="foot-opening-date" style="margin-top:6px" onchange="footOpeningDateChanged(this.value)"></div>`;
   } else if (intent === 'Ongoing foot traffic') {
@@ -1870,6 +1871,7 @@ function renderFootSubflow(intent) {
     applyWalmartFlightDates(start, end);
     wrap.innerHTML = `<div class="walmart-subflow-note">Your campaign will run for <strong>4 weeks</strong> starting <strong>${fmtFlowDate(start)}</strong>. You can override the dates below.</div>`;
   } else if (intent === 'Seasonal promotion') {
+    setSchedMode('custom');
     wrap.innerHTML = `<div class="walmart-subflow-note">Enter your promotion dates:
       <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
         <div><label style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Start</label><br>
@@ -1878,6 +1880,7 @@ function renderFootSubflow(intent) {
           <input type="date" id="foot-promo-end" style="margin-top:4px" onchange="footPromoDateChanged()"></div>
       </div></div>`;
   } else if (intent === 'Event or sale') {
+    setSchedMode('custom');
     wrap.innerHTML = `<div class="walmart-subflow-note">Enter your event date:<br>
       <input type="date" id="foot-event-date" style="margin-top:6px" onchange="footEventDateChanged(this.value)"></div>`;
   } else {
@@ -1934,6 +1937,7 @@ function renderTechSubflow(intent) {
     applyWalmartFlightDates(start, end);
     wrap.innerHTML = `<div class="walmart-subflow-note">Your campaign will run for <strong>4 weeks</strong> starting <strong>${fmtFlowDate(start)}</strong>. You can override the dates below.</div>`;
   } else if (intent === 'Event or launch') {
+    setSchedMode('custom');
     wrap.innerHTML = `<div class="walmart-subflow-note">Enter your event date:<br>
       <input type="date" id="tech-event-date" style="margin-top:6px" onchange="techEventDateChanged(this.value)"></div>`;
   } else if (intent === 'Investor visibility') {
