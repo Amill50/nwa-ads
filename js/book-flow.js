@@ -57,6 +57,7 @@ function goTo(step) {
   goToPanel(step);
 
   if (step===3) {
+    initBudgetSlider();
     const isWalmart = ST.goal === "Reach Walmart & Sam's Club buyers";
     const isFoot    = ST.goal === 'Drive customers through your door';
     const isTech    = ST.goal === 'Reach the NWA Tech & Startup Scene';
@@ -1993,46 +1994,68 @@ function fmtBudgetK(n) {
   return n >= 1000 ? '$' + Math.round(n/1000) + 'K' : '$' + n;
 }
 
+/* Log-scale helpers — single source of truth for slider ↔ dollar mapping.
+   Slider input range is 0–100; dollars snap to $250 increments. */
+function budgetFromPos(pos) {
+  const raw = BUDGET_MIN * Math.pow(BUDGET_MAX / BUDGET_MIN, pos / 100);
+  return Math.max(BUDGET_MIN, Math.min(BUDGET_MAX, Math.round(raw / 250) * 250));
+}
+function posFromBudget(dollars) {
+  const clamped = Math.max(BUDGET_MIN, Math.min(BUDGET_MAX, dollars));
+  return Math.round(Math.log(clamped / BUDGET_MIN) / Math.log(BUDGET_MAX / BUDGET_MIN) * 100);
+}
+
 function renderBudgetHints() {
   const el = document.getElementById('budget-hints');
   if (!el) return;
-  const range = BUDGET_MAX - BUDGET_MIN;
-  const pctStarter     = ((BUDGET_STARTER     - BUDGET_MIN) / range * 100).toFixed(2);
-  const pctRecommended = ((BUDGET_RECOMMENDED - BUDGET_MIN) / range * 100).toFixed(2);
+  const pctStarter     = posFromBudget(BUDGET_STARTER);
+  const pctRecommended = posFromBudget(BUDGET_RECOMMENDED);
   el.innerHTML =
     `<span style="left:0%">${fmtBudgetK(BUDGET_MIN)} min</span>` +
     `<span style="left:${pctStarter}%">${fmtBudgetK(BUDGET_STARTER)} starter</span>` +
     `<span style="left:${pctRecommended}%">${fmtBudgetK(BUDGET_RECOMMENDED)} recommended</span>` +
-    `<span>No maximum</span>`;
+    `<span style="right:0%;left:auto">No max</span>`;
+}
+
+function _applySliderFill(slider, pos) {
+  slider.style.background =
+    `linear-gradient(to right,var(--accent) 0%,var(--accent) ${pos}%,var(--border) ${pos}%)`;
 }
 
 function updBudget(inp) {
-  const val = parseInt(inp.value) || BUDGET_MIN;
-  ST.budget = val;
+  const dollars = budgetFromPos(parseInt(inp.value));
+  ST.budget = dollars;
   const lbl = ST.inc === 'daily' ? 'Daily budget'
             : ST.inc === 'weekly' ? 'Weekly budget' : 'Monthly budget';
   const labelEl = document.getElementById('budget-label');
   if (labelEl) labelEl.textContent = lbl;
   const bdisp = document.getElementById('bdisp');
-  if (bdisp) bdisp.textContent = '$' + val.toLocaleString();
+  if (bdisp) bdisp.textContent = '$' + dollars.toLocaleString();
   const customEl = document.getElementById('b-custom');
-  if (customEl) customEl.value = val;
-  const pct = Math.min(100, ((val - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100);
-  inp.style.background = `linear-gradient(to right,var(--accent) 0%,var(--accent) ${pct}%,var(--border) ${pct}%)`;
+  if (customEl) customEl.value = dollars;
+  _applySliderFill(inp, parseInt(inp.value));
 }
 
 function updBudgetCustom(inp) {
-  const val = parseInt(inp.value);
-  if (!val || val < BUDGET_MIN) return;
-  ST.budget = val;
+  const dollars = parseInt(inp.value);
+  if (!dollars || dollars < BUDGET_MIN) return;
+  ST.budget = Math.min(dollars, BUDGET_MAX);
   const bdisp = document.getElementById('bdisp');
-  if (bdisp) bdisp.textContent = '$' + val.toLocaleString();
+  if (bdisp) bdisp.textContent = '$' + ST.budget.toLocaleString();
   const slider = document.getElementById('bslider');
   if (slider) {
-    slider.value = Math.min(val, BUDGET_MAX);
-    const pct = Math.min(100, ((val - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100);
-    slider.style.background = `linear-gradient(to right,var(--accent) 0%,var(--accent) ${pct}%,var(--border) ${pct}%)`;
+    const pos = posFromBudget(ST.budget);
+    slider.value = pos;
+    _applySliderFill(slider, pos);
   }
+}
+
+function initBudgetSlider() {
+  const slider = document.getElementById('bslider');
+  if (!slider) return;
+  slider.value = posFromBudget(ST.budget || BUDGET_STARTER);
+  updBudget(slider);
+  renderBudgetHints();
 }
 
 function selInc(el, inc) {
