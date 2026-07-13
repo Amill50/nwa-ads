@@ -1869,14 +1869,7 @@ function fmtBudgetK(n) {
 function renderBudgetHints() {
   const el = document.getElementById('budget-hints');
   if (!el) return;
-  const range = BUDGET_MAX - BUDGET_MIN;
-  const pctStarter     = ((BUDGET_STARTER     - BUDGET_MIN) / range * 100).toFixed(2);
-  const pctRecommended = ((BUDGET_RECOMMENDED - BUDGET_MIN) / range * 100).toFixed(2);
-  el.innerHTML =
-    `<span style="left:0%">${fmtBudgetK(BUDGET_MIN)} min</span>` +
-    `<span style="left:${pctStarter}%">${fmtBudgetK(BUDGET_STARTER)} starter</span>` +
-    `<span style="left:${pctRecommended}%">${fmtBudgetK(BUDGET_RECOMMENDED)} recommended</span>` +
-    `<span>No maximum</span>`;
+  el.innerHTML = `<span>${fmtBudgetK(BUDGET_MIN)} min</span><span>${fmtBudgetK(BUDGET_STARTER)} starter</span><span>${fmtBudgetK(BUDGET_RECOMMENDED)} recommended</span><span>No maximum</span>`;
 }
 
 function updBudget(inp) {
