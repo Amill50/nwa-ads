@@ -17,23 +17,20 @@ function renderNavAccount() {
     const email = AUTH_SESSION.user.email || '';
     const initial = email ? email[0].toUpperCase() : '?';
     el.innerHTML = `
-      <div style="background:#c8440a;border-radius:10px;overflow:hidden;min-width:200px;margin:8px 0;flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-bottom:1px solid rgba(255,255,255,0.18)">
-          <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">${initial}</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${initial}</div>
           <div>
-            <div style="font-size:11px;font-weight:600;color:#fff;line-height:1.2">${email}</div>
-            <div style="display:flex;gap:7px;margin-top:1px">
-              <a style="font-size:9px;color:rgba(255,255,255,0.72);text-decoration:underline;cursor:pointer" onclick="showMyCampaigns()">My campaigns</a>
-              <a style="font-size:9px;color:rgba(255,255,255,0.72);text-decoration:underline;cursor:pointer" onclick="signOut()">Sign out</a>
+            <div style="font-size:11px;color:rgba(255,255,255,0.85);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;line-height:1.3">${email}</div>
+            <div style="display:flex;gap:8px">
+              <a style="font-size:9px;color:rgba(255,255,255,0.65);text-decoration:underline;cursor:pointer" onclick="showMyCampaigns()">My campaigns</a>
+              <a style="font-size:9px;color:rgba(255,255,255,0.65);text-decoration:underline;cursor:pointer" onclick="signOut()">Sign out</a>
             </div>
           </div>
         </div>
-        <div id="nav-cart-row" style="display:flex;align-items:center;gap:7px;padding:6px 11px;cursor:pointer" onclick="openCartSidebar()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.85"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          <div>
-            <div id="nav-cart-label" style="font-size:11px;font-weight:700;color:#fff;line-height:1.15">No screens added yet</div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.78)">Tap to review cart</div>
-          </div>
+        <div id="nav-cart-row" style="display:flex;align-items:center;gap:6px;background:#c8440a;border-radius:16px;padding:5px 11px;cursor:pointer;flex-shrink:0" onclick="openCartSidebar()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span id="nav-cart-label" style="font-size:10px;font-weight:700;color:#fff;white-space:nowrap">No screens added yet</span>
         </div>
       </div>
     `;

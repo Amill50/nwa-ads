@@ -13,6 +13,7 @@
   --pill-bg: #f0ece5;
   --r: 14px;
   --r-sm: 8px;
+  --nav-h: 64px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
@@ -338,7 +339,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
    instead of #panel-4 (the actual map/pick-screens panel) — the map view
    never received its flex/height treatment, causing the whitespace, toggle
    clipping, and layout bugs reported. Fixed to target the real map panel. */
-#panel-4.active { display: flex; flex-direction: column; height: 100vh; padding-top: 64px; background: #1f3d2a; }
+#panel-4.active { display: flex; flex-direction: column; height: 100dvh; padding-top: var(--nav-h); background: #1f3d2a; }
 
 .s2-top {
   background: var(--green,#1f3d2a) !important;
@@ -767,7 +768,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 .skip-btn { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; }
 
 /* Step 4 */
-.s4-layout { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 64px); }
+.s4-layout { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100dvh - var(--nav-h)); }
 .checkout-form { padding: 48px; overflow-y: auto; }
 .form-section { margin-bottom: 28px; }
 .form-section h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
@@ -787,7 +788,7 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 .cc.m { background: linear-gradient(to right,#eb001b 50%,#f79e1b 50%); }
 .cc.a { background:#007bc1;color:#fff; }
 .stripe-lbl { margin-left: auto; font-size: 11px; font-weight: 700; color: #635bff; }
-.os-panel { border-left: 1px solid var(--border); background: var(--pill-bg); padding: 40px 28px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; }
+.os-panel { border-left: 1px solid var(--border); background: var(--pill-bg); padding: 40px 28px; position: sticky; top: var(--nav-h); height: calc(100dvh - var(--nav-h)); overflow-y: auto; }
 .os-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; margin-bottom: 20px; }
 .os-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); gap: 10px; }
 .os-item .name { font-size: 13px; font-weight: 600; }
