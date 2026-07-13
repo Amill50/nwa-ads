@@ -25447,7 +25447,7 @@ const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
    range so the hint labels under it can never drift out of sync with the
    actual min/max/step used by the input and its % fill calculation. ── */
 const BUDGET_MIN = 500;
-const BUDGET_MAX = 50000;
+const BUDGET_MAX = 57000;
 const BUDGET_STEP = 500;
 const BUDGET_STARTER = 2000;
 const BUDGET_RECOMMENDED = 10000;
