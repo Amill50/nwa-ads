@@ -1065,6 +1065,7 @@ async function runOptimizer() {
   results.classList.remove('visible');
 
   // Build a proximity+budget scored inventory summary for Claude
+  const weeklyBudget = toWeeklyBudget(ST.budget, ST.inc) || 2000;
   const HQ = WALMART_HQ;
   const tLat = ST.proximityTarget?.lat || HQ.lat;
   const tLng = ST.proximityTarget?.lng || HQ.lng;
@@ -1073,10 +1074,10 @@ async function runOptimizer() {
     .map(s => {
       const rate = s.wkly_rate || Math.round((s.cpm||0)*(s.weekly_imp||0)/1000);
       const dist = haversineMiles(tLat, tLng, s.lat, s.lng);
-      const budgetPct = rate > 0 ? Math.round((rate/(ST.budget||2000))*100) : 0;
+      const budgetPct = rate > 0 ? Math.round((rate/weeklyBudget)*100) : 0;
       return { ...s, _rate: rate, _dist: dist, _budgetPct: budgetPct };
     })
-    .filter(s => s._rate > 0 && s._rate <= (ST.budget||2000) * 1.1)
+    .filter(s => s._rate > 0 && s._rate <= weeklyBudget * 1.1)
     .sort((a, b) => {
       const proxA = Math.max(0, 50 - a._dist*10);
       const proxB = Math.max(0, 50 - b._dist*10);
@@ -1095,12 +1096,12 @@ that together maximize reach within budget.
 
 Advertiser: ${ST.advertiserName || 'Not specified'}
 Campaign goal: "${ST.goal || 'General advertising'}"
-Weekly budget: $${ST.budget || 2000}
+Weekly budget: $${weeklyBudget}
 Duration: ${durLabel()}
 ${ST.proximityTarget ? `Target: ${ST.proximityTarget.name} (${ST.proximityTarget.lat?.toFixed(4)}, ${ST.proximityTarget.lng?.toFixed(4)})` : ''}
 
 RULES:
-1. Total weekly spend ≤ $${Math.round((ST.budget||2000)*1.05)}
+1. Total weekly spend ≤ $${Math.round(weeklyBudget*1.05)}
 2. Maximize total weekly impressions within budget
 3. Prefer screens closest to target (dist column)
 4. Include format diversity if budget allows
@@ -1149,7 +1150,7 @@ Respond ONLY with valid JSON, no markdown:
     renderOptimizerBasket();
     const _optTotal = optRecommended.reduce((sum, sc) =>
       sum + (sc.wkly_rate || Math.round((sc.cpm||0)*(sc.weekly_imp||0)/1000)), 0);
-    const _optPct = Math.round(_optTotal / (ST.budget||1) * 100);
+    const _optPct = Math.round(_optTotal / (weeklyBudget||1) * 100);
     const _reasonEl = document.getElementById('opt-reason');
     if (_reasonEl && _optTotal > 0 && !_reasonEl.textContent.includes('/wk')) {
       _reasonEl.textContent += ` · $${_optTotal.toLocaleString()}/wk (${_optPct}% of budget)`;
@@ -1167,7 +1168,7 @@ Respond ONLY with valid JSON, no markdown:
     renderOptimizerBasket();
     const _optTotal = optRecommended.reduce((sum, sc) =>
       sum + (sc.wkly_rate || Math.round((sc.cpm||0)*(sc.weekly_imp||0)/1000)), 0);
-    const _optPct = Math.round(_optTotal / (ST.budget||1) * 100);
+    const _optPct = Math.round(_optTotal / (weeklyBudget||1) * 100);
     const _reasonEl = document.getElementById('opt-reason');
     if (_reasonEl && _optTotal > 0 && !_reasonEl.textContent.includes('/wk')) {
       _reasonEl.textContent += ` · $${_optTotal.toLocaleString()}/wk (${_optPct}% of budget)`;
@@ -1231,6 +1232,13 @@ function updateCartIndicator() {
   el.innerHTML = `<span class="nci-icon">🛒</span><span class="nci-label">${keys.length} item${keys.length !== 1 ? 's' : ''} · </span>$${Math.round(total).toLocaleString()}${rateLabel()}`;
 }
 
+function toWeeklyBudget(budget, inc) {
+  const b = budget || 0;
+  if (inc === 'daily')   return b * 7;
+  if (inc === 'monthly') return Math.round(b / 4.33);
+  return b; // weekly (default)
+}
+
 function screenRate(s) {
   if (s.cpm && s.weekly_imp) return Math.round(s.cpm * s.weekly_imp / 1000);
   if (s.wkly_rate && s.wkly_rate > 0) return s.wkly_rate;
@@ -1273,29 +1281,32 @@ function showBudgetWarning(budget) {
 
 function fallbackRecommend() {
   const goal   = ST.goal;
-  const budget = ST.budget || 2000;
+  const budget = toWeeklyBudget(ST.budget, ST.inc) || 2000;
 
   function d(s, lat, lng) {
     return haversineMiles(lat, lng, s.lat, s.lng);
   }
 
   /* Greedy fill — always returns at least 1 screen.
-     First candidate always included even if over budget.
-     Keeps adding until 80-105% budget utilization or max screens reached. */
+     First pick respects budget cap (1.05x); only force-adds if every candidate
+     exceeds budget (inventory too expensive — better to show 1 over-budget
+     screen than nothing). Keeps adding until 85-105% utilization or max screens. */
   function greedyFill(candidates, maxScreens) {
     if (!candidates || candidates.length === 0) return [];
     maxScreens = maxScreens || 6;
     const picks = [];
     let spent = 0;
+    const anyFits = candidates.some(s => s._rate <= budget * 1.05);
     for (const s of candidates) {
       if (picks.length >= maxScreens) break;
       if (picks.length === 0) {
+        if (anyFits && s._rate > budget * 1.05) continue;
         picks.push(s); spent += s._rate; continue;
       }
       if (spent + s._rate <= budget * 1.05) {
         picks.push(s); spent += s._rate;
       }
-      if (spent >= budget * 0.80) break;
+      if (spent >= budget * 0.85) break;
     }
     return picks;
   }
@@ -1510,7 +1521,7 @@ function fallbackRecommend() {
       if (spent + s._rate <= budget * 1.05) {
         picks.push(s); spent += s._rate;
       }
-      if (spent >= budget * 0.80) break;
+      if (spent >= budget * 0.85) break;
     }
 
     maybeShowBudgetCard(picks);
