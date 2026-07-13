@@ -184,7 +184,8 @@ function showCampaignDetail(id) {
     </div>
     <div style="font-size:11px;text-transform:uppercase;color:#6b6560;font-weight:600;margin-bottom:10px">Screens (${screens.length})</div>
     ${screens.length ? screens.map(s => {
-      const imgSrc = (s && (s.img || s.image_url || VENUE_TYPE_IMG[s.venue_type] || VENUE_TYPE_IMG[s.type])) || '';
+      const _vti = typeof VENUE_TYPE_IMG !== 'undefined' ? VENUE_TYPE_IMG : {};
+      const imgSrc = (s && (s.img || s.image_url || _vti[s.venue_type] || _vti[s.type])) || '';
       const photoHtml = imgSrc
         ? `<img src="${imgSrc}" alt="" style="width:56px;height:42px;object-fit:cover;border-radius:6px;flex-shrink:0;margin-right:12px" onerror="this.style.display='none'">`
         : '';
