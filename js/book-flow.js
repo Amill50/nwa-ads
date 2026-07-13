@@ -1,3 +1,4 @@
+/* cache-bust: 2026-07-13 */
 function goToPanel(step) {
   updateNavSel();
   for (let i=1;i<=8;i++) {
