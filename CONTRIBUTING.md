@@ -153,3 +153,18 @@ Set this up at:
 ---
 
 *Last updated: July 11, 2026*
+
+## Deploy workflow (staging → production)
+
+- `main` = production (nwa-ads.com). Never push directly.
+- `staging` = pre-production check (staging--<site>.netlify.app, enable Branch deploys in Netlify UI).
+- All work happens on feature branches:
+  1. `git checkout staging && git pull && git checkout -b feature/<name>`
+  2. Commit, push, open a PR → Netlify posts a **Deploy Preview** URL on the PR.
+  3. Click through the preview. Merge to `staging`, re-verify on the staging URL.
+  4. PR `staging` → `main` to ship.
+- `node scripts/build-check.js` runs on every deploy and blocks syntax errors,
+  missing files, and pages whose script chain uses an undefined shared global.
+- Shared data/logic (inventory, pricing, POIs, Supabase client, venue photos)
+  lives in `shared/` ONLY. Never copy it into tool folders.
+- The old `origin/proposals` branch is pre-module-split. NEVER merge it. Cherry-pick files only.

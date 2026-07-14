@@ -17,6 +17,16 @@
   status = 200
 
 [[headers]]
+  for = "/shared/js/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/shared/css/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
   for = "/js/*.js"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
@@ -45,3 +55,22 @@
 [context.proposals]
   command = "echo 'Proposals branch — no build needed'"
   publish = "."
+
+# ── Deploy contexts ──
+# Production = main branch → nwa-ads.com
+[context.production]
+  command = "node scripts/build-check.js"
+
+# Staging branch → staging--<site>.netlify.app (enable in Netlify UI: Branch deploys)
+[context.staging]
+  command = "node scripts/build-check.js"
+
+[context.staging.environment]
+  CONTEXT_LABEL = "staging"
+
+# Every PR gets a preview URL; never index non-production deploys
+[context.deploy-preview]
+  command = "node scripts/build-check.js"
+
+# Note: Netlify serves deploy previews and branch deploys on *.netlify.app
+# with X-Robots-Tag: noindex automatically; env.js adds a visible STAGING ribbon.
