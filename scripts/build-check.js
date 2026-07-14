@@ -20,15 +20,15 @@ const JS_FILES = [
   'shared/js/inventory.js',
   'shared/js/poi-data.js',
   'shared/js/venue-type-img.js',
-  'js/book-state.js',
-  'js/book-ui.js',
-  'js/book-map.js',
-  'js/book-cart.js',
-  'js/book-flow.js',
+  'book/js/book-state.js',
+  'book/js/book-ui.js',
+  'book/js/book-map.js',
+  'book/js/book-cart.js',
+  'book/js/book-flow.js',
 ];
 
 const HTML_FILES = [
-  'book.html',
+  'book/index.html',
   'index.html',
 ];
 
@@ -151,8 +151,8 @@ HTML_FILES.forEach(file => {
 // ── Check required files exist ─────────────────────────────
 console.log('\nChecking required files...');
 const REQUIRED = [
-  'book.html',
-  'css/book.css',
+  'book/index.html',
+  'book/css/book.css',
   'shared/css/base.css',
   'shared/js/env.js',
   'shared/js/pricing.js',
@@ -160,11 +160,11 @@ const REQUIRED = [
   'shared/js/poi-data.js',
   'shared/js/supabase.js',
   'shared/js/venue-type-img.js',
-  'js/book-state.js',
-  'js/book-flow.js',
-  'js/book-map.js',
-  'js/book-cart.js',
-  'js/book-ui.js',
+  'book/js/book-state.js',
+  'book/js/book-flow.js',
+  'book/js/book-map.js',
+  'book/js/book-cart.js',
+  'book/js/book-ui.js',
   'design-system.html',
   'shared/venue_photos/Billboards_generic.png',
   'shared/venue_photos/QSR_FastCasual.png',
