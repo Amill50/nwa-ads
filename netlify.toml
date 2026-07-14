@@ -6,16 +6,24 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# ── Redirects ──
+# /book and /book.html both 301 to the new /book/ directory
 [[redirects]]
   from = "/book"
-  to = "/book.html"
-  status = 200
+  to = "/book/"
+  status = 301
+
+[[redirects]]
+  from = "/book.html"
+  to = "/book/"
+  status = 301
 
 [[redirects]]
   from = "/proposal"
   to = "/proposals/index.html"
   status = 200
 
+# ── Cache headers — all local assets bust on deploy via ?v= params ──
 [[headers]]
   for = "/shared/js/*.js"
   [headers.values]
@@ -23,6 +31,16 @@
 
 [[headers]]
   for = "/shared/css/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/book/js/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/book/css/*.css"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
@@ -41,13 +59,14 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# /book/ is not indexed (it's a tool, not a marketing page)
 [[headers]]
-  for = "/admin.html"
+  for = "/book/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
-  for = "/book.html"
+  for = "/admin.html"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
