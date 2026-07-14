@@ -1,0 +1,21 @@
+/* ══════════════ SHARED DESIGN TOKENS ══════════════
+   Colors, radii and brand variables used by all three tools.
+   Load BEFORE any tool-specific stylesheet.
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg: #f6f4ef;
+  --ink: #1a1714;
+  --ink2: #4a4540;
+  --muted: #6b6560;
+  --border: #e2ddd6;
+  --white: #fffef9;
+  --accent: #c8440a;
+  --accent-light: #fdf1eb;
+  --accent2: #1f3d2a;
+  --accent2-light: #eaf2ec;
+  --surface: #fffef9;
+  --pill-bg: #f0ece5;
+  --r: 14px;
+  --r-sm: 8px;
+  --nav-h: 64px;
+}

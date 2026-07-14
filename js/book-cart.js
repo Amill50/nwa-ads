@@ -376,11 +376,7 @@ function updateCustomSched() {
   updateNavSel();
 }
 
-function customSchedTotalCost(screenRate4wk) {
-  if (ST.customDayCount === 0) return 0;
-  const dailyRate = Math.round((screenRate4wk / 28) * RATE_CONFIG.daily_premium);
-  return dailyRate * ST.customDayCount;
-}
+/* customSchedTotalCost moved to /shared/js/pricing.js */
 
 
 /* ══════════════ PROPOSAL LINK ══════════════ */
