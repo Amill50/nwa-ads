@@ -6,15 +6,58 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# ── Redirects ──
+# /book and /book.html both 301 to the new /book/ directory
 [[redirects]]
   from = "/book"
-  to = "/book.html"
+  to = "/book/"
+  status = 301
+
+[[redirects]]
+  from = "/book.html"
+  to = "/book/"
+  status = 301
+
+[[redirects]]
+  from = "/proposal/view"
+  to = "/proposal/index.html"
   status = 200
 
 [[redirects]]
   from = "/proposal"
-  to = "/proposals/index.html"
-  status = 200
+  to = "/proposal/view"
+  status = 301
+
+[[redirects]]
+  from = "/proposal.html"
+  to = "/proposal/view"
+  status = 301
+
+[[redirects]]
+  from = "/admin.html"
+  to = "/admin/"
+  status = 301
+
+# ── Cache headers — all local assets bust on deploy via ?v= params ──
+[[headers]]
+  for = "/shared/js/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/shared/css/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/book/js/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/book/css/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/js/*.js"
@@ -31,13 +74,14 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# /book/ is not indexed (it's a tool, not a marketing page)
 [[headers]]
-  for = "/admin.html"
+  for = "/book/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
-  for = "/book.html"
+  for = "/admin/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
@@ -45,3 +89,22 @@
 [context.proposals]
   command = "echo 'Proposals branch — no build needed'"
   publish = "."
+
+# ── Deploy contexts ──
+# Production = main branch → nwa-ads.com
+[context.production]
+  command = "node scripts/build-check.js"
+
+# Staging branch → staging--<site>.netlify.app (enable in Netlify UI: Branch deploys)
+[context.staging]
+  command = "node scripts/build-check.js"
+
+[context.staging.environment]
+  CONTEXT_LABEL = "staging"
+
+# Every PR gets a preview URL; never index non-production deploys
+[context.deploy-preview]
+  command = "node scripts/build-check.js"
+
+# Note: Netlify serves deploy previews and branch deploys on *.netlify.app
+# with X-Robots-Tag: noindex automatically; env.js adds a visible STAGING ribbon.

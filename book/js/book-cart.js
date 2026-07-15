@@ -376,11 +376,7 @@ function updateCustomSched() {
   updateNavSel();
 }
 
-function customSchedTotalCost(screenRate4wk) {
-  if (ST.customDayCount === 0) return 0;
-  const dailyRate = Math.round((screenRate4wk / 28) * RATE_CONFIG.daily_premium);
-  return dailyRate * ST.customDayCount;
-}
+/* customSchedTotalCost moved to /shared/js/pricing.js */
 
 
 /* ══════════════ PROPOSAL LINK ══════════════ */
@@ -436,7 +432,7 @@ async function generateProposalLink() {
     return;
   }
 
-  const url = 'https://proposals.nwa-ads.com?id=' + proposalId;
+  const url = window.location.origin + '/proposal/view?id=' + proposalId;
   document.getElementById('proposal-link-input').value = url;
   if (btn) btn.style.display = 'none';
   document.getElementById('proposal-link-wrap').style.display = 'flex';

@@ -1,20 +1,4 @@
-:root {
-  --bg: #f6f4ef;
-  --ink: #1a1714;
-  --ink2: #4a4540;
-  --muted: #6b6560;
-  --border: #e2ddd6;
-  --white: #fffef9;
-  --accent: #c8440a;
-  --accent-light: #fdf1eb;
-  --accent2: #1f3d2a;
-  --accent2-light: #eaf2ec;
-  --surface: #fffef9;
-  --pill-bg: #f0ece5;
-  --r: 14px;
-  --r-sm: 8px;
-  --nav-h: 64px;
-}
+/* Design tokens live in /shared/css/base.css — load it before this file. */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color: var(--ink); }

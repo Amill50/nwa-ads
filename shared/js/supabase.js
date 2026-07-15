@@ -1,6 +1,9 @@
   // Supabase config — publishable/anon key only. Safe to expose client-side;
   // access is enforced server-side via Row Level Security policies.
-  window.SUPABASE_CONFIG = {
+  window.SUPABASE_CONFIG = window.ENV_CONFIG ? {
+    url: window.ENV_CONFIG.supabaseUrl,
+    publishableKey: window.ENV_CONFIG.supabaseKey,
+  } : {
     url: 'https://etytgvxkjqjnriflktzv.supabase.co',
     publishableKey: 'sb_publishable_6T9Ikbmq5ldlzNB_Bncheg_C8K52sB8',
   };
@@ -199,18 +202,5 @@ function showCampaignDetail(id) {
   window.scrollTo(0,0);
 }
 
-/* ══════════════ RATE CONFIG ══════════════
-   Source of truth for all pricing logic.
-   Daily premium and markup are set here — update when media owner
-   rate sheets are confirmed. Admin panel reads/writes these values.
-   ════════════════════════════════════════ */
-const RATE_CONFIG = {
-  daily_premium:    1.10,   // +10% above 4-week rate card for daily buys
-  weekly_premium:   1.00,   // no premium on weekly
-  monthly_premium:  1.083,  // +8.3% for 30-day vs 28-day commitment
-  markup_under_10k: 0.20,   // 20% margin on deals under $10,000 total
-  markup_over_10k:  0.15,   // 15% margin on deals $10,000+
-  last_updated:     '2026-06-04',
-  note: 'Daily premium is estimated pending confirmed media owner rate sheets'
-};
+/* RATE_CONFIG moved to /shared/js/pricing.js */
 

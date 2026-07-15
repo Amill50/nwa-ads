@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWA Ads — Campaign Proposal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="/shared/css/base.css?v=20260715b">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/shared/js/env.js?v=20260715b"></script>
+<script src="/shared/js/venue-type-img.js?v=20260715b"></script>
+<script src="/shared/js/pricing.js?v=20260715b"></script>
+<style>
+:root {
+  /* proposal-specific tokens not in shared/css/base.css */
+  --green:  #1f3d2a;
+  --cream:  #f9f6ee;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; font-family: 'Instrument Sans', sans-serif; color: var(--ink); background: var(--bg); }
+
+/* ── LOADING ── */
+#loading-screen {
+  position: fixed; inset: 0; background: var(--green);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9999; gap: 20px;
+}
+.spinner {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading-screen p { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; }
+
+/* ── ERROR ── */
+#error-screen {
+  position: fixed; inset: 0; background: var(--green);
+  display: none; align-items: center; justify-content: center;
+}
+.error-box {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px; padding: 48px 56px; text-align: center; max-width: 440px;
+}
+.error-box h2 { font-family: 'Fraunces', serif; color: #fff; font-size: 22px; margin-bottom: 12px; }
+.error-box p  { color: rgba(255,255,255,0.65); font-size: 14px; line-height: 1.6; }
+.error-box a  { color: rgba(255,255,255,0.45); font-size: 12px; display: block; margin-top: 24px; text-decoration: none; }
+.error-box a:hover { color: #fff; }
+
+/* ── MAIN ── */
+#proposal-content { display: none; }
+
+/* ── HEADER ── */
+.p-header {
+  background: var(--green); padding: 44px 40px 52px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.p-header-inner { max-width: 920px; margin: 0 auto; }
+.p-logo {
+  font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700;
+  color: #fff; letter-spacing: -0.3px; margin-bottom: 36px; display: block;
+}
+.p-logo em { color: var(--accent); font-style: normal; }
+.p-h1 {
+  font-family: 'Fraunces', serif; font-size: 40px; font-weight: 700;
+  color: #fff; line-height: 1.08; letter-spacing: -1.2px; margin-bottom: 12px;
+}
+.p-h1 em { color: var(--accent); font-style: italic; }
+.p-subhead { font-size: 15px; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
+.p-prepared { font-size: 11px; color: rgba(255,255,255,0.38); letter-spacing: 0.2px; }
+
+/* ── SUMMARY STRIP ── */
+.summary-strip {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  border-bottom: 1px solid var(--border); background: var(--white);
+}
+.sum-cell {
+  padding: 24px 28px;
+  border-right: 1px solid var(--border);
+}
+.sum-cell:last-child { border-right: none; }
+.sum-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 6px; }
+.sum-val { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; color: var(--ink); line-height: 1; }
+.sum-val.accent { color: var(--accent); }
+
+/* ── OBJECTIVE BANNER ── */
+.objective-banner {
+  background: var(--cream); padding: 26px 40px;
+  border-bottom: 1px solid var(--border);
+}
+.obj-inner { max-width: 920px; margin: 0 auto; display: flex; align-items: flex-start; gap: 16px; }
+.obj-icon { font-size: 26px; flex-shrink: 0; line-height: 1.3; }
+.obj-headline { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.obj-sub { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── SECTION SHARED ── */
+.section-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--muted); margin-bottom: 6px;
+}
+.section-heading {
+  font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700;
+  color: var(--ink); margin-bottom: 20px; letter-spacing: -0.5px;
+}
+
+/* ── MAP ── */
+.map-section { padding: 44px 40px 0; background: var(--bg); }
+.map-inner { max-width: 920px; margin: 0 auto; }
+.map-toggle-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.map-toggle-btn {
+  font-family: 'Instrument Sans', sans-serif; font-size: 11px; font-weight: 600;
+  padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--white); color: var(--ink2); cursor: pointer; transition: all 0.15s;
+}
+.map-toggle-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+#proposal-map {
+  height: 420px; border-radius: var(--r); border: 1px solid var(--border);
+  overflow: hidden; box-shadow: 0 2px 16px rgba(26,23,20,0.08);
+}
+.map-meta-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  margin-top: 14px; margin-bottom: 44px;
+}
+.map-meta-card {
+  background: var(--cream); border-radius: var(--r);
+  padding: 16px 20px; border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(26,23,20,0.07);
+}
+.map-meta-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: #8a8378; margin-bottom: 10px;
+}
+.map-meta-icons { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.map-meta-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.map-stat-cell { text-align: center; padding: 8px 4px; }
+.map-stat-val { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--ink); }
+.map-stat-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+
+/* ── INVENTORY ── */
+.inventory-section { padding: 0 40px 44px; background: var(--bg); }
+.inventory-inner { max-width: 920px; margin: 0 auto; }
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(195px,1fr));
+  gap: 16px; margin-top: 20px;
+}
+.inv-card {
+  background: var(--white); border-radius: var(--r);
+  border: 1.5px solid #ece7dd; overflow: hidden;
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+.inv-card:hover { box-shadow: 0 8px 28px rgba(26,23,20,0.12); transform: translateY(-2px); }
+.inv-photo { height: 120px; width: 100%; object-fit: cover; display: block; }
+.inv-photo-fallback {
+  height: 120px; display: flex; align-items: center; justify-content: center;
+}
+.inv-body { padding: 12px 14px 16px; }
+.inv-eyebrow { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+.inv-eyebrow-text {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.7px; color: var(--muted);
+}
+.inv-name {
+  font-family: 'Fraunces', serif; font-size: 14px; font-weight: 700;
+  color: var(--ink); line-height: 1.3; margin-bottom: 4px;
+}
+.inv-loc { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+.inv-price { font-size: 14px; font-weight: 700; color: var(--accent); }
+.inv-price small { font-size: 10px; font-weight: 400; color: var(--muted); margin-left: 2px; }
+
+/* ── COST ── */
+.cost-section { padding: 0 40px 44px; background: var(--bg); }
+.cost-inner { max-width: 920px; margin: 0 auto; }
+.cost-card {
+  background: var(--white); border-radius: var(--r);
+  border: 1px solid var(--border); overflow: hidden;
+  box-shadow: 0 2px 12px rgba(26,23,20,0.06);
+}
+.cost-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px; border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.cost-row:last-of-type { border-bottom: none; }
+.cost-lbl { color: var(--ink2); }
+.cost-val { font-weight: 600; color: var(--ink); }
+.cost-row.total { padding: 22px 24px; background: var(--cream); }
+.cost-row.total .cost-lbl { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--ink); }
+.cost-row.total .cost-val { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--accent); }
+.reservation-note {
+  margin-top: 12px; padding: 14px 18px;
+  background: #fffbf2; border-left: 3px solid #f59e0b; border-radius: 8px;
+  font-size: 12px; color: var(--ink2); line-height: 1.65;
+}
+
+/* ── CTA FOOTER ── */
+.cta-footer {
+  background: var(--green); padding: 60px 40px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.cta-inner { max-width: 920px; margin: 0 auto; text-align: center; }
+.cta-heading {
+  font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700;
+  color: #fff; margin-bottom: 10px; letter-spacing: -0.5px;
+}
+.cta-sub { font-size: 14px; color: rgba(255,255,255,0.55); margin-bottom: 32px; line-height: 1.6; }
+.cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn-approve {
+  background: var(--accent); color: #fff; border: none;
+  padding: 14px 32px; border-radius: 40px;
+  font-family: 'Instrument Sans', sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s;
+}
+.btn-approve:hover { background: #a8360a; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(200,68,10,0.4); }
+.btn-approve:disabled { background: rgba(255,255,255,0.18); cursor: default; transform: none; box-shadow: none; }
+.btn-question {
+  background: transparent; color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.35); padding: 14px 32px; border-radius: 40px;
+  font-family: 'Instrument Sans', sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; text-decoration: none; display: inline-flex; align-items: center;
+}
+.btn-question:hover { border-color: rgba(255,255,255,0.75); }
+.cta-confirmed {
+  display: none; align-items: center; gap: 14px; justify-content: center;
+  background: rgba(255,255,255,0.1); border-radius: 14px; padding: 18px 32px;
+  margin-top: 8px;
+}
+.cta-confirmed-icon { font-size: 22px; }
+.cta-confirmed-text { color: #fff; font-weight: 600; font-size: 15px; }
+
+/* ── PAGE FOOTER ── */
+.page-footer {
+  background: #141210; padding: 20px 40px;
+  text-align: center; font-size: 11px; color: rgba(255,255,255,0.3);
+  letter-spacing: 0.3px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .p-header { padding: 28px 20px 36px; }
+  .p-h1 { font-size: 28px; }
+  .summary-strip { grid-template-columns: 1fr 1fr; }
+  .sum-cell:nth-child(2) { border-right: none; }
+  .sum-cell:nth-child(3),
+  .sum-cell:nth-child(4) { border-top: 1px solid var(--border); }
+  .sum-cell:nth-child(4) { border-right: none; }
+  .objective-banner { padding: 20px; }
+  .map-section { padding: 28px 20px 0; }
+  .inventory-section,
+  .cost-section { padding-left: 20px; padding-right: 20px; }
+  #proposal-map { height: 300px; }
+  .map-meta-row { grid-template-columns: 1fr; }
+  .inv-grid { grid-template-columns: repeat(auto-fill, minmax(155px,1fr)); gap: 12px; }
+  .cta-footer { padding: 44px 20px; }
+  .cta-heading { font-size: 24px; }
+  .page-footer { padding: 16px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <p>Loading your proposal…</p>
+</div>
+
+<!-- ERROR -->
+<div id="error-screen">
+  <div class="error-box">
+    <h2>Proposal not available</h2>
+    <p>This proposal link has expired or is no longer available. Please contact your NWA Ads representative for an updated link.</p>
+    <a href="https://nwa-ads.com">← Return to NWA Ads</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="proposal-content">
+
+  <header class="p-header">
+    <div class="p-header-inner">
+      <span class="p-logo">NWA <em>Ads</em></span>
+      <h1 class="p-h1" id="p-h1">Your Campaign Proposal</h1>
+      <p class="p-subhead" id="p-subhead">Northwest Arkansas</p>
+      <p class="p-prepared" id="p-prepared"></p>
+    </div>
+  </header>
+
+  <div class="summary-strip">
+    <div class="sum-cell">
+      <div class="sum-label">Flight Dates</div>
+      <div class="sum-val" id="sum-dates">—</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-label">Screens</div>
+      <div class="sum-val" id="sum-screens">0</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-label">Weekly Impressions</div>
+      <div class="sum-val" id="sum-impr">—</div>
+    </div>
+    <div class="sum-cell">
+      <div class="sum-label">Total Estimate</div>
+      <div class="sum-val accent" id="sum-total">$0</div>
+    </div>
+  </div>
+
+  <div class="objective-banner">
+    <div class="obj-inner">
+      <div class="obj-icon">🎯</div>
+      <div>
+        <div class="obj-headline" id="obj-headline">Preparing your proposal…</div>
+        <div class="obj-sub" id="obj-sub"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="map-section">
+    <div class="map-inner">
+      <div class="section-label">Campaign Geography</div>
+      <div class="section-heading">Where your campaign runs</div>
+      <div class="map-toggle-bar">
+        <button class="map-toggle-btn active" id="btn-overlay-on"  onclick="toggleOverlay(true)">Show strategy overlay</button>
+        <button class="map-toggle-btn"        id="btn-overlay-off" onclick="toggleOverlay(false)">Pins only</button>
+      </div>
+      <div id="proposal-map"></div>
+      <div class="map-meta-row">
+        <div class="map-meta-card">
+          <div class="map-meta-label">Advertising Venue Types</div>
+          <div class="map-meta-icons" id="map-venue-icons"></div>
+        </div>
+        <div class="map-meta-card">
+          <div class="map-meta-stats">
+            <div class="map-stat-cell">
+              <div class="map-stat-val" id="meta-screen-count">0</div>
+              <div class="map-stat-lbl">Screens</div>
+            </div>
+            <div class="map-stat-cell">
+              <div class="map-stat-val" id="meta-zone-val">—</div>
+              <div class="map-stat-lbl" id="meta-zone-lbl">Targeting Zones</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="inventory-section">
+    <div class="inventory-inner">
+      <div class="section-label">Included Inventory</div>
+      <div class="section-heading">Your screens</div>
+      <div class="inv-grid" id="inv-grid"></div>
+    </div>
+  </section>
+
+  <section class="cost-section">
+    <div class="cost-inner">
+      <div class="section-label">Investment</div>
+      <div class="section-heading">Cost summary</div>
+      <div class="cost-card">
+        <div class="cost-row">
+          <span class="cost-lbl">Weekly subtotal</span>
+          <span class="cost-val" id="cost-weekly">$0 /wk</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-lbl">Flight length</span>
+          <span class="cost-val" id="cost-weeks">—</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-lbl">Platform fee</span>
+          <span class="cost-val" style="color:var(--green)">Included</span>
+        </div>
+        <div class="cost-row total">
+          <span class="cost-lbl">Total estimate</span>
+          <span class="cost-val" id="cost-total">$0</span>
+        </div>
+      </div>
+      <div class="reservation-note">
+        🔒 This is a <strong>reservation, not a charge</strong> — Approving holds your screens. Pricing confirmed within 24–48 hours before payment is collected.
+      </div>
+    </div>
+  </section>
+
+  <footer class="cta-footer">
+    <div class="cta-inner">
+      <h2 class="cta-heading">Ready to move forward?</h2>
+      <p class="cta-sub">Approving this proposal holds your screens at no charge — we'll confirm availability and send a secure payment link within 24 hours.</p>
+      <div class="cta-btns" id="cta-btns">
+        <button class="btn-approve" onclick="approveProposal()">Approve this proposal →</button>
+        <a class="btn-question" id="cta-ask" href="mailto:hello@nwa-ads.com">Ask a question</a>
+      </div>
+      <div class="cta-confirmed" id="cta-confirmed">
+        <span class="cta-confirmed-icon">✓</span>
+        <span class="cta-confirmed-text">Proposal approved! We'll be in touch within 24 hours to confirm your screens.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="page-footer">
+    NWA Ads · Northwest Arkansas · nwa-ads.com · Proposal expires 14 days from send date
+  </div>
+
+</div>
+
+<script>
+/* ══════════════ VENUE ICON SYSTEM ══════════════ */
+const VENUE_COLORS = {
+  'Digital Billboard':        '#c8440a',
+  'Grocery Store':            '#1f3d2a',
+  'Cinema (In-Theater)':      '#8b5cf6',
+  'Gym':                      '#4a5da8',
+  'Casual Dining':            '#b5843c',
+  'Quick Service Restaurant': '#b5843c',
+  'Bar/Restaurant TV':        '#b5843c',
+  'Sports Entertainment':     '#2a8a5c',
+  'Recreational (NEW)':       '#2a8a5c',
+  'Airport':                  '#0d7377',
+  'Doctors Office':           '#e07830',
+  'Taxi / Rideshare Interior':'#6b6560',
+  'Salon & Spa':              '#6b6560',
+  'Gas Station':              '#b45309',
+  'Convenience Store':        '#b45309',
+  'Apartment Building':       '#92400e',
+  'College Campus':           '#0369a1',
+  'School (NEW)':             '#0369a1',
+  'Office Building (NEW)':    '#57534e',
+  billboard:'#c8440a', digital:'#c8440a', static:'#c8440a',
+  grocery:'#1f3d2a', cinema:'#8b5cf6', gym:'#4a5da8',
+  dining:'#b5843c', sports:'#2a8a5c', recreation:'#2a8a5c',
+  airport:'#0d7377', healthcare:'#e07830', rideshare:'#6b6560',
+  gasstation:'#b45309', residential:'#92400e', retail:'#4f46e5',
+  education:'#0369a1', office:'#57534e',
+};
+const VENUE_SVG = {
+  'Digital Billboard':        '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="12.5" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="22" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="2" y="3.5" width="24" height="13" rx="1"/><line x1="8" y1="16.5" x2="8" y2="24"/><line x1="20" y1="16.5" x2="20" y2="24"/><line x1="8" y1="20" x2="20" y2="20"/><line x1="5" y1="24" x2="11" y2="24"/><line x1="17" y1="24" x2="23" y2="24"/></svg>',
+  'Grocery Store':            '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+  'Cinema (In-Theater)':      '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>',
+  'Gym':                      '<svg viewBox="0 0 28 28" fill="white" stroke="none"><rect x="1" y="9" width="4" height="10" rx="1.5"/><rect x="5" y="11" width="2.5" height="6" rx="1"/><rect x="7.5" y="12.5" width="13" height="3" rx="1"/><rect x="20.5" y="11" width="2.5" height="6" rx="1"/><rect x="23" y="9" width="4" height="10" rx="1.5"/></svg>',
+  'Casual Dining':            '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h2Zm0 0v7"/></svg>',
+  'Quick Service Restaurant': '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h2Zm0 0v7"/></svg>',
+  'Sports Entertainment':     '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="5.5"/><path d="M5.5 7.5 Q8 8.5 10.5 7.5"/><path d="M5.5 10 Q8 11 10.5 10"/><circle cx="8.5" cy="20.5" r="4.5"/><path d="M6.5 18 C7 19 7 22 6.5 23"/><path d="M10.5 18 C10 19 10 22 10.5 23"/><circle cx="20" cy="15" r="7"/><line x1="13" y1="15" x2="27" y2="15"/><path d="M17 8.5 Q20 12 20 15 Q20 18 17 21.5"/><path d="M23 8.5 Q20 12 20 15 Q20 18 23 21.5"/></svg>',
+  'Recreational (NEW)':       '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="5.5"/><path d="M5.5 7.5 Q8 8.5 10.5 7.5"/><path d="M5.5 10 Q8 11 10.5 10"/><circle cx="8.5" cy="20.5" r="4.5"/><path d="M6.5 18 C7 19 7 22 6.5 23"/><path d="M10.5 18 C10 19 10 22 10.5 23"/><circle cx="20" cy="15" r="7"/><line x1="13" y1="15" x2="27" y2="15"/><path d="M17 8.5 Q20 12 20 15 Q20 18 17 21.5"/><path d="M23 8.5 Q20 12 20 15 Q20 18 23 21.5"/></svg>',
+  'Airport':                  '<svg viewBox="0 0 28 28" fill="white" stroke="none"><path d="M13 24 L16 8 C16.3 6.5 15.5 5 14 5 C12.5 5 11.7 6.5 12 8 Z"/><path d="M5 19 L14 14 L23 19 L21 20 L14 17 L7 20 Z"/><path d="M10 23 L14 20 L18 23 L17 24 L14 22 L11 24 Z"/></svg>',
+  'Doctors Office':           '<svg viewBox="0 0 28 28" fill="white" stroke="none"><circle cx="14" cy="6.5" r="4"/><path d="M7 28 V20 C7 15.5 10 13 14 13 C18 13 21 15.5 21 20 V28 Z"/></svg>',
+  'Taxi / Rideshare Interior':'<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="14" rx="1.5"/><line x1="6" y1="16" x2="8" y2="16"/><line x1="12" y1="11" x2="17" y2="11"/><polyline points="15,8.5 17.5,11 15,13.5"/><rect x="17" y="16" width="10" height="6" rx="1.2"/><path d="M19 16 L20.5 13 L24.5 13 L26 16"/><circle cx="20" cy="22" r="1.2" fill="white"/><circle cx="25" cy="22" r="1.2" fill="white"/></svg>',
+  'Salon & Spa':              '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="14" rx="1.5"/><line x1="6" y1="16" x2="8" y2="16"/><line x1="12" y1="11" x2="17" y2="11"/><polyline points="15,8.5 17.5,11 15,13.5"/><rect x="17" y="16" width="10" height="6" rx="1.2"/><path d="M19 16 L20.5 13 L24.5 13 L26 16"/><circle cx="20" cy="22" r="1.2" fill="white"/><circle cx="25" cy="22" r="1.2" fill="white"/></svg>',
+  'Bar/Restaurant TV':        '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h2Zm0 0v7"/></svg>',
+  'Gas Station':              '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"/><path d="M3 22h12"/><rect x="6" y="9" width="5" height="4" rx="1"/></svg>',
+  'Apartment Building':       '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  'College Campus':           '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+  'Office Building (NEW)':    '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  'Convenience Store':        '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"/><path d="M3 22h12"/><rect x="6" y="9" width="5" height="4" rx="1"/></svg>',
+  billboard: '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="12.5" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="22" y="1.5" width="3" height="2" rx="0.5" fill="white" stroke="none"/><rect x="2" y="3.5" width="24" height="13" rx="1"/><line x1="8" y1="16.5" x2="8" y2="24"/><line x1="20" y1="16.5" x2="20" y2="24"/><line x1="8" y1="20" x2="20" y2="20"/><line x1="5" y1="24" x2="11" y2="24"/><line x1="17" y1="24" x2="23" y2="24"/></svg>',
+  grocery:   '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+  cinema:    '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>',
+  gym:       '<svg viewBox="0 0 28 28" fill="white" stroke="none"><rect x="1" y="9" width="4" height="10" rx="1.5"/><rect x="5" y="11" width="2.5" height="6" rx="1"/><rect x="7.5" y="12.5" width="13" height="3" rx="1"/><rect x="20.5" y="11" width="2.5" height="6" rx="1"/><rect x="23" y="9" width="4" height="10" rx="1.5"/></svg>',
+  dining:    '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h2Zm0 0v7"/></svg>',
+  sports:    '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="5.5"/><path d="M5.5 7.5 Q8 8.5 10.5 7.5"/><path d="M5.5 10 Q8 11 10.5 10"/><circle cx="8.5" cy="20.5" r="4.5"/><path d="M6.5 18 C7 19 7 22 6.5 23"/><path d="M10.5 18 C10 19 10 22 10.5 23"/><circle cx="20" cy="15" r="7"/><line x1="13" y1="15" x2="27" y2="15"/><path d="M17 8.5 Q20 12 20 15 Q20 18 17 21.5"/><path d="M23 8.5 Q20 12 20 15 Q20 18 23 21.5"/></svg>',
+  airport:   '<svg viewBox="0 0 28 28" fill="white" stroke="none"><path d="M13 24 L16 8 C16.3 6.5 15.5 5 14 5 C12.5 5 11.7 6.5 12 8 Z"/><path d="M5 19 L14 14 L23 19 L21 20 L14 17 L7 20 Z"/><path d="M10 23 L14 20 L18 23 L17 24 L14 22 L11 24 Z"/></svg>',
+  healthcare:'<svg viewBox="0 0 28 28" fill="white" stroke="none"><circle cx="14" cy="6.5" r="4"/><path d="M7 28 V20 C7 15.5 10 13 14 13 C18 13 21 15.5 21 20 V28 Z"/></svg>',
+  rideshare: '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="14" rx="1.5"/><line x1="6" y1="16" x2="8" y2="16"/><line x1="12" y1="11" x2="17" y2="11"/><polyline points="15,8.5 17.5,11 15,13.5"/><rect x="17" y="16" width="10" height="6" rx="1.2"/><path d="M19 16 L20.5 13 L24.5 13 L26 16"/><circle cx="20" cy="22" r="1.2" fill="white"/><circle cx="25" cy="22" r="1.2" fill="white"/></svg>',
+  gasstation:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"/><path d="M3 22h12"/><rect x="6" y="9" width="5" height="4" rx="1"/></svg>',
+  residential:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  retail:    '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+  education: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+  office:    '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  recreation:'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>',
+};
+
+function venueColor(typeOrVenueType) {
+  return VENUE_COLORS[typeOrVenueType] || '#4a4540';
+}
+
+function makeIconHtml(typeOrVenueType, size) {
+  const s = size || 36;
+  const svgSz = Math.round(s * 0.58);
+  const color = venueColor(typeOrVenueType);
+  const svgRaw = VENUE_SVG[typeOrVenueType] || VENUE_SVG.billboard;
+  const svg = svgRaw.replace('<svg ', '<svg width="' + svgSz + '" height="' + svgSz + '" ');
+  return '<div style="width:' + s + 'px;height:' + s + 'px;border-radius:50%;background:' + color
+       + ';border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 3px 14px rgba(0,0,0,0.28)'
+       + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + svg + '</div>';
+}
+
+function makeIcon(typeOrVenueType, size) {
+  const s = size || 36;
+  return L.divIcon({
+    className:   '',
+    html:        makeIconHtml(typeOrVenueType, s),
+    iconSize:    [s, s],
+    iconAnchor:  [s / 2, s / 2],
+    popupAnchor: [0, -(s / 2 + 4)],
+  });
+}
+
+/* ══════════════ SUPABASE ══════════════ */
+/* ══════════════ SUPABASE ══════════════ */
+const sbClient = window.supabase.createClient(
+  window.ENV_CONFIG.supabaseUrl,
+  window.ENV_CONFIG.supabaseKey
+);
+
+/* ══════════════ GLOBALS ══════════════ */
+let proposalMap    = null;
+let overlayLayers  = [];
+let overlayVisible = true;
+let CAMPAIGN       = null;
+
+/* ══════════════ HELPERS ══════════════ */
+function fmtDate(str) {
+  if (!str) return null;
+  const d = new Date(str + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function fmtMoney(n) { return '$' + Math.round(n || 0).toLocaleString(); }
+function fmtImpr(n) {
+  if (!n) return '—';
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M+';
+  if (n >= 1000)    return Math.round(n / 1000) + 'K+';
+  return String(n);
+}
+function computeWeeks(start, end) {
+  if (!start || !end) return null;
+  const ms = new Date(end) - new Date(start);
+  return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24 * 7)));
+}
+function screensArr(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  return Object.values(raw);
+}
+function expireDate() {
+  const d = new Date(); d.setDate(d.getDate() + 14);
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+function isWalmartGoal(goal) {
+  return goal && (goal.includes('Walmart') || goal.includes("Sam's"));
+}
+
+/* ══════════════ RENDER ══════════════ */
+function renderProposal(c) {
+  CAMPAIGN = c;
+  const screens   = screensArr(c.screens);
+  const weeks     = computeWeeks(c.flight_start, c.flight_end);
+  const weeklySum = screens.reduce((a, s) => a + screenRate(s), 0);
+  const totalImpr = screens.reduce((a, s) => a + (s.weekly_imp || 0), 0);
+  const total     = Math.round(weeklySum * (weeks || 1));
+  const goal      = c.goal || '';
+  const product   = c.product || '';
+  const company   = c.company_name || '';
+  const isWmt     = isWalmartGoal(goal);
+
+  /* Header */
+  document.getElementById('p-h1').innerHTML =
+    'Your ' + (product ? '<em>' + product + '</em> ' : '') + 'Campaign Proposal';
+  document.getElementById('p-subhead').textContent =
+    'Northwest Arkansas' + (goal ? ' · ' + goal : '');
+  const prepParts = [];
+  if (company) prepParts.push('Prepared for ' + company);
+  prepParts.push('Expires ' + expireDate());
+  document.getElementById('p-prepared').textContent = prepParts.join(' · ');
+
+  /* Summary strip */
+  document.getElementById('sum-dates').textContent =
+    (c.flight_start && c.flight_end) ? fmtDate(c.flight_start) + ' – ' + fmtDate(c.flight_end) : '—';
+  document.getElementById('sum-screens').textContent = screens.length;
+  document.getElementById('sum-impr').textContent    = fmtImpr(totalImpr);
+  document.getElementById('sum-total').textContent   = fmtMoney(total);
+
+  /* Objective banner */
+  const targetDesc = isWmt
+    ? 'Walmart Home Office and Residential Corridors'
+    : (product ? product + (c.sub_intent ? ' — ' + c.sub_intent : '') : goal || 'your target audience');
+  const uniqueTypes = [...new Set(screens.map(s => s.venue_type || s.type).filter(Boolean))];
+  document.getElementById('obj-headline').textContent = 'Inventory targeting ' + targetDesc;
+  document.getElementById('obj-sub').textContent =
+    '— screens filtered to ' + (isWmt ? '2' : uniqueTypes.length || screens.length)
+    + ' targeting zone' + (isWmt || (uniqueTypes.length || screens.length) !== 1 ? 's' : '')
+    + ' across ' + (uniqueTypes.slice(0, 4).join(', ') || 'NWA') + (uniqueTypes.length > 4 ? ' + more' : '') + ' formats.';
+
+  /* Email link */
+  const askLink = document.getElementById('cta-ask');
+  if (askLink && company) {
+    askLink.href = 'mailto:hello@nwa-ads.com?subject=Question about my proposal' + (company ? ' for ' + company : '');
+  }
+
+  /* Map meta */
+  document.getElementById('meta-screen-count').textContent = screens.length;
+  if (isWmt) {
+    document.getElementById('meta-zone-val').textContent = '2';
+    document.getElementById('meta-zone-lbl').textContent = 'Walmart Targeting Zones';
+  } else {
+    document.getElementById('meta-zone-val').textContent  = uniqueTypes.length || screens.length;
+    document.getElementById('meta-zone-lbl').textContent  = 'Advertising Formats';
+  }
+
+  /* Venue type icon row */
+  const iconRow = document.getElementById('map-venue-icons');
+  const seen = new Set();
+  screens.forEach(s => {
+    const vk = s.venue_type || s.type || 'billboard';
+    if (seen.has(vk)) return; seen.add(vk);
+    const wrap = document.createElement('div');
+    wrap.title = vk;
+    wrap.innerHTML = makeIconHtml(vk, 20);
+    iconRow.appendChild(wrap);
+  });
+
+  /* Map */
+  renderMap(c, screens, isWmt);
+
+  /* Inventory */
+  renderInventory(screens);
+
+  /* Cost */
+  document.getElementById('cost-weekly').textContent = fmtMoney(weeklySum) + ' /wk';
+  document.getElementById('cost-weeks').textContent  =
+    weeks ? weeks + ' week' + (weeks !== 1 ? 's' : '') : 'TBD';
+  document.getElementById('cost-total').textContent  = fmtMoney(total);
+
+  /* Reveal */
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('proposal-content').style.display = 'block';
+  setTimeout(() => { if (proposalMap) proposalMap.invalidateSize(); }, 250);
+}
+
+function renderInventory(screens) {
+  document.getElementById('inv-grid').innerHTML = screens.map(s => {
+    const vk     = s.venue_type || s.type || 'billboard';
+    const label  = s.venue_type || s.label || vk;
+    const color  = venueColor(vk);
+    const rate   = Math.round(screenRate(s));
+    const city   = [s.city, s.state].filter(Boolean).join(', ') || s.area || '';
+    const imgSrc = s.img || s.image_url || VENUE_TYPE_IMG[s.venue_type] || VENUE_TYPE_IMG[s.type];
+    const photoBlock = imgSrc
+      ? '<img class="inv-photo" src="' + imgSrc + '" alt="' + (s.name||'') + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<div class="inv-photo-fallback" style="display:none;background:' + color + '18">' + makeIconHtml(vk, 34) + '</div>'
+      : '<div class="inv-photo-fallback" style="background:' + color + '14">' + makeIconHtml(vk, 34) + '</div>';
+
+    return '<div class="inv-card">'
+      + photoBlock
+      + '<div class="inv-body">'
+      + '<div class="inv-eyebrow">' + makeIconHtml(vk, 16)
+      + '<span class="inv-eyebrow-text">' + label + '</span></div>'
+      + '<div class="inv-name">' + (s.full_name || s.name || 'Screen') + '</div>'
+      + (city ? '<div class="inv-loc">' + city + '</div>' : '')
+      + (rate ? '<div class="inv-price">' + fmtMoney(rate) + '<small>/wk</small></div>' : '')
+      + '</div></div>';
+  }).join('');
+}
+
+/* ══════════════ MAP ══════════════ */
+function renderMap(c, screens, isWmt) {
+  const hasScreens = screens.some(s => s.lat && s.lng);
+  const center = hasScreens
+    ? [ screens.filter(s=>s.lat).reduce((a,s)=>a+(s.lat||0),0)/screens.filter(s=>s.lat).length,
+        screens.filter(s=>s.lng).reduce((a,s)=>a+(s.lng||0),0)/screens.filter(s=>s.lng).length ]
+    : [36.28, -94.21];
+
+  proposalMap = L.map('proposal-map', {
+    center, zoom: 11, zoomControl: true, scrollWheelZoom: false,
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 19,
+  }).addTo(proposalMap);
+
+  screens.forEach(s => {
+    if (!s.lat || !s.lng) return;
+    const m = L.marker([s.lat, s.lng], { icon: makeIcon(s.venue_type || s.type || 'billboard', 36) });
+    m.bindTooltip(s.name || s.full_name || 'Screen', { direction: 'top', offset: [0, -20] });
+    m.addTo(proposalMap);
+  });
+
+  const goal = c.goal || '';
+  if (isWmt) {
+    buildWalmartOverlay();
+  } else if (goal.includes('door') || goal.includes('foot') || goal.includes('customer') || c.product) {
+    buildPoiOverlay(c, screens);
+  }
+  // no overlay for broad/year-round — toggle label stays "Market Coverage"
+
+  if (hasScreens) {
+    const coords = screens.filter(s => s.lat && s.lng).map(s => [s.lat, s.lng]);
+    try { proposalMap.fitBounds(L.latLngBounds(coords).pad(0.28)); } catch(e) {}
+  }
+
+  // Update toggle label for no-overlay case
+  if (!isWmt && !overlayLayers.length) {
+    document.getElementById('btn-overlay-on').textContent  = 'Market Coverage';
+    document.getElementById('btn-overlay-off').textContent = 'Pins only';
+  } else if (isWmt) {
+    document.getElementById('btn-overlay-on').textContent  = 'Walmart HQ & Corridors';
+  } else if (c.product) {
+    document.getElementById('btn-overlay-on').textContent  = 'POI — ' + c.product;
+  }
+}
+
+function buildWalmartOverlay() {
+  const HQ  = [36.3729, -94.2192];
+  const RES = [36.3200, -94.1800];
+  const hqCircle  = L.circle(HQ,  { radius:2600, color:'#1f3d2a', fillColor:'#1f3d2a', fillOpacity:0.09, weight:2, opacity:0.35 });
+  const resCircle = L.circle(RES, { radius:2200, color:'#c8440a', fillColor:'#c8440a', fillOpacity:0.07, weight:2, opacity:0.30 });
+  const line      = L.polyline([HQ, RES], { color:'#1f3d2a', weight:3, opacity:0.28, dashArray:'8 6' });
+  hqCircle.bindTooltip('Walmart Home Office');
+  resCircle.bindTooltip('Executive Residential Corridor');
+  overlayLayers = [hqCircle, resCircle, line];
+  overlayLayers.forEach(l => l.addTo(proposalMap));
+}
+
+function buildPoiOverlay(c, screens) {
+  const s0 = screens.find(s => s.lat && s.lng);
+  if (!s0) return;
+  const label   = c.product || 'Target Location';
+  const circle  = L.circle([s0.lat, s0.lng], {
+    radius:2400, color:'#8b5cf6', fillColor:'#8b5cf6', fillOpacity:0.08, weight:2, opacity:0.35,
+  });
+  const poiIcon = L.divIcon({
+    className: '',
+    html: '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">'
+        + '<div style="width:44px;height:44px;border-radius:50%;background:#8b5cf6;border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 3px 14px rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;font-size:20px">📍</div>'
+        + '<div style="white-space:nowrap;font-size:9px;font-weight:700;color:#8b5cf6;background:#fff;padding:2px 6px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,0.14)">' + label + '</div>'
+        + '</div>',
+    iconSize:   [80, 60],
+    iconAnchor: [40, 56],
+  });
+  const marker = L.marker([s0.lat, s0.lng], { icon: poiIcon, zIndexOffset: 1000 });
+  overlayLayers = [circle, marker];
+  overlayLayers.forEach(l => l.addTo(proposalMap));
+}
+
+function toggleOverlay(show) {
+  overlayVisible = show;
+  document.getElementById('btn-overlay-on').classList.toggle('active', show);
+  document.getElementById('btn-overlay-off').classList.toggle('active', !show);
+  overlayLayers.forEach(l => show ? l.addTo(proposalMap) : proposalMap.removeLayer(l));
+}
+
+/* ══════════════ APPROVE ══════════════ */
+async function approveProposal() {
+  if (!CAMPAIGN) return;
+  const btn = document.querySelector('.btn-approve');
+  if (btn) { btn.disabled = true; btn.textContent = 'Approving…'; }
+
+  await sbClient.from('campaigns').update({ status: 'pending_confirmation' }).eq('id', CAMPAIGN.id);
+
+  document.getElementById('cta-btns').style.display = 'none';
+  const conf = document.getElementById('cta-confirmed');
+  conf.style.display = 'flex';
+}
+
+/* ══════════════ INIT ══════════════ */
+function showError(msg) {
+  document.getElementById('loading-screen').style.display = 'none';
+  const el = document.getElementById('error-screen');
+  el.style.display = 'flex';
+  if (msg) { const p = el.querySelector('p'); if (p) p.textContent = msg; }
+}
+
+async function init() {
+  const id = new URLSearchParams(window.location.search).get('id');
+  if (!id) { showError('No proposal ID found in this link. Please use the link sent by your NWA Ads representative.'); return; }
+
+  const { data, error } = await sbClient.from('campaigns').select('*').eq('id', id).single();
+  if (error || !data) { showError('This proposal is no longer available or the link has expired.'); return; }
+
+  renderProposal(data);
+}
+
+window.addEventListener('DOMContentLoaded', init);
+window.addEventListener('resize', () => {
+  if (proposalMap) setTimeout(() => proposalMap.invalidateSize(true), 150);
+});
+</script>
+</body>
+</html>

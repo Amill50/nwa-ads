@@ -6,14 +6,7 @@
 <title>NWA Ads — Admin Console</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script>
-  // Supabase config — publishable/anon key only. Safe to expose client-side;
-  // access is enforced server-side via Row Level Security policies.
-  window.SUPABASE_CONFIG = {
-    url: 'https://etytgvxkjqjnriflktzv.supabase.co',
-    publishableKey: 'sb_publishable_6T9Ikbmq5ldlzNB_Bncheg_C8K52sB8',
-  };
-</script>
+<script src="/shared/js/env.js?v=20260715b"></script>
 <style>
 :root {
   /* NWA Ads brand system */
@@ -327,22 +320,13 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
   <div class="gate-inner">
     <div class="gate-logo"><svg width="26" height="26" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><line x1="14" y1="26" x2="50" y2="26" stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-linecap="round"/><line x1="14" y1="32" x2="50" y2="32" stroke="#f0905a" stroke-width="3.5" stroke-linecap="round"/><line x1="14" y1="38" x2="50" y2="38" stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-linecap="round"/></svg>NWA <em>Ads</em></div>
     <div class="gate-sub">Admin console — restricted access</div>
-    <div class="gate-label">Passphrase</div>
-    <input class="gate-input" id="gate-pw" type="password" placeholder="••••••••"
-      onkeydown="if(event.key==='Enter')checkPw()">
-    <button class="gate-btn" onclick="checkPw()">Enter console →</button>
-    <div class="gate-error" id="gate-error">Incorrect passphrase. Try again.</div>
-  </div>
-</div>
-
-<!-- ── ADMIN SUPABASE AUTH ── -->
-<div class="admin-auth-overlay" id="admin-auth-overlay">
-  <div class="admin-auth-box" id="admin-auth-box">
-    <h2>Admin sign-in</h2>
-    <p>Campaign status changes are written to the live database and require a verified admin account. Enter your admin email to get a sign-in link.</p>
-    <input type="email" id="admin-auth-email" placeholder="you@nwa-ads.com" autocomplete="email" />
-    <button id="admin-auth-send-btn" onclick="sendAdminMagicLink()">Send magic link</button>
-    <div class="admin-auth-status" id="admin-auth-status"></div>
+    <div id="gate-form">
+      <div class="gate-label">Admin email</div>
+      <input class="gate-input" id="gate-email" type="email" placeholder="you@nwa-ads.com"
+        onkeydown="if(event.key==='Enter')sendAdminMagicLink()">
+      <button class="gate-btn" onclick="sendAdminMagicLink()">Send sign-in link →</button>
+      <div class="gate-error" id="gate-error"></div>
+    </div>
   </div>
 </div>
 
@@ -11842,28 +11826,13 @@ let campSearch = '';
 let editedRates = {};
 
 /* ══════════════ AUTH ══════════════ */
-const PASSPHRASE = 'nwaads2026';
-
-const sbClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.publishableKey);
-const ADMIN_ALLOWLIST = ['andrew@nwa-ads.com'];
+const sbClient = window.supabase.createClient(window.ENV_CONFIG.supabaseUrl, window.ENV_CONFIG.supabaseKey);
+const ADMIN_ALLOWLIST = ['andrew@nwa-ads.com', 'andrewjmiller50@gmail.com'];
 let ADMIN_SESSION = null;
 
-function checkPw() {
-  const val = document.getElementById('gate-pw').value;
-  if (val === PASSPHRASE) {
-    document.getElementById('gate').style.display = 'none';
-    ensureAdminAuth();
-  } else {
-    const err = document.getElementById('gate-error');
-    err.style.display = 'block';
-    document.getElementById('gate-pw').value = '';
-    setTimeout(() => err.style.display = 'none', 3000);
-  }
-}
 function logout() {
   document.getElementById('app').style.display = 'none';
   document.getElementById('gate').style.display = 'flex';
-  document.getElementById('gate-pw').value = '';
   sbClient.auth.signOut();
 }
 
@@ -11873,64 +11842,60 @@ function isAllowedAdmin(session) {
 
 function ensureAdminAuth() {
   if (isAllowedAdmin(ADMIN_SESSION)) {
-    document.getElementById('admin-auth-overlay').classList.remove('open');
+    document.getElementById('gate').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
     init();
     return;
   }
-  document.getElementById('admin-auth-overlay').classList.add('open');
-  document.getElementById('admin-auth-box').innerHTML = `
-    <h2>Admin sign-in</h2>
-    <p>Campaign status changes are written to the live database and require a verified admin account. Enter your admin email to get a sign-in link.</p>
-    <input type="email" id="admin-auth-email" placeholder="you@nwa-ads.com" autocomplete="email" />
-    <button id="admin-auth-send-btn" onclick="sendAdminMagicLink()">Send magic link</button>
-    <div class="admin-auth-status" id="admin-auth-status"></div>
-  `;
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
 }
 
 async function sendAdminMagicLink() {
-  const input = document.getElementById('admin-auth-email');
-  const status = document.getElementById('admin-auth-status');
-  const btn = document.getElementById('admin-auth-send-btn');
+  const input = document.getElementById('gate-email');
+  const errEl = document.getElementById('gate-error');
+  const btn = document.querySelector('#gate .gate-btn');
   const email = (input?.value || '').trim().toLowerCase();
+  errEl.style.display = 'none';
+  errEl.textContent = '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    status.textContent = 'Please enter a valid email address.';
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block';
     return;
   }
   if (!ADMIN_ALLOWLIST.includes(email)) {
-    status.textContent = 'This email is not on the admin allowlist.';
+    errEl.textContent = 'This email is not on the admin allowlist.';
+    errEl.style.display = 'block';
     return;
   }
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-  status.textContent = '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
   try {
     const { error } = await sbClient.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin + window.location.pathname }
+      options: { emailRedirectTo: window.location.origin + '/admin/' }
     });
     if (error) throw error;
-    document.getElementById('admin-auth-box').innerHTML = `
-      <h2>Check your email</h2>
-      <p>We sent a sign-in link to <strong>${email}</strong>. Click it to come back here signed in as admin.</p>
+    document.getElementById('gate-form').innerHTML = `
+      <p style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6">
+        Sign-in link sent to <strong>${email}</strong>.<br>
+        Click the link in your email to open the admin console.
+      </p>
     `;
   } catch (err) {
-    status.textContent = err.message || 'Something went wrong. Please try again.';
-    btn.disabled = false;
-    btn.textContent = 'Send magic link';
+    errEl.textContent = err.message || 'Something went wrong. Please try again.';
+    errEl.style.display = 'block';
+    if (btn) { btn.disabled = false; btn.textContent = 'Send sign-in link →'; }
   }
 }
 
 sbClient.auth.onAuthStateChange((_event, session) => {
   ADMIN_SESSION = session;
-  // Only proceed automatically if the passphrase gate has already been passed
-  // (app container has been unhidden or is about to be) — avoids popping the
-  // admin auth flow before the passphrase step on a fresh page load.
-  if (document.getElementById('gate').style.display === 'none') {
-    ensureAdminAuth();
-  }
+  ensureAdminAuth();
 });
-sbClient.auth.getSession().then(({ data }) => { ADMIN_SESSION = data.session; });
+sbClient.auth.getSession().then(({ data }) => {
+  ADMIN_SESSION = data.session;
+  ensureAdminAuth();
+});
 
 /* ══════════════ SUPABASE CAMPAIGNS ══════════════ */
 const SB_STATUS_LABELS = {

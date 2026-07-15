@@ -1,6 +1,6 @@
 // tests/e2e/booking-flow.spec.js
 const { test, expect } = require('@playwright/test');
-const URL = '/book.html';
+const URL = '/book/';
 
 async function step2(page) {
   page.on('pageerror', e => console.log('JS ERROR:', e.message));
@@ -257,7 +257,7 @@ test.describe('Step 4 — Checkout', () => {
 });
 
 // ── Proposal round-trip ───────────────────────────────────────────────────────
-const PROPOSAL = '/book.html?proposal=eyJ2IjoxLCJnb2FsIjpudWxsLCJpbmMiOiJ3ZWVrbHkiLCJxdHkiOjIsImJ1ZGdldCI6MjAwMCwic2NoZWRNb2RlIjoiY3VzdG9tIiwiY3VzdG9tRGF5cyI6WzEsMl0sInNjaGVkU3RhcnQiOiIyMDI2LTA2LTIzIiwic2NoZWRFbmQiOiIyMDI2LTA5LTA3IiwiY3VzdG9tRGF5Q291bnQiOjIyLCJzY3JlZW5zIjpbImxvY181OTU0MDkiXSwiY3JlYXRlZCI6IjIwMjYtMDYtMTgifQ==';
+const PROPOSAL = '/book/?proposal=eyJ2IjoxLCJnb2FsIjpudWxsLCJpbmMiOiJ3ZWVrbHkiLCJxdHkiOjIsImJ1ZGdldCI6MjAwMCwic2NoZWRNb2RlIjoiY3VzdG9tIiwiY3VzdG9tRGF5cyI6WzEsMl0sInNjaGVkU3RhcnQiOiIyMDI2LTA2LTIzIiwic2NoZWRFbmQiOiIyMDI2LTA5LTA3IiwiY3VzdG9tRGF5Q291bnQiOjIyLCJzY3JlZW5zIjpbImxvY181OTU0MDkiXSwiY3JlYXRlZCI6IjIwMjYtMDYtMTgifQ==';
 
 test.describe('Proposal Round-trip', () => {
   test('proposal URL loads directly to checkout', async ({ page }) => {
@@ -278,7 +278,7 @@ test.describe('Proposal Round-trip', () => {
   });
 
   test('corrupt proposal param falls back to step 1', async ({ page }) => {
-    await page.goto('/book.html?proposal=INVALID!!!');
+    await page.goto('/book/?proposal=INVALID!!!');
     await page.waitForLoadState('domcontentloaded');
     await expect(page.getByText("What's your")).toBeVisible({ timeout: 8000 });
   });
