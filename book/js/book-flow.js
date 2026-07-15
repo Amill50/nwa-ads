@@ -277,8 +277,7 @@ function renderDrawer(s) {
   // Photo
   const img = document.getElementById('dd-photo');
   const fallback = document.getElementById('dd-photo-fallback');
-  const _vti = typeof VENUE_TYPE_IMG !== 'undefined' ? VENUE_TYPE_IMG : {};
-  const photoSrc = s.image_url || s.img || _vti[s.venue_type];
+  const photoSrc = resolveScreenImg(s);
   if (photoSrc) {
     img.style.display = 'block';
     fallback.style.display = 'none';
@@ -1853,6 +1852,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ov = document.getElementById('summary-overlay');
   if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeSummary(); });
   renderBudgetHints();
+  loadPhotoOverrides(sbClient);
 });
 
 
