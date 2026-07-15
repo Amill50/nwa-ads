@@ -690,7 +690,7 @@ If you cannot find real matches in NWA, return an empty array: []`;
 
     const data = await response.json();
     if (!data.content) throw new Error('no content');
-    const text = data.content?.[0]?.text || '[]';
+    const text = (data.content || []).find(b => b.type === 'text')?.text || '[]';
 
     // Parse JSON — strip any accidental markdown fences
     const clean = text.replace(/```json|```/g, '').trim();
@@ -1138,7 +1138,7 @@ Respond ONLY with valid JSON, no markdown:
     if (!resp.ok) throw new Error('proxy ' + resp.status);
     const data = await resp.json();
     if (!data.content) throw new Error('no content');
-    const text = data.content?.[0]?.text || '{}';
+    const text = (data.content || []).find(b => b.type === 'text')?.text || '{}';
     const clean = text.replace(/```json|```/g, '').trim();
     const result = JSON.parse(clean);
 
