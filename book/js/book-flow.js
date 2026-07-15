@@ -681,13 +681,15 @@ If you cannot find real matches in NWA, return an empty array: []`;
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5',
         max_tokens: 600,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+    if (!response.ok) throw new Error('proxy ' + response.status);
 
     const data = await response.json();
+    if (!data.content) throw new Error('no content');
     const text = data.content?.[0]?.text || '[]';
 
     // Parse JSON — strip any accidental markdown fences
@@ -1107,7 +1109,7 @@ RULES:
 4. Include format diversity if budget allows
 5. Never pick a screen whose rate alone exceeds the full budget
 ${ST.goal === "Reach Walmart & Sam's Club buyers"
-  ? '6. MUST include at least 1 billboard. Airport only if budget remains after billboards.'
+  ? '6. MUST include at least 1 digitalbillboard. Airport only if budget remains after digitalbillboards.'
   : ST.goal === 'Reach the NWA Tech & Startup Scene'
   ? '6. Billboard first. Gym or dining as secondary if budget allows.'
   : '6. Nearest screens to target location get priority.'}
@@ -1128,12 +1130,14 @@ Respond ONLY with valid JSON, no markdown:
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5',
         max_tokens: 600,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+    if (!resp.ok) throw new Error('proxy ' + resp.status);
     const data = await resp.json();
+    if (!data.content) throw new Error('no content');
     const text = data.content?.[0]?.text || '{}';
     const clean = text.replace(/```json|```/g, '').trim();
     const result = JSON.parse(clean);
@@ -1146,7 +1150,15 @@ Respond ONLY with valid JSON, no markdown:
       })
       .filter(Boolean);
 
-    document.getElementById('opt-reason').textContent = result.reason || '';
+    if (optRecommended.length === 0) {
+      optRecommended = fallbackRecommend();
+      document.getElementById('opt-reason').textContent = 'Picked by proximity + budget: '
+        + (ST.goal === "Reach Walmart & Sam's Club buyers"
+          ? 'Top-performing screens within 2 miles of Walmart HQ, sorted by impressions.'
+          : 'Top screens by weekly impressions closest to your target.');
+    } else {
+      document.getElementById('opt-reason').textContent = result.reason || '';
+    }
     renderOptimizerBasket();
     const _optTotal = optRecommended.reduce((sum, sc) =>
       sum + (sc.wkly_rate || Math.round((sc.cpm||0)*(sc.weekly_imp||0)/1000)), 0);
@@ -1354,7 +1366,7 @@ function fallbackRecommend() {
     // Expand billboards to 10mi if the zone-restricted pool is empty
     if (candidates.length === 0) {
       candidates = INV
-        .filter(s => s.type === 'billboard')
+        .filter(s => s.type === 'digitalbillboard')
         .map(s => ({ ...s, _rate: screenRate(s), _dist: d(s, HQ.lat, HQ.lng), _zone: null }))
         .filter(s => s._rate > 0 && s._dist <= 10.0);
     }
@@ -1419,11 +1431,11 @@ function fallbackRecommend() {
     function hasConflict(s) {
       if (cat.includes('qsr') || cat.includes('fast food') ||
           cat.includes('restaurant')) {
-        if (s.type === 'dining') return true;
+        if (['casualdining','quickservicerestaurant'].includes(s.type)) return true;
       }
       if (cat.includes('alcohol') || cat.includes('beer') ||
           cat.includes('wine') || cat.includes('spirits')) {
-        if (s.type === 'healthcare') return true;
+        if (s.type === 'doctorsoffice') return true;
       }
       if (cat.includes('fitness') || cat.includes('gym')) {
         if (s.type === 'gym') return true;
@@ -1478,7 +1490,7 @@ function fallbackRecommend() {
 
     // Billboards sorted by closest hub — priority units first
     let billPool = INV
-      .filter(s => s.type === 'billboard' && isVisible(s))
+      .filter(s => s.type === 'digitalbillboard' && isVisible(s))
       .map(s => ({ ...s, _rate: screenRate(s), _dist: minDistToHubs(s) }))
       .filter(s => s._rate > 0)
       .sort((a, b) => {
@@ -1487,17 +1499,17 @@ function fallbackRecommend() {
         return a._dist - b._dist;
       });
 
-    // Expand if no billboards found near hubs
+    // Expand if no digitalbillboards found near hubs
     if (billPool.length === 0) {
       billPool = INV
-        .filter(s => s.type === 'billboard')
+        .filter(s => s.type === 'digitalbillboard')
         .map(s => ({ ...s, _rate: screenRate(s), _dist: minDistToHubs(s) }))
         .filter(s => s._rate > 0)
         .sort((a, b) => a._dist - b._dist);
     }
 
     const secondary = INV
-      .filter(s => ['gym','dining'].includes(s.type) && isVisible(s))
+      .filter(s => ['gym','casualdining','quickservicerestaurant'].includes(s.type) && isVisible(s))
       .map(s => ({ ...s, _rate: screenRate(s), _dist: minDistToHubs(s) }))
       .filter(s => s._rate > 0)
       .sort((a, b) => a._dist - b._dist);
