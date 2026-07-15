@@ -1,7 +1,7 @@
 // tests/e2e/proposal.spec.js
 const { test, expect } = require('@playwright/test');
-const URL = '/book.html';
-const VALID = '/book.html?proposal=eyJ2IjoxLCJnb2FsIjpudWxsLCJpbmMiOiJ3ZWVrbHkiLCJxdHkiOjIsImJ1ZGdldCI6MjAwMCwic2NoZWRNb2RlIjoiY3VzdG9tIiwiY3VzdG9tRGF5cyI6WzEsMl0sInNjaGVkU3RhcnQiOiIyMDI2LTA2LTIzIiwic2NoZWRFbmQiOiIyMDI2LTA5LTA3IiwiY3VzdG9tRGF5Q291bnQiOjIyLCJzY3JlZW5zIjpbImxvY181OTU0MDkiXSwiY3JlYXRlZCI6IjIwMjYtMDYtMTgifQ==';
+const URL = '/book/';
+const VALID = '/book/?proposal=eyJ2IjoxLCJnb2FsIjpudWxsLCJpbmMiOiJ3ZWVrbHkiLCJxdHkiOjIsImJ1ZGdldCI6MjAwMCwic2NoZWRNb2RlIjoiY3VzdG9tIiwiY3VzdG9tRGF5cyI6WzEsMl0sInNjaGVkU3RhcnQiOiIyMDI2LTA2LTIzIiwic2NoZWRFbmQiOiIyMDI2LTA5LTA3IiwiY3VzdG9tRGF5Q291bnQiOjIyLCJzY3JlZW5zIjpbImxvY181OTU0MDkiXSwiY3JlYXRlZCI6IjIwMjYtMDYtMTgifQ==';
 
 async function checkout(page) {
   page.on('pageerror', e => console.log('JS ERROR:', e.message));
@@ -9,18 +9,14 @@ async function checkout(page) {
   await page.waitForLoadState('domcontentloaded');
   await page.locator('.goal-card').first().click();
   await page.locator('.btn-next').first().click();
-  // On mobile sidebar is hidden in Map view — switch to List view first
   const sidebar = page.locator('.s2-side');
   const sidebarVisible = await sidebar.isVisible({ timeout: 12000 }).catch(() => false);
   if (!sidebarVisible) { await page.locator('#vt-list').click(); }
-  // Navigate from Recommendations state to Browse
   await expect(page.locator('.btn-browse-own')).toBeVisible({ timeout: 5000 });
   await page.locator('.btn-browse-own').click();
   await expect(page.locator('.sc-add-btn').first()).toBeVisible({ timeout: 5000 });
   await page.locator('.sc-add-btn').first().click();
-  // btn-s2 now shows Cart Review state
   await page.locator('#btn-s2').click();
-  // Continue from cart review to creative upload modal
   await page.getByText(/Continue to creative upload/).click();
   await expect(page.locator('.summary-modal-title')).toBeVisible({ timeout: 8000 });
   await page.getByText(/Looks good/).click();
@@ -29,29 +25,18 @@ async function checkout(page) {
 }
 
 test.describe('Proposal Generation', () => {
-  test('proposal section on checkout', async ({ page }) => {
+  test('proposal section visible on checkout', async ({ page }) => {
     await checkout(page);
     await page.locator('.proposal-section').scrollIntoViewIfNeeded();
     await expect(page.locator('.proposal-section')).toBeVisible();
   });
 
-  test('generate link produces ?proposal= URL', async ({ page }) => {
+  test('generate link points at /proposal/view?id=', async ({ page }) => {
     await checkout(page);
     await page.locator('.btn-gen-proposal').scrollIntoViewIfNeeded();
     await page.locator('.btn-gen-proposal').click();
     const val = await page.locator('#proposal-link-input').inputValue();
-    expect(val).toContain('?proposal=');
-  });
-
-  test('generated URL is valid base64 JSON with screens', async ({ page }) => {
-    await checkout(page);
-    await page.locator('.btn-gen-proposal').scrollIntoViewIfNeeded();
-    await page.locator('.btn-gen-proposal').click();
-    const url = await page.locator('#proposal-link-input').inputValue();
-    const encoded = url.split('?proposal=')[1];
-    const decoded = JSON.parse(Buffer.from(encoded, 'base64').toString());
-    expect(decoded.v).toBe(1);
-    expect(decoded.screens.length).toBeGreaterThan(0);
+    expect(val).toContain('/proposal/view?id=');
   });
 });
 
@@ -68,7 +53,6 @@ test.describe('Proposal Round-trip', () => {
     await page.goto(VALID);
     await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('#panel-4.active')).toBeVisible({ timeout: 15000 });
-    // Banner uses classList.add('visible') not display — check for class
     await expect(page.locator('#proposal-banner.visible')).toBeVisible({ timeout: 5000 });
   });
 
@@ -76,7 +60,6 @@ test.describe('Proposal Round-trip', () => {
     await page.goto(VALID);
     await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('#panel-4.active')).toBeVisible({ timeout: 15000 });
-    // CTA uses classList.add('visible') 
     await expect(page.locator('#proposal-cta.visible')).toBeVisible({ timeout: 5000 });
   });
 
