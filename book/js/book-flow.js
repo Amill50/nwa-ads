@@ -1309,9 +1309,20 @@ function diagnoseOptimizer(picks, weeklyBudget) {
     .map(s => ({ ...s, _rate: screenRate(s) }))
     .filter(s => s._rate > 0);
 
-  /* ── 1. Budget floor: visible screens exist but none affordable ── */
-  if (ratedVisible.length > 0 && ratedVisible.every(s => s._rate > weeklyBudget * 1.1)) {
-    const cheapest = ratedVisible.slice().sort((a, b) => a._rate - b._rate)[0];
+  // Broad pool: type filter only (hiddenTypes), 25-mile radius — no goal-zone cap.
+  // Used to distinguish "budget too low" from "genuinely no matching screens."
+  const _bLat = ST.proximityTarget?.lat || WALMART_HQ.lat;
+  const _bLng = ST.proximityTarget?.lng || WALMART_HQ.lng;
+  const ratedBroad = INV
+    .filter(s => {
+      if (hiddenTypes && (hiddenTypes.has(s.venue_type) || hiddenTypes.has(s.type))) return false;
+      return haversineMiles(_bLat, _bLng, s.lat, s.lng) <= 25;
+    })
+    .map(s => ({ ...s, _rate: screenRate(s) }))
+    .filter(s => s._rate > 0);
+
+  function _budgetFloorCard(pool) {
+    const cheapest = pool.slice().sort((a, b) => a._rate - b._rate)[0];
     const hiddenFloors = {};
     INV.forEach(s => {
       if (isVisible(s)) return;
@@ -1339,6 +1350,11 @@ function diagnoseOptimizer(picks, weeklyBudget) {
         ...(cheapHidden.length ? [{ label: 'Show all venue types', secondary: true, fn: 'clearAllHiddenTypes()' }] : [])
       ]
     };
+  }
+
+  /* ── 1. Budget floor: screens exist in visible or broad pool but none affordable ── */
+  if (ratedVisible.length > 0 && ratedVisible.every(s => s._rate > weeklyBudget * 1.1)) {
+    return _budgetFloorCard(ratedVisible);
   }
 
   /* ── 2. Flight / minimum conflicts (custom schedule only) ── */
@@ -1381,12 +1397,16 @@ function diagnoseOptimizer(picks, weeklyBudget) {
     }
   }
 
-  /* ── 3. Location / filter emptiness: no visible screens at all ── */
+  /* ── 3. No visible screens — budget floor or genuine filter problem ── */
   if (ratedVisible.length === 0) {
-    const tLat = ST.proximityTarget?.lat || WALMART_HQ.lat;
-    const tLng = ST.proximityTarget?.lng || WALMART_HQ.lng;
+    // If screens of the right types exist in a 25-mile radius but are all too expensive,
+    // that's a budget problem — not a filter/location problem.
+    if (ratedBroad.length > 0 && ratedBroad.every(s => s._rate > weeklyBudget * 1.1)) {
+      return _budgetFloorCard(ratedBroad);
+    }
+    // Genuinely empty: no matching screens in area at all
     const nearest = INV
-      .map(s => ({ ...s, _rate: screenRate(s), _dist: haversineMiles(tLat, tLng, s.lat, s.lng) }))
+      .map(s => ({ ...s, _rate: screenRate(s), _dist: haversineMiles(_bLat, _bLng, s.lat, s.lng) }))
       .filter(s => s._rate > 0)
       .sort((a, b) => a._dist - b._dist)[0];
     const targetName = (ST.proximityTarget?.name || '').split('–')[0].trim() || 'your area';
