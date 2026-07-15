@@ -1188,6 +1188,51 @@ body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color:
 }
 
 
+/* ── Optimizer Constraint Card (positioned over #map) ── */
+.opt-constraint-card {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  max-width: 440px;
+  z-index: 600;
+  background: var(--white);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--r);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  overflow: hidden;
+  animation: occ-in 0.22s ease;
+}
+@keyframes occ-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.opt-cc-head {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px 14px 10px; background: var(--accent-light);
+}
+.opt-cc-icon { font-size: 18px; flex-shrink: 0; line-height: 1.2; }
+.opt-cc-title { font-size: 13px; font-weight: 700; color: var(--accent); line-height: 1.35; flex: 1; }
+.opt-cc-close {
+  margin-left: 4px; flex-shrink: 0; background: none; border: none;
+  cursor: pointer; font-size: 18px; color: var(--muted); line-height: 1; padding: 0; opacity: 0.7;
+}
+.opt-cc-close:hover { opacity: 1; }
+.opt-cc-body { padding: 10px 14px 12px; font-size: 12px; color: var(--ink2); line-height: 1.65; }
+.opt-cc-actions { display: flex; flex-direction: column; gap: 6px; padding: 0 14px 12px; }
+.opt-cc-btn {
+  background: var(--accent); color: #fff; border: none; border-radius: var(--r-sm);
+  padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: inherit; text-align: left; width: 100%;
+}
+.opt-cc-btn:hover { filter: brightness(1.08); }
+.opt-cc-btn.secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+.opt-cc-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.opt-cc-pill {
+  background: var(--pill-bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 2px 8px; font-size: 11px; color: var(--ink2); white-space: nowrap;
+}
+
 /* ── OPTIMIZER ── */
 .opt-panel {
   background: var(--white); border-top: 1px solid var(--border);
