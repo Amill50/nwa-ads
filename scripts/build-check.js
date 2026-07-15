@@ -30,6 +30,7 @@ const JS_FILES = [
 const HTML_FILES = [
   'book/index.html',
   'proposal/index.html',
+  'admin/index.html',
   'index.html',
 ];
 
@@ -171,6 +172,7 @@ const REQUIRED = [
   'shared/venue_photos/QSR_FastCasual.png',
   'proposal/index.html',
   'proposal/view.html',
+  'admin/index.html',
   'admin/prospects.html',
 ];
 REQUIRED.forEach(file => {

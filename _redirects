@@ -3,6 +3,7 @@
 /proposal/view  /proposal/index.html  200
 /proposal       /proposal/view  301
 /proposal.html  /proposal/view  301
-/admin          /admin.html     200
+/admin.html     /admin/         301
+/admin          /admin/         301
 /home           /home.html      200
 /andys          /andys.html     200
