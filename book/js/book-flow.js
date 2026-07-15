@@ -1056,6 +1056,24 @@ function showOptimizer() {
   if (panel) panel.classList.add('visible');
 }
 
+function _finishOptimizer(weeklyBudget, thinking, results) {
+  if (optRecommended.length > 0) {
+    renderOptimizerBasket();
+    const total = optRecommended.reduce((s, sc) => s + (sc._rate != null ? sc._rate : screenRate(sc)), 0);
+    const pct   = Math.round(total / (weeklyBudget || 1) * 100);
+    const el    = document.getElementById('opt-reason');
+    if (el && total > 0 && !el.textContent.includes('/wk')) {
+      el.textContent += ' · $' + total.toLocaleString() + '/wk (' + pct + '% of budget)';
+    }
+    results.classList.add('visible');
+  } else {
+    results.classList.remove('visible');
+  }
+  thinking.classList.remove('visible');
+  const diag = diagnoseOptimizer(optRecommended, weeklyBudget);
+  if (diag) showOptimizerConstraintCard(diag);
+}
+
 async function runOptimizer() {
   const btn = document.getElementById('btn-optimize');
   const thinking = document.getElementById('opt-thinking');
@@ -1065,6 +1083,7 @@ async function runOptimizer() {
   btn.textContent = '…';
   thinking.classList.add('visible');
   results.classList.remove('visible');
+  dismissConstraintCard();
 
   // Build a proximity+budget scored inventory summary for Claude
   const weeklyBudget = toWeeklyBudget(ST.budget, ST.inc) || 2000;
@@ -1159,34 +1178,14 @@ Respond ONLY with valid JSON, no markdown:
     } else {
       document.getElementById('opt-reason').textContent = result.reason || '';
     }
-    renderOptimizerBasket();
-    const _optTotal = optRecommended.reduce((sum, sc) =>
-      sum + (sc.wkly_rate || Math.round((sc.cpm||0)*(sc.weekly_imp||0)/1000)), 0);
-    const _optPct = Math.round(_optTotal / (weeklyBudget||1) * 100);
-    const _reasonEl = document.getElementById('opt-reason');
-    if (_reasonEl && _optTotal > 0 && !_reasonEl.textContent.includes('/wk')) {
-      _reasonEl.textContent += ` · $${_optTotal.toLocaleString()}/wk (${_optPct}% of budget)`;
-    }
-
-    thinking.classList.remove('visible');
-    results.classList.add('visible');
+    _finishOptimizer(weeklyBudget, thinking, results);
   } catch (err) {
-    // Fallback: recommend top screens by goal logic
     optRecommended = fallbackRecommend();
-    document.getElementById('opt-reason').textContent =
-      ST.goal === "Reach Walmart & Sam's Club buyers"
+    document.getElementById('opt-reason').textContent = 'Picked by proximity + budget: '
+      + (ST.goal === "Reach Walmart & Sam's Club buyers"
         ? 'Top-performing screens within 2 miles of Walmart HQ, sorted by impressions.'
-        : 'Top screens by weekly impressions closest to your target.';
-    renderOptimizerBasket();
-    const _optTotal = optRecommended.reduce((sum, sc) =>
-      sum + (sc.wkly_rate || Math.round((sc.cpm||0)*(sc.weekly_imp||0)/1000)), 0);
-    const _optPct = Math.round(_optTotal / (weeklyBudget||1) * 100);
-    const _reasonEl = document.getElementById('opt-reason');
-    if (_reasonEl && _optTotal > 0 && !_reasonEl.textContent.includes('/wk')) {
-      _reasonEl.textContent += ` · $${_optTotal.toLocaleString()}/wk (${_optPct}% of budget)`;
-    }
-    thinking.classList.remove('visible');
-    results.classList.add('visible');
+        : 'Top screens by weekly impressions closest to your target.');
+    _finishOptimizer(weeklyBudget, thinking, results);
   }
 
   btn.classList.remove('loading');
@@ -1258,37 +1257,172 @@ function screenRate(s) {
   return 0;
 }
 
-function showBudgetWarning(budget) {
-  const cheapest = INV
-    .map(s => ({ ...s, _rate: s.wkly_rate || Math.round((s.cpm||0)*(s.weekly_imp||0)/1000) }))
-    .filter(s => s._rate > 0)
-    .sort((a, b) => a._rate - b._rate)[0];
-  const minRate = cheapest ? cheapest._rate : 500;
-  const minName = cheapest ? cheapest.name : 'available screen';
+/* ══════════════ OPTIMIZER CONSTRAINT CARD ══════════════ */
 
-  const thinkingEl = document.getElementById('opt-thinking');
-  const resultsEl  = document.getElementById('opt-results');
-  const reasonEl   = document.getElementById('opt-reason');
-  if (thinkingEl) thinkingEl.classList.remove('visible');
-  if (resultsEl)  resultsEl.classList.add('visible');
-  if (reasonEl) {
-    reasonEl.innerHTML = `
-      <div style="background:#fdf1eb;border-left:3px solid #c8440a;border-radius:0 8px 8px 0;padding:12px 14px;margin:4px 0">
-        <div style="font-size:13px;font-weight:600;color:#c8440a;margin-bottom:4px">
-          ⚠️ Budget too low for available inventory
-        </div>
-        <div style="font-size:12px;color:#4a4540;line-height:1.5">
-          Your budget of <strong>$${budget.toLocaleString()}/wk</strong> is below
-          the minimum for any screen in this area. The most affordable option is
-          <strong>${minName}</strong> at <strong>$${minRate.toLocaleString()}/wk</strong>.
-        </div>
-        <button onclick="ST.budget=${minRate};document.getElementById('cb-bud').textContent='$${minRate.toLocaleString()}/wk';runOptimizer();"
-          style="margin-top:10px;background:#c8440a;color:#fff;border:none;border-radius:8px;
-          padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">
-          Set budget to $${minRate.toLocaleString()}/wk and try again →
-        </button>
-      </div>`;
+function dismissConstraintCard() {
+  const el = document.getElementById('opt-constraint-card');
+  if (el) el.remove();
+}
+
+function clearAllHiddenTypes() {
+  hiddenTypes.clear();
+  document.querySelectorAll('[data-type],[data-vtype]').forEach(cb => { cb.checked = true; });
+  refreshMarkers();
+  renderList();
+  dismissConstraintCard();
+  runOptimizer();
+}
+
+function raiseBudgetAndRun(amount) {
+  ST.budget = amount;
+  const bEl = document.getElementById('cb-bud');
+  if (bEl) bEl.textContent = '$' + amount.toLocaleString() + '/wk';
+  initBudgetSlider();
+  dismissConstraintCard();
+  runOptimizer();
+}
+
+function showOptimizerConstraintCard(d) {
+  dismissConstraintCard();
+  const mapEl = document.getElementById('map');
+  if (!mapEl) return;
+  const actionsHtml = (d.actions || []).map(a =>
+    '<button class="opt-cc-btn' + (a.secondary ? ' secondary' : '') + '" onclick="' + a.fn + '">' + a.label + '</button>'
+  ).join('');
+  const card = document.createElement('div');
+  card.id = 'opt-constraint-card';
+  card.className = 'opt-constraint-card';
+  card.innerHTML =
+    '<div class="opt-cc-head">' +
+    '<span class="opt-cc-icon">' + d.icon + '</span>' +
+    '<span class="opt-cc-title">' + d.headline + '</span>' +
+    '<button class="opt-cc-close" onclick="dismissConstraintCard()" aria-label="Dismiss">×</button>' +
+    '</div>' +
+    '<div class="opt-cc-body">' + d.body + '</div>' +
+    (actionsHtml ? '<div class="opt-cc-actions">' + actionsHtml + '</div>' : '');
+  mapEl.appendChild(card);
+}
+
+function diagnoseOptimizer(picks, weeklyBudget) {
+  const ratedVisible = INV
+    .filter(s => isVisible(s))
+    .map(s => ({ ...s, _rate: screenRate(s) }))
+    .filter(s => s._rate > 0);
+
+  /* ── 1. Budget floor: visible screens exist but none affordable ── */
+  if (ratedVisible.length > 0 && ratedVisible.every(s => s._rate > weeklyBudget * 1.1)) {
+    const cheapest = ratedVisible.slice().sort((a, b) => a._rate - b._rate)[0];
+    const hiddenFloors = {};
+    INV.forEach(s => {
+      if (isVisible(s)) return;
+      const r = screenRate(s);
+      if (!r) return;
+      const vt = s.venue_type || s.type;
+      if (!hiddenFloors[vt] || hiddenFloors[vt] > r) hiddenFloors[vt] = r;
+    });
+    const cheapHidden = Object.entries(hiddenFloors).sort((a, b) => a[1] - b[1]).slice(0, 3);
+    const pillsHtml = cheapHidden.length
+      ? '<div class="opt-cc-pills">' + cheapHidden.map(([vt, r]) =>
+          '<span class="opt-cc-pill">' + vt + ' from $' + r.toLocaleString() + '/wk</span>'
+        ).join('') + '</div>'
+      : '';
+    return {
+      icon: '⚠️',
+      headline: 'Budget too low for available inventory',
+      body: 'Your budget of <strong>$' + weeklyBudget.toLocaleString() + '/wk</strong> is below the least expensive available screen'
+        + ' (<strong>$' + cheapest._rate.toLocaleString() + '/wk — ' + cheapest.name + '</strong>).'
+        + ' Raise your weekly budget to at least <strong>$' + cheapest._rate.toLocaleString() + '</strong>,'
+        + ' or re-enable more venue types.'
+        + (cheapHidden.length ? '<br><br>Cheapest currently-hidden types:' + pillsHtml : ''),
+      actions: [
+        { label: 'Raise budget to $' + cheapest._rate.toLocaleString() + '/wk →', fn: 'raiseBudgetAndRun(' + cheapest._rate + ')' },
+        ...(cheapHidden.length ? [{ label: 'Show all venue types', secondary: true, fn: 'clearAllHiddenTypes()' }] : [])
+      ]
+    };
   }
+
+  /* ── 2. Flight / minimum conflicts (custom schedule only) ── */
+  if (ST.schedMode === 'custom' && ST.customDayCount > 0 && picks.length > 0) {
+    const PLATFORM_MIN = 500;
+    const campaignTotal = picks.reduce((sum, s) => {
+      const dailyR = Math.round(((s.mo_rate || 0) / 28) * RATE_CONFIG.daily_premium);
+      return sum + dailyR * ST.customDayCount;
+    }, 0);
+    if (campaignTotal > 0 && campaignTotal < PLATFORM_MIN) {
+      const minDays = Math.ceil(PLATFORM_MIN / (campaignTotal / ST.customDayCount));
+      const extra = minDays - ST.customDayCount;
+      return {
+        icon: '📅',
+        headline: ST.customDayCount + '‑day flight is below the $' + PLATFORM_MIN + ' platform minimum',
+        body: 'Your custom flight totals <strong>$' + campaignTotal.toLocaleString() + '</strong>'
+          + ' — below the <strong>$' + PLATFORM_MIN + ' platform minimum</strong>.'
+          + ' Extend to at least <strong>' + minDays + ' ad days</strong>'
+          + ' (' + extra + ' more ' + (extra === 1 ? 'day' : 'days') + ').',
+        actions: []
+      };
+    }
+    let flightWeeks = 1;
+    if (ST.schedStart && ST.schedEnd) {
+      const ms = new Date(ST.schedEnd + 'T00:00:00') - new Date(ST.schedStart + 'T00:00:00');
+      flightWeeks = Math.max(1, Math.ceil(ms / (7 * 86400000)));
+    }
+    const ceiling = weeklyBudget * flightWeeks;
+    if (campaignTotal > ceiling * 1.1) {
+      const over = Math.round(campaignTotal - ceiling);
+      return {
+        icon: '⚠️',
+        headline: 'Flight cost $' + over.toLocaleString() + ' over ' + flightWeeks + '‑week budget',
+        body: 'Your ' + ST.customDayCount + '‑day campaign totals <strong>$' + campaignTotal.toLocaleString() + '</strong>'
+          + ' — <strong>$' + over.toLocaleString() + '</strong> above your'
+          + ' ' + flightWeeks + '‑week budget of <strong>$' + ceiling.toLocaleString() + '</strong>.'
+          + ' Try fewer days per week or remove a screen.',
+        actions: []
+      };
+    }
+  }
+
+  /* ── 3. Location / filter emptiness: no visible screens at all ── */
+  if (ratedVisible.length === 0) {
+    const tLat = ST.proximityTarget?.lat || WALMART_HQ.lat;
+    const tLng = ST.proximityTarget?.lng || WALMART_HQ.lng;
+    const nearest = INV
+      .map(s => ({ ...s, _rate: screenRate(s), _dist: haversineMiles(tLat, tLng, s.lat, s.lng) }))
+      .filter(s => s._rate > 0)
+      .sort((a, b) => a._dist - b._dist)[0];
+    const targetName = (ST.proximityTarget?.name || '').split('–')[0].trim() || 'your area';
+    const typeLabel = hiddenTypes.size > 0 ? 'checked venue types' : 'selected venue types';
+    return {
+      icon: '🗺',
+      headline: 'No screens match your current filter',
+      body: 'No <strong>' + typeLabel + '</strong> screens are visible near <strong>' + targetName + '</strong>.'
+        + (nearest ? ' Nearest match: <strong>' + nearest.name + '</strong> (' + nearest.venue_type + ', ' + distLabel(nearest._dist) + ' away).' : '')
+        + ' Try expanding your venue types or moving your pin.',
+      actions: [
+        { label: 'Show all venue types', fn: 'clearAllHiddenTypes()' }
+      ]
+    };
+  }
+
+  /* ── 4. Over-budget compromise ── */
+  if (picks.length > 0) {
+    const spent = picks.reduce((t, s) => t + (s._rate != null ? s._rate : screenRate(s)), 0);
+    if (spent > weeklyBudget * 1.05) {
+      const over = Math.round(spent - weeklyBudget);
+      return {
+        icon: '⚠️',
+        headline: 'Slightly over budget — closest available screens',
+        body: 'The nearest matching screens total <strong>$' + Math.round(spent).toLocaleString() + '/wk</strong>'
+          + ' — <strong>$' + over.toLocaleString() + '</strong> above your'
+          + ' <strong>$' + weeklyBudget.toLocaleString() + '/wk</strong> budget.'
+          + ' These are the best options near your target. Adjust your budget or remove a screen.',
+        actions: [
+          { label: 'Raise budget to $' + Math.round(spent).toLocaleString() + '/wk →', fn: 'raiseBudgetAndRun(' + Math.round(spent) + ')' }
+        ]
+      };
+    }
+  }
+
+  return null;
 }
 
 function fallbackRecommend() {
@@ -1321,28 +1455,6 @@ function fallbackRecommend() {
       if (spent >= budget * 0.85) break;
     }
     return picks;
-  }
-
-  /* Show over-budget card if spend exceeds budget */
-  function maybeShowBudgetCard(picks) {
-    const spent = picks.reduce((t, s) => t + s._rate, 0);
-    const overBudget = spent > budget * 1.05;
-    const el = document.getElementById('opt-reason');
-    if (!el) return;
-    if (overBudget && picks.length > 0) {
-      const overAmt = spent - budget;
-      el.innerHTML = '<div style="background:#fdf1eb;border-left:3px solid'
-        + ' #c8440a;border-radius:0 8px 8px 0;padding:10px 14px;margin:4px 0">'
-        + '<div style="font-size:12px;font-weight:600;color:#c8440a;margin-bottom:3px">'
-        + '⚠️ Slightly over budget due to inventory constraints</div>'
-        + '<div style="font-size:11px;color:#4a4540;line-height:1.5">'
-        + 'The closest available screens total <strong>$'
-        + spent.toLocaleString() + '/wk</strong> — $'
-        + overAmt.toLocaleString()
-        + ' above your $' + budget.toLocaleString()
-        + '/wk budget. These are the best options near your target area. '
-        + 'Adjust your budget or remove a screen to bring it in range.</div></div>';
-    }
   }
 
   /* ── OBJECTIVE 1: Reach Walmart & Sam's Club buyers ── */
@@ -1419,7 +1531,6 @@ function fallbackRecommend() {
       }
     }
 
-    maybeShowBudgetCard(picks);
     return picks;
   }
 
@@ -1465,14 +1576,12 @@ function fallbackRecommend() {
       if (candidates.length === 0) candidates = byDist;
 
       const picks = greedyFill(candidates, 6);
-      maybeShowBudgetCard(picks);
       return picks;
     }
 
     // No POI — highest impressions within budget
     const byImpr = pool.sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0));
     const picks = greedyFill(byImpr, 5);
-    maybeShowBudgetCard(picks);
     return picks;
   }
 
@@ -1536,7 +1645,6 @@ function fallbackRecommend() {
       if (spent >= budget * 0.85) break;
     }
 
-    maybeShowBudgetCard(picks);
     return picks;
   }
 
@@ -1547,7 +1655,6 @@ function fallbackRecommend() {
     .filter(s => s._rate > 0)
     .sort((a, b) => (b.weekly_imp||0) - (a.weekly_imp||0));
   const picks = greedyFill(pool, 5);
-  maybeShowBudgetCard(picks);
   return picks;
 }
 function renderOptimizerBasket() {
