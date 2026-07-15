@@ -318,7 +318,7 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 
 /* Photo QA */
 .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.photo-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;position:relative}
+.photo-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;position:relative;content-visibility:auto;contain-intrinsic-size:0 200px}
 .photo-card-thumb{width:100%;aspect-ratio:16/9;background:#1a1a1a;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:32px}
 .photo-card-thumb img{width:100%;height:100%;object-fit:cover}
 .photo-card-body{padding:10px 12px}
@@ -13055,49 +13055,87 @@ function togglePhotoSel(id, checked) {
   if (cnt) cnt.textContent = n;
 }
 
+let _photoFiltered = [];
+let _photoPage     = 0;
+const _PHOTO_PAGE_SIZE = 100;
+
+function _photoCardHtml(s) {
+  const img    = resolveScreenImg(s);
+  const status = photoStatusOf(s);
+  const badgeMeta = {override:['var(--accent)','Override'],own:['var(--green)','Own photo'],fallback:['var(--text3)','Fallback'],missing:['var(--gold)','Missing']};
+  const [bc, bl] = badgeMeta[status] || ['var(--text3)','—'];
+  const checked  = _photoSelections.has(s.id) ? 'checked' : '';
+  const thumb = img
+    ? `<img src="${img}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
+    : `<span>${s.icon || '📍'}</span>`;
+  const revertBtn = status === 'override' ? `<button class="btn sm" onclick="revertScreenPhoto('${s.id}')">↩ Revert</button>` : '';
+  const cropBtn   = img ? `<button class="btn sm" onclick="openCropModal('${s.id}')">✂ Crop</button>` : '';
+  return `
+    <div class="photo-card">
+      <label style="position:absolute;top:6px;left:6px;z-index:2;cursor:pointer">
+        <input type="checkbox" class="photo-sel" ${checked} onchange="togglePhotoSel('${s.id}',this.checked)">
+      </label>
+      <span class="photo-badge" style="background:${bc}">${bl}</span>
+      <div class="photo-card-thumb">${thumb}</div>
+      <div class="photo-card-body">
+        <div class="photo-card-name">${s.name || s.id}</div>
+        <div class="photo-card-sub">${s.venue_type || ''} · ${s.area || ''}</div>
+        <div class="photo-card-sub" style="font-family:monospace;font-size:9px;margin-top:2px;color:var(--text3)">${s.id}</div>
+        <div class="photo-card-actions">
+          ${cropBtn}
+          <label class="btn sm" style="cursor:pointer">
+            📷 Replace
+            <input type="file" accept="image/*" style="display:none" onchange="replaceScreenPhoto('${s.id}',this)">
+          </label>
+          ${revertBtn}
+        </div>
+      </div>
+    </div>`;
+}
+
+function _appendPhotoCards(grid, from) {
+  const slice = _photoFiltered.slice(from, from + _PHOTO_PAGE_SIZE);
+  if (!slice.length) return;
+  grid.insertAdjacentHTML('beforeend', slice.map(_photoCardHtml).join(''));
+}
+
+let _photoObserver = null;
+function _initPhotoObserver(grid) {
+  if (_photoObserver) { _photoObserver.disconnect(); _photoObserver = null; }
+  const loaded = (_photoPage + 1) * _PHOTO_PAGE_SIZE;
+  if (loaded >= _photoFiltered.length) return;
+
+  const sentinel = document.createElement('div');
+  sentinel.id = 'photo-sentinel';
+  sentinel.style.cssText = 'height:1px;grid-column:1/-1';
+  grid.appendChild(sentinel);
+
+  const root = document.querySelector('.content');
+  _photoObserver = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    _photoObserver.disconnect(); _photoObserver = null;
+    sentinel.remove();
+    _photoPage++;
+    _appendPhotoCards(grid, _photoPage * _PHOTO_PAGE_SIZE);
+    _initPhotoObserver(grid);
+  }, { root, rootMargin: '300px' });
+  _photoObserver.observe(sentinel);
+}
+
 function renderPhotoGrid() {
   const search = (document.getElementById('photo-search')?.value || '').toLowerCase();
   const vtype  = document.getElementById('photo-vtype')?.value || '';
-  const screens = INV.filter(s => {
+  _photoFiltered = INV.filter(s => {
     if (search && !(s.name||'').toLowerCase().includes(search) && !(s.area||'').toLowerCase().includes(search)) return false;
     if (vtype && s.venue_type !== vtype) return false;
-    const st = photoStatusOf(s);
-    if (_photoStatusFilter !== 'all' && st !== _photoStatusFilter) return false;
+    if (_photoStatusFilter !== 'all' && photoStatusOf(s) !== _photoStatusFilter) return false;
     return true;
   });
-  const badgeMeta = {override:['var(--accent)','Override'],own:['var(--green)','Own photo'],fallback:['var(--text3)','Fallback'],missing:['var(--gold)','Missing']};
-  document.getElementById('photo-grid').innerHTML = screens.map(s => {
-    const img = resolveScreenImg(s);
-    const status = photoStatusOf(s);
-    const [bc, bl] = badgeMeta[status] || ['var(--text3)','—'];
-    const checked = _photoSelections.has(s.id) ? 'checked' : '';
-    const thumb = img
-      ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
-      : `<span>${s.icon || '📍'}</span>`;
-    const revertBtn = status === 'override' ? `<button class="btn sm" onclick="revertScreenPhoto('${s.id}')">↩ Revert</button>` : '';
-    const cropBtn = img ? `<button class="btn sm" onclick="openCropModal('${s.id}')">✂ Crop</button>` : '';
-    return `
-      <div class="photo-card">
-        <label style="position:absolute;top:6px;left:6px;z-index:2;cursor:pointer">
-          <input type="checkbox" class="photo-sel" ${checked} onchange="togglePhotoSel('${s.id}',this.checked)">
-        </label>
-        <span class="photo-badge" style="background:${bc}">${bl}</span>
-        <div class="photo-card-thumb">${thumb}</div>
-        <div class="photo-card-body">
-          <div class="photo-card-name">${s.name || s.id}</div>
-          <div class="photo-card-sub">${s.venue_type || ''} · ${s.area || ''}</div>
-          <div class="photo-card-sub" style="font-family:monospace;font-size:9px;margin-top:2px;color:var(--text3)">${s.id}</div>
-          <div class="photo-card-actions">
-            ${cropBtn}
-            <label class="btn sm" style="cursor:pointer">
-              📷 Replace
-              <input type="file" accept="image/*" style="display:none" onchange="replaceScreenPhoto('${s.id}',this)">
-            </label>
-            ${revertBtn}
-          </div>
-        </div>
-      </div>`;
-  }).join('');
+  _photoPage = 0;
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = '';
+  _appendPhotoCards(grid, 0);
+  _initPhotoObserver(grid);
 }
 
 async function replaceScreenPhoto(screenId, input) {
@@ -13179,6 +13217,7 @@ document.getElementById('crop-free')?.addEventListener('change', function() {
 
 async function saveCrop() {
   if (!_cropperInstance || !_cropTargetId) return;
+  const cropData = _cropperInstance.getData(true); // rounded pixel coords for crop_meta
   const canvas = _cropperInstance.getCroppedCanvas({ width: 1280, height: 720 });
   const btn = document.getElementById('crop-save-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
@@ -13189,6 +13228,7 @@ async function saveCrop() {
     const { data: urlData } = sbClient.storage.from('screen-photos').getPublicUrl(path);
     const { error: dbErr } = await sbClient.from('screen_photo_overrides').upsert({
       screen_id: _cropTargetId, image_url: urlData.publicUrl,
+      crop_meta: cropData,
       updated_by: ADMIN_SESSION?.user?.email || '',
       updated_at: new Date().toISOString(),
     });
