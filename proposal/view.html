@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Campaign Proposal · NWA Ads</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/shared/js/env.js?v=20260715b"></script>
 <style>
 :root {
   --bg:      #faf8f3;
@@ -375,18 +377,94 @@ function esc(s) {
 }
 
 /* ─────────────────────────────────────────
-   Decode payload from ?d= param
+   Normalizers — both paths produce the same
+   shape that renderPage() consumes.
 ───────────────────────────────────────── */
-function loadProposal() {
-  const params = new URLSearchParams(window.location.search);
-  const encoded = params.get('d');
-  if (!encoded) return null;
-  try {
-    const json = decodeURIComponent(escape(atob(encoded)));
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
+function normalizeSupabase(row) {
+  const cartObj = row.cart && typeof row.cart === 'object' ? row.cart : {};
+  const screens = Object.values(cartObj).map(function(s) {
+    return {
+      unitRate:  s.weeklyRate || s.wkly_rate || 0,
+      wkly_impr: s.weekly_imp || s.wkly_impr || 0,
+      name:      s.name || s.full_name || '',
+      area:      s.area || [s.city, s.state].filter(Boolean).join(', ') || '',
+      type:      s.venue_type || s.type || '',
+      img:       s.img || s.image_url || null,
+      lat:       s.lat,
+      lng:       s.lng,
+      cpm:       s.cpm || null,
+      audience:  s.audience || null,
+      icon:      null,
+    };
+  });
+  return {
+    company: row.company_name || '',
+    contact: row.contact_email || '',
+    goal:    row.goal || '',
+    inc:     row.inc || 'weekly',
+    qty:     row.qty || 1,
+    created: (row.created_at || '').slice(0, 10),
+    screens: screens,
+  };
+}
+
+function normalizeBase64(d) {
+  return {
+    company: d.company || '',
+    contact: d.contact || '',
+    goal:    d.goal || '',
+    inc:     d.inc || 'weekly',
+    qty:     d.qty || 1,
+    created: d.created || new Date().toISOString().slice(0, 10),
+    screens: (d.screens || []).map(function(s) {
+      return {
+        unitRate:  s.unitRate || 0,
+        wkly_impr: s.wkly_impr || 0,
+        name:      s.name || '',
+        area:      s.area || '',
+        type:      s.type || '',
+        img:       s.img || null,
+        lat:       s.lat,
+        lng:       s.lng,
+        cpm:       s.cpm || null,
+        audience:  s.audience || null,
+        icon:      s.icon || null,
+      };
+    }),
+  };
+}
+
+/* ─────────────────────────────────────────
+   Load proposal — supports both ?id= (Supabase)
+   and ?d= (base64 encoded payload)
+───────────────────────────────────────── */
+async function loadProposal() {
+  var params = new URLSearchParams(window.location.search);
+  var id      = params.get('id');
+  var encoded = params.get('d');
+
+  if (id) {
+    try {
+      var cfg = window.ENV_CONFIG;
+      var sb  = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+      var res = await sb.from('campaigns').select('*').eq('id', id).single();
+      if (res.error || !res.data) return null;
+      return normalizeSupabase(res.data);
+    } catch (e) {
+      return null;
+    }
   }
+
+  if (encoded) {
+    try {
+      var json = decodeURIComponent(escape(atob(encoded)));
+      return normalizeBase64(JSON.parse(json));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  return null;
 }
 
 /* ─────────────────────────────────────────
@@ -602,7 +680,7 @@ function renderPage(d) {
       <h2>Ready to book this campaign?</h2>
       <p>No payment now — confirm interest and we'll verify screen availability within 2 hours, then send a secure payment link.</p>
       <div class="cta-btns">
-        <a href="/book.html" class="cta-btn-primary">Book these screens →</a>
+        <a href="/book/" class="cta-btn-primary">Book these screens →</a>
         <a href="mailto:hello@nwa-ads.com" class="cta-btn-secondary">✉ hello@nwa-ads.com</a>
       </div>
       <div class="cta-fine">Proposal expires ${expires} · Platform fee included · No hidden costs</div>
@@ -614,8 +692,11 @@ function renderPage(d) {
 /* ─────────────────────────────────────────
    Boot
 ───────────────────────────────────────── */
-(function boot() {
-  const d = loadProposal();
+(async function boot() {
+  // Show a loading state while fetching (Supabase ?id= path is async)
+  document.getElementById('root').innerHTML =
+    '<div style="text-align:center;padding:80px 24px;color:#9b8f7a;font-size:14px">Loading proposal…</div>';
+  var d = await loadProposal();
   document.getElementById('root').innerHTML = d ? renderPage(d) : renderError();
 })();
 </script>
