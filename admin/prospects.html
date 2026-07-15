@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWA Ads — Prospect Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0e1a0e;--green:#1f3d2a;--green-l:#eaf2ec;--green-d:#163020;
+  --orange:#c8440a;--orange-l:#fdf1eb;
+  --gold:#9a7b00;--gold-l:#fefbe8;
+  --border:#e2ddd6;--muted:#7a7570;
+  --white:#fffef9;--off:#f6f4ef;--off2:#ede9e3;
+}
+body{font-family:'Instrument Sans',sans-serif;background:var(--off);color:var(--ink);min-height:100vh}
+#app{max-width:820px;margin:0 auto;padding:36px 20px 80px}
+
+/* passcode screen */
+#lock{position:fixed;inset:0;background:var(--green);display:flex;align-items:center;justify-content:center;z-index:100;transition:opacity 0.4s}
+#lock.hidden{opacity:0;pointer-events:none}
+.lock-inner{text-align:center;color:#fff}
+.lock-inner .logo{font-family:'Fraunces',serif;font-size:13px;font-weight:300;letter-spacing:0.18em;text-transform:uppercase;opacity:0.5;margin-bottom:32px}
+.lock-inner h1{font-family:'Fraunces',serif;font-size:40px;font-weight:700;line-height:1.1;margin-bottom:8px}
+.lock-inner p{font-size:13px;opacity:0.55;margin-bottom:36px}
+.lock-inner input{
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);
+  color:#fff;font-size:18px;letter-spacing:0.15em;text-align:center;
+  padding:14px 24px;border-radius:10px;outline:none;width:220px;
+  font-family:'Instrument Sans',sans-serif;
+}
+.lock-inner input::placeholder{opacity:0.3;letter-spacing:0.05em;font-size:14px}
+.lock-inner input:focus{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.15)}
+.lock-inner .err{font-size:12px;color:#f9a875;margin-top:10px;min-height:18px}
+.lock-inner .hint{font-size:11px;opacity:0.3;margin-top:28px}
+
+/* header */
+.header{margin-bottom:32px}
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--orange);margin-bottom:8px}
+.header h1{font-family:'Fraunces',serif;font-size:34px;font-weight:700;line-height:1.15;margin-bottom:10px;letter-spacing:-0.3px}
+.header p{font-size:14px;color:var(--muted);line-height:1.65;max-width:520px}
+
+/* how it works */
+.how{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.step{display:flex;align-items:flex-start;gap:10px;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px 14px;flex:1;min-width:180px}
+.step-num{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--orange);line-height:1;flex-shrink:0}
+.step-text{font-size:12px;line-height:1.55;color:var(--muted)}
+.step-text strong{color:var(--ink);font-weight:600}
+
+/* card */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px}
+
+/* form */
+label.lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px}
+input[type=text],select,textarea{
+  width:100%;padding:10px 14px;border-radius:8px;
+  border:1px solid var(--border);background:var(--white);
+  font-size:13px;font-family:'Instrument Sans',sans-serif;
+  color:var(--ink);outline:none;transition:border-color 0.15s;
+}
+input[type=text]:focus,select:focus,textarea:focus{border-color:var(--orange)}
+textarea{resize:vertical;line-height:1.6}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:14px}
+
+/* generate button */
+.btn-generate{
+  width:100%;padding:14px;background:var(--green);color:#fff;
+  border:none;border-radius:10px;font-size:15px;font-weight:600;
+  font-family:'Instrument Sans',sans-serif;cursor:pointer;
+  transition:background 0.15s;margin-top:4px;
+}
+.btn-generate:hover{background:var(--green-d)}
+.btn-generate:disabled{background:var(--off2);color:var(--muted);cursor:not-allowed}
+
+/* output */
+#output-section{display:none}
+.output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:gap}
+.output-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600}
+.copy-wrap{display:flex;gap:8px;align-items:center}
+.btn-copy{
+  padding:8px 18px;background:var(--orange);color:#fff;
+  border:none;border-radius:8px;font-size:13px;font-weight:600;
+  font-family:'Instrument Sans',sans-serif;cursor:pointer;transition:background 0.15s;
+}
+.btn-copy:hover{background:#a83608}
+.btn-copy.copied{background:#1f3d2a}
+.btn-claude{
+  padding:8px 18px;background:var(--off2);color:var(--ink);
+  border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;
+  font-family:'Instrument Sans',sans-serif;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn-claude:hover{background:var(--border)}
+#prompt-box{
+  background:var(--off);border:1px solid var(--border);border-radius:10px;
+  padding:18px 20px;font-size:12px;font-family:'Courier New',monospace;
+  line-height:1.75;color:var(--ink);white-space:pre-wrap;word-break:break-word;
+  max-height:520px;overflow-y:auto;
+}
+
+/* instructions */
+.instructions{background:var(--green-l);border:1px solid rgba(31,61,42,0.18);border-radius:10px;padding:16px 20px;margin-top:14px}
+.instructions .ins-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:10px}
+.instructions ol{padding-left:18px;display:flex;flex-direction:column;gap:7px}
+.instructions li{font-size:13px;line-height:1.55;color:#2a4a35}
+.instructions li strong{color:var(--green)}
+.instructions .warn{font-size:12px;color:var(--orange);margin-top:10px;font-weight:600}
+
+/* queue */
+.queue-wrap{margin-top:20px}
+.queue-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:10px}
+.queue-list{display:flex;flex-direction:column;gap:6px}
+.q-item{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  cursor:pointer;transition:border-color 0.15s;
+}
+.q-item:hover{border-color:var(--orange)}
+.q-item.active{border-color:var(--green);background:var(--green-l)}
+.q-brand{font-weight:600;font-size:13px;flex:1}
+.q-cat{font-size:11px;color:var(--muted)}
+.q-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;line-height:1}
+.q-del:hover{color:var(--orange)}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lock">
+  <div class="lock-inner">
+    <div class="logo">NWA Ads</div>
+    <h1>Prospect Engine</h1>
+    <p>OOH competitive intelligence for Northwest Arkansas</p>
+    <input type="password" id="passcode" placeholder="Enter passcode" maxlength="20" autocomplete="off"/>
+    <div class="err" id="err-msg"></div>
+    <div class="hint">For authorized NWA Ads team use only</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="header">
+    <div class="eyebrow">NWA Ads · Prospect Engine</div>
+    <h1>OOH Competitive Intelligence</h1>
+    <p>Generate a research prompt for any brand. Paste it into Claude with web search on — get a full NWA OOH pitch deck in 30 seconds.</p>
+  </div>
+
+  <!-- How it works -->
+  <div class="how">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text"><strong>Fill in the brand</strong> name, category, and any context below</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><strong>Copy the prompt</strong> that gets generated</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text"><strong>Paste into Claude</strong> at claude.ai with web search enabled</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text"><strong>Get a full pitch deck</strong> — screens, CPM analysis, copy suggestions</div>
+    </div>
+  </div>
+
+  <!-- Input form -->
+  <div class="card">
+    <div class="grid2">
+      <div class="field">
+        <label class="lbl">Brand name</label>
+        <input type="text" id="brand" placeholder="e.g. Maverik, Life Time Fitness, Casey's…"/>
+      </div>
+      <div class="field">
+        <label class="lbl">Category</label>
+        <select id="category">
+          <option>Gas Station / C-Store</option>
+          <option>QSR / Fast Casual</option>
+          <option>Auto Dealer</option>
+          <option>Gym / Fitness</option>
+          <option>Real Estate / Builder</option>
+          <option>Healthcare / Urgent Care</option>
+          <option>Retail Chain</option>
+          <option>Walmart Supplier / CPG</option>
+          <option>Hotel / Hospitality</option>
+          <option>Entertainment / Venue</option>
+          <option>Financial Services</option>
+          <option>Home Services</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="lbl">Additional context <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — new location, promo, rebrand, competitor activity, etc.)</span></label>
+      <input type="text" id="context" placeholder="e.g. Just rebranded from Kum & Go in NWA, opening 2nd Rogers location in August…"/>
+    </div>
+    <button class="btn-generate" id="btn-gen" onclick="generate()">Generate prospect prompt</button>
+  </div>
+
+  <!-- Output -->
+  <div id="output-section">
+    <div class="card">
+      <div class="output-header">
+        <div class="output-title" id="output-title">Prompt ready</div>
+        <div class="copy-wrap">
+          <a href="https://claude.ai" target="_blank" class="btn-claude">Open Claude ↗</a>
+          <button class="btn-copy" id="btn-copy" onclick="copyPrompt()">Copy prompt</button>
+        </div>
+      </div>
+      <div id="prompt-box"></div>
+      <div class="instructions">
+        <div class="ins-title">How to use this prompt</div>
+        <ol>
+          <li>Click <strong>Copy prompt</strong> above, then click <strong>Open Claude ↗</strong></li>
+          <li>Start a new conversation — make sure <strong>web search is turned on</strong> (search icon in the toolbar)</li>
+          <li>Paste the prompt and hit send — Claude will research the brand and return a full JSON analysis</li>
+          <li>The JSON includes: fit score, CPM comparison, recommended screens, package pricing, pitch headline, and ad copy suggestions</li>
+        </ol>
+        <div class="warn">⚠ Web search must be enabled or the NWA presence + digital activity research won't work</div>
+      </div>
+    </div>
+
+    <!-- Queue -->
+    <div class="queue-wrap" id="queue-wrap" style="display:none">
+      <div class="queue-title">Saved prospects — <span id="q-count">0</span></div>
+      <div class="queue-list" id="queue-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASSCODE = 'nwaads2026';
+const NWA_SCREENS = [
+  {id:'loc_595406',name:'5500 W Sunset (Springdale)',area:'Springdale',type:'digital',cpm:10.14,wkly_impr:35000,mo_rate:1537},
+  {id:'loc_595408',name:'Walton Blvd E/S (Bentonville)',area:'Bentonville',type:'digital',cpm:7.25,wkly_impr:35000,mo_rate:1100},
+  {id:'loc_595412',name:'I-49 @ Don Tyson Pkwy (Springdale)',area:'Springdale',type:'digital',cpm:10.14,wkly_impr:35000,mo_rate:1537},
+  {id:'loc_595414',name:'Hwy 71 / I-49 @ N Walton (Bentonville)',area:'Bentonville',type:'digital',cpm:10.14,wkly_impr:35000,mo_rate:1537},
+  {id:'loc_595434',name:'14th & S Walton E/S (Bentonville)',area:'Bentonville',type:'digital',cpm:7.25,wkly_impr:35000,mo_rate:1100},
+  {id:'loc_595441',name:'I-49 W/S NB (Rogers)',area:'Rogers',type:'digital',cpm:7.25,wkly_impr:35000,mo_rate:1100},
+  {id:'loc_595442',name:'I-49 E/S NB (Rogers)',area:'Rogers',type:'digital',cpm:7.25,wkly_impr:35000,mo_rate:1100},
+  {id:'loc_595430',name:'SW Regional Airport Blvd (Bentonville)',area:'Bentonville',type:'digital',cpm:10.14,wkly_impr:35000,mo_rate:1537},
+  {id:'loc_740950',name:'Gas Station Network — 12 screens (Fayetteville)',area:'Fayetteville',type:'gasstation',cpm:20.29,wkly_impr:21600,mo_rate:1897},
+  {id:'loc_2003347',name:'Gas Station Network — 20 screens (Lowell)',area:'Lowell',type:'gasstation',cpm:20.29,wkly_impr:36000,mo_rate:3161},
+  {id:'loc_2551020',name:'Gas Station Network — 16 screens (Bentonville)',area:'Bentonville',type:'gasstation',cpm:20.29,wkly_impr:28800,mo_rate:2529},
+  {id:'xna_billboard_1',name:'XNA Airport — Digital Billboard',area:'XNA Airport',type:'airport',cpm:8.25,wkly_impr:70000,mo_rate:2500},
+  {id:'xna_eposter',name:'XNA Airport — E-Poster Network',area:'XNA Airport',type:'airport',cpm:8.26,wkly_impr:60000,mo_rate:2145},
+  {id:'loc_237536',name:'Rogers Towne Center 12 (Cinema Lobby)',area:'Rogers',type:'cinema',cpm:7.61,wkly_impr:4500,mo_rate:147},
+  {id:'loc_442131',name:'Pinnacle Hills 12 (Cinema Lobby)',area:'Rogers',type:'cinema',cpm:7.61,wkly_impr:4500,mo_rate:147},
+];
+const MARKUP = 1.20;
+
+let queue = JSON.parse(localStorage.getItem('nwaads_queue') || '[]');
+let currentPrompt = '';
+
+// ── PASSCODE ──
+const lockEl = document.getElementById('lock');
+const pcInput = document.getElementById('passcode');
+
+if(sessionStorage.getItem('nwaads_auth') === '1') unlock(false);
+
+pcInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter') checkPass();
+  document.getElementById('err-msg').textContent = '';
+});
+
+function checkPass() {
+  if(pcInput.value === PASSCODE) {
+    sessionStorage.setItem('nwaads_auth','1');
+    unlock(true);
+  } else {
+    document.getElementById('err-msg').textContent = 'Incorrect passcode';
+    pcInput.value = '';
+    pcInput.focus();
+  }
+}
+
+function unlock(animate) {
+  if(animate) {
+    lockEl.style.opacity = '0';
+    setTimeout(() => lockEl.classList.add('hidden'), 400);
+  } else {
+    lockEl.classList.add('hidden');
+  }
+  renderQueue();
+}
+
+// ── GENERATE ──
+function generate() {
+  const brand = document.getElementById('brand').value.trim();
+  const category = document.getElementById('category').value;
+  const context = document.getElementById('context').value.trim();
+  if(!brand) { document.getElementById('brand').focus(); return; }
+
+  const invSummary = NWA_SCREENS.map(s =>
+    `${s.id}|${s.name}|${s.area}|${s.type}|CPM $${s.cpm}|${Math.round(s.wkly_impr/1000)}K wkly impr|$${Math.round(s.mo_rate*MARKUP)}/4wk`
+  ).join('\n');
+
+  const prompt = `You are a competitive media analyst for NWA Ads, an out-of-home advertising marketplace in Northwest Arkansas. Research the brand below and build a full OOH pitch analysis.
+
+NWA MARKET CONTEXT:
+- Population: ~600,000 across Bentonville, Rogers, Fayetteville, Springdale
+- Walmart HQ in Bentonville — major supplier/executive audience
+- Fast-growing market — many national chains expanding into NWA
+- OOH CPM benchmarks: digital billboard $7–$10, gas station screens $20, airport $8–$23
+- Social CPM benchmarks: Meta/Instagram $8–$15 (geo-targeted, but only 2–5% reaches NWA), X/Twitter $2–$7, YouTube $10–$30
+
+NWA ADS INVENTORY (id|name|area|type|CPM|weekly impr|4wk customer price):
+${invSummary}
+
+PRICING RULE: Apply 20% markup on all deals. Prices above already include markup.
+
+BRAND TO RESEARCH: ${brand}
+CATEGORY: ${category}${context ? `\nADDITIONAL CONTEXT: ${context}` : ''}
+
+RESEARCH TASKS (use web search):
+1. Is ${brand} actively running Meta (Facebook/Instagram) or X/Twitter ads? What are the ads about?
+2. Does ${brand} have locations in Northwest Arkansas / Bentonville area? How many and where?
+3. Any recent NWA expansion, new locations, rebrands, or promotional campaigns?
+4. What is their estimated digital ad spend level — national, regional, or local?
+
+Return ONLY a JSON object — no markdown, no explanation, no text outside the JSON:
+
+{
+  "brand": "${brand}",
+  "category": "${category}",
+  "nwa_presence": {
+    "has_locations": true,
+    "location_count": 2,
+    "cities": ["Bentonville","Rogers"],
+    "recent_news": "one sentence about recent NWA activity",
+    "confidence": "confirmed"
+  },
+  "digital_activity": {
+    "platforms": ["Meta","X"],
+    "campaign_type": "national",
+    "estimated_spend_range": "$50K–$200K/mo",
+    "ad_description": "one sentence describing current ad campaigns",
+    "local_targeting": false,
+    "effective_nwa_pct": 2,
+    "source_notes": "where you found this"
+  },
+  "ooh_opportunity": {
+    "fit_score": 8,
+    "fit_rationale": "2–3 sentences on the OOH opportunity",
+    "key_insight": "one punchy headline finding",
+    "urgency_trigger": "new location",
+    "recommended_formats": ["digital","gasstation"],
+    "campaign_goal": "foot traffic"
+  },
+  "cpm_comparison": {
+    "social_cpm_national": 12,
+    "social_cpm_nwa_effective": 480,
+    "ooh_cpm": 8.50,
+    "efficiency_multiplier": 56.5,
+    "explanation": "2 sentences explaining the CPM gap and what it means for the advertiser"
+  },
+  "recommended_screens": [
+    {"screen_id": "loc_595408", "screen_name": "Walton Blvd E/S (Bentonville)", "why": "one sentence on why this screen fits this brand"}
+  ],
+  "package": {
+    "screens": 3,
+    "duration_weeks": 4,
+    "weekly_impressions": 105000,
+    "four_week_impressions": 420000,
+    "customer_price": 4200,
+    "blended_cpm": 10.00
+  },
+  "pitch_headline": "compelling one-liner for the proposal cover",
+  "pitch_body": "3–4 sentence paragraph making the case with specific numbers",
+  "suggested_copy": [
+    {"placement": "Walton Blvd E/S (Bentonville)", "copy": "8-word billboard copy with location cue"}
+  ]
+}`;
+
+  currentPrompt = prompt;
+  document.getElementById('prompt-box').textContent = prompt;
+  document.getElementById('output-title').textContent = `Prompt ready — ${brand}`;
+  document.getElementById('output-section').style.display = 'block';
+  document.getElementById('btn-copy').textContent = 'Copy prompt';
+  document.getElementById('btn-copy').classList.remove('copied');
+
+  // Save to queue
+  const existing = queue.findIndex(q => q.brand.toLowerCase() === brand.toLowerCase());
+  if(existing === -1) {
+    queue.unshift({ brand, category, context, prompt, ts: Date.now() });
+    if(queue.length > 20) queue = queue.slice(0,20);
+    localStorage.setItem('nwaads_queue', JSON.stringify(queue));
+  }
+  renderQueue();
+  document.getElementById('output-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── COPY ──
+function copyPrompt() {
+  navigator.clipboard.writeText(currentPrompt).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy prompt'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+// ── QUEUE ──
+function renderQueue() {
+  const wrap = document.getElementById('queue-wrap');
+  const list = document.getElementById('queue-list');
+  const count = document.getElementById('q-count');
+  if(!queue.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  count.textContent = queue.length;
+  list.innerHTML = queue.map((item, i) => `
+    <div class="q-item" onclick="loadFromQueue(${i})">
+      <div>
+        <div class="q-brand">${item.brand}</div>
+        <div class="q-cat">${item.category}</div>
+      </div>
+      <button class="q-del" onclick="removeFromQueue(event,${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function loadFromQueue(i) {
+  const item = queue[i];
+  document.getElementById('brand').value = item.brand;
+  document.getElementById('category').value = item.category;
+  document.getElementById('context').value = item.context || '';
+  currentPrompt = item.prompt;
+  document.getElementById('prompt-box').textContent = item.prompt;
+  document.getElementById('output-title').textContent = `Prompt ready — ${item.brand}`;
+  document.getElementById('output-section').style.display = 'block';
+  document.getElementById('btn-copy').textContent = 'Copy prompt';
+  document.getElementById('btn-copy').classList.remove('copied');
+  document.getElementById('output-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function removeFromQueue(e, i) {
+  e.stopPropagation();
+  queue.splice(i, 1);
+  localStorage.setItem('nwaads_queue', JSON.stringify(queue));
+  renderQueue();
+}
+
+// Enter key on brand field
+document.getElementById('brand').addEventListener('keydown', e => {
+  if(e.key === 'Enter') generate();
+});
+</script>
+</body>
+</html>

@@ -20,6 +20,14 @@ const RATE_CONFIG = {
   note: 'Daily premium is estimated pending confirmed media owner rate sheets'
 };
 
+/* Weekly rate for a screen — pure calculation, no cart state */
+function screenRate(s) {
+  if (s.cpm && s.weekly_imp) return Math.round(s.cpm * s.weekly_imp / 1000);
+  if (s.wkly_rate && s.wkly_rate > 0) return s.wkly_rate;
+  if (s.mo_rate   && s.mo_rate   > 0) return Math.round(s.mo_rate / 4.33);
+  return 0;
+}
+
 function customSchedTotalCost(screenRate4wk) {
   if (ST.customDayCount === 0) return 0;
   const dailyRate = Math.round((screenRate4wk / 28) * RATE_CONFIG.daily_premium);

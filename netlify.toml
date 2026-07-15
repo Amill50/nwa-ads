@@ -19,9 +19,19 @@
   status = 301
 
 [[redirects]]
-  from = "/proposal"
-  to = "/proposals/index.html"
+  from = "/proposal/view"
+  to = "/proposal/index.html"
   status = 200
+
+[[redirects]]
+  from = "/proposal"
+  to = "/proposal/view"
+  status = 301
+
+[[redirects]]
+  from = "/proposal.html"
+  to = "/proposal/view"
+  status = 301
 
 # ── Cache headers — all local assets bust on deploy via ?v= params ──
 [[headers]]

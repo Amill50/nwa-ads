@@ -432,7 +432,7 @@ async function generateProposalLink() {
     return;
   }
 
-  const url = 'https://proposals.nwa-ads.com?id=' + proposalId;
+  const url = window.location.origin + '/proposal/view?id=' + proposalId;
   document.getElementById('proposal-link-input').value = url;
   if (btn) btn.style.display = 'none';
   document.getElementById('proposal-link-wrap').style.display = 'flex';
