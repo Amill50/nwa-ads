@@ -33,6 +33,11 @@
   to = "/proposal/view"
   status = 301
 
+[[redirects]]
+  from = "/admin.html"
+  to = "/admin/"
+  status = 301
+
 # ── Cache headers — all local assets bust on deploy via ?v= params ──
 [[headers]]
   for = "/shared/js/*.js"
@@ -76,7 +81,7 @@
     X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
-  for = "/admin.html"
+  for = "/admin/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
