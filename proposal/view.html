@@ -447,9 +447,9 @@ async function loadProposal() {
     try {
       var cfg = window.ENV_CONFIG;
       var sb  = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
-      var res = await sb.from('campaigns').select('*').eq('id', id).single();
-      if (res.error || !res.data) return null;
-      return normalizeSupabase(res.data);
+      var { data, error } = await sb.rpc('get_proposal', { p_id: id });
+      if (error || !data) return null;
+      return normalizeSupabase(data);
     } catch (e) {
       return null;
     }
