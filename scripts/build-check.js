@@ -29,6 +29,7 @@ const JS_FILES = [
 
 const HTML_FILES = [
   'book/index.html',
+  'proposal/index.html',
   'index.html',
 ];
 
@@ -168,6 +169,9 @@ const REQUIRED = [
   'design-system.html',
   'shared/venue_photos/Billboards_generic.png',
   'shared/venue_photos/QSR_FastCasual.png',
+  'proposal/index.html',
+  'proposal/view.html',
+  'admin/prospects.html',
 ];
 REQUIRED.forEach(file => {
   if (fs.existsSync(file)) {
