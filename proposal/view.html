@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/shared/js/env.js?v=20260715b"></script>
+<script src="/shared/js/venue-type-img.js?v=20260715c"></script>
+<script src="/shared/js/photo-overrides.js?v=20260715c"></script>
 <style>
 :root {
   --bg:      #faf8f3;
@@ -389,7 +391,7 @@ function normalizeSupabase(row) {
       name:      s.name || s.full_name || '',
       area:      s.area || [s.city, s.state].filter(Boolean).join(', ') || '',
       type:      s.venue_type || s.type || '',
-      img:       s.img || s.image_url || null,
+      img:       resolveScreenImg(s),
       lat:       s.lat,
       lng:       s.lng,
       cpm:       s.cpm || null,

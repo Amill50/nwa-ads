@@ -396,7 +396,7 @@ async function generateProposalLink() {
   const cartWithRates = {};
   cartKeys.forEach(id => {
     const s = ST.cart[id];
-    cartWithRates[id] = Object.assign({}, s, { weeklyRate: Math.round(unitRate(s)) });
+    cartWithRates[id] = Object.assign({}, s, { weeklyRate: Math.round(unitRate(s)), img: resolveScreenImg(s) });
   });
 
   const payload = {

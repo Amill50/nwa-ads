@@ -7,6 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/shared/js/env.js?v=20260715b"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script src="/shared/js/venue-type-img.js?v=20260715c"></script>
+<script src="/shared/js/inventory.js?v=20260715c"></script>
+<script src="/shared/js/photo-overrides.js?v=20260715c"></script>
 <style>
 :root {
   /* NWA Ads brand system */
@@ -311,6 +316,25 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .source-estimated { background:var(--gold-dim); color:var(--gold); }
 .source-manual    { background:var(--blue-dim); color:var(--blue); }
 
+/* Photo QA */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.photo-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;position:relative;content-visibility:auto;contain-intrinsic-size:0 200px}
+.photo-card-thumb{width:100%;aspect-ratio:16/9;background:#1a1a1a;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:32px}
+.photo-card-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-card-body{padding:10px 12px}
+.photo-card-name{font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-card-sub{font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-card-actions{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.photo-badge{position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;padding:2px 7px;border-radius:999px;color:#fff}
+.photo-sel{position:absolute;top:6px;left:6px;width:16px;height:16px;cursor:pointer}
+#crop-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:6000;align-items:center;justify-content:center}
+#crop-modal.open{display:flex}
+#crop-modal-box{background:var(--surface);border-radius:12px;width:min(640px,92vw);overflow:hidden}
+#crop-modal-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+#crop-modal-body{padding:16px}
+#crop-img-wrap{position:relative;width:100%;max-height:380px;overflow:hidden;background:#000}
+#crop-img-wrap img{display:block;max-width:100%}
+
 </style>
 </head>
 <body>
@@ -364,6 +388,9 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
       </div>
       <div class="nav-item" onclick="showView('health')" id="nav-health">
         <span class="ni-icon">🔎</span> Inventory health
+      </div>
+      <div class="nav-item" onclick="showView('photos')" id="nav-photos">
+        <span class="ni-icon">🖼</span> Photo QA
       </div>
       <div class="nav-item" onclick="showView('pricing')" id="nav-pricing">
         <span class="ni-icon">💲</span> Pricing manager
@@ -538,6 +565,30 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
         </div>
       </div>
 
+      <!-- ════ PHOTO QA ════ -->
+      <div class="view" id="view-photos">
+        <div class="page-head">
+          <div class="page-title">Photo QA</div>
+          <div class="page-sub">Review, crop, and replace screen photos — overrides stored in Supabase, no deploy needed</div>
+        </div>
+        <div class="kpi-row" id="kpi-photos"></div>
+        <div class="filter-bar">
+          <input id="photo-search" class="search-input" placeholder="Search screens, cities…" oninput="renderPhotoGrid()" style="width:220px">
+          <select id="photo-vtype" class="search-input" style="width:auto;min-width:160px" onchange="renderPhotoGrid()">
+            <option value="">All venue types</option>
+          </select>
+          <div class="filter-chip on" onclick="setPhotoStatusFilter(this,'all')">All</div>
+          <div class="filter-chip" onclick="setPhotoStatusFilter(this,'override')">Override</div>
+          <div class="filter-chip" onclick="setPhotoStatusFilter(this,'own')">Own photo</div>
+          <div class="filter-chip" onclick="setPhotoStatusFilter(this,'fallback')">Fallback</div>
+          <div class="filter-chip" onclick="setPhotoStatusFilter(this,'missing')">Missing</div>
+          <label class="btn" id="bulk-replace-btn" style="cursor:pointer;margin-left:auto;display:none">
+            📷 Replace selected (<span id="bulk-sel-count">0</span>)
+            <input type="file" accept="image/*" style="display:none" onchange="bulkReplacePhotos(this)">
+          </label>
+        </div>
+        <div id="photo-grid" class="photo-grid"></div>
+      </div>
 
       <!-- ════ PRICING MANAGER ════ -->
       <div class="view" id="view-pricing">
@@ -11961,6 +12012,7 @@ function init() {
   initPricing();
   initRateConfig();
   fetchSupabaseCampaigns();
+  loadPhotoOverrides(sbClient).then(() => renderHealth());
 }
 
 function startClock() {
@@ -11979,6 +12031,7 @@ function showView(id) {
   document.getElementById('view-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
   closeDetail();
+  if (id === 'photos') initPhotoQA();
 }
 
 
@@ -12455,16 +12508,21 @@ function renderPipeline() {
 /* ══════════════ INVENTORY HEALTH ══════════════ */
 function renderHealth() {
   const issues = [];
+  // Photo check: full 826-screen shared INV with override-aware resolver
+  INV.forEach(s => {
+    if (!resolveScreenImg(s)) issues.push({screen:s.name,area:s.area||'',severity:'warn',issue:'Missing photo',detail:'No photo, override, or venue fallback',icon:s.icon||'📍'});
+  });
+  // Rate/spec checks: embedded INV_DATA which carries spec_res / wkly_rate / faces
   INV_DATA.forEach(s => {
-    if (!s.image_url || s.image_url === 'nan') issues.push({screen:s.name,area:s.area,severity:'warn',issue:'Missing photo',detail:'No image URL in Adomni data',icon:s.icon});
     if (!s.spec_res || s.spec_res === '—') issues.push({screen:s.name,area:s.area,severity:'warn',issue:'Missing resolution spec',detail:'Content dimensions not in export',icon:s.icon});
     if (s.cpm < 5) issues.push({screen:s.name,area:s.area,severity:'bad',issue:'Unusually low CPM',detail:`${s.cpm} CPM — verify with media owner`,icon:s.icon});
     if (s.wkly_rate > 600 && s.type === 'gasstation') issues.push({screen:s.name,area:s.area,severity:'warn',issue:'High-value GS — confirm face count',detail:`${s.faces} faces × ${s.cpm} CPM = $${s.wkly_rate}/wk`,icon:s.icon});
   });
 
-  const good = INV_DATA.length - new Set(issues.map(i=>i.screen)).size;
+  const total = INV.length;
+  const good = total - new Set(issues.map(i=>i.screen)).size;
   document.getElementById('kpi-health').innerHTML = [
-    {val: INV_DATA.length, lbl: 'Total screens', cls: ''},
+    {val: total, lbl: 'Total screens', cls: ''},
     {val: good,            lbl: 'Passing checks', cls: 'green'},
     {val: issues.filter(i=>i.severity==='warn').length, lbl: 'Warnings', cls: 'gold'},
     {val: issues.filter(i=>i.severity==='bad').length,  lbl: 'Errors',   cls: 'accent'},
@@ -12932,6 +12990,273 @@ function initRateConfig() {
 }
 
 
+/* ══════════════ PHOTO QA ══════════════ */
+let _photoQAReady = false;
+let _photoStatusFilter = 'all';
+let _photoSelections = new Set();
+let _cropperInstance = null;
+let _cropTargetId = null;
+
+function initPhotoQA() {
+  if (_photoQAReady) { renderPhotoGrid(); return; }
+  refreshPhotoOverrides(sbClient).then(() => {
+    _photoQAReady = true;
+    const types = [...new Set(INV.map(s => s.venue_type).filter(Boolean))].sort();
+    const sel = document.getElementById('photo-vtype');
+    if (sel && sel.options.length === 1) {
+      types.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; sel.appendChild(o); });
+    }
+    renderPhotoQAKPIs();
+    renderPhotoGrid();
+  });
+}
+
+function renderPhotoQAKPIs() {
+  const ov = window.PHOTO_OVERRIDES || new Map();
+  let own = 0, fallback = 0, missing = 0;
+  const vti = typeof VENUE_TYPE_IMG !== 'undefined' ? VENUE_TYPE_IMG : {};
+  INV.forEach(s => {
+    if (ov.has(s.id)) return;
+    if (s.img) { own++; return; }
+    if (vti[s.venue_type] || vti[s.type]) { fallback++; return; }
+    missing++;
+  });
+  document.getElementById('kpi-photos').innerHTML = [
+    {val: INV.length,   lbl: 'Total screens', cls: ''},
+    {val: ov.size,      lbl: 'Overrides',     cls: 'accent'},
+    {val: own,          lbl: 'Own photos',     cls: 'green'},
+    {val: fallback,     lbl: 'Venue fallback', cls: ''},
+    {val: missing,      lbl: 'Missing',        cls: 'gold'},
+  ].map(k=>`<div class="kpi"><span class="kpi-val ${k.cls}">${k.val}</span><span class="kpi-lbl">${k.lbl}</span></div>`).join('');
+}
+
+function photoStatusOf(s) {
+  const ov = window.PHOTO_OVERRIDES || new Map();
+  if (ov.has(s.id)) return 'override';
+  if (s.img) return 'own';
+  const vti = typeof VENUE_TYPE_IMG !== 'undefined' ? VENUE_TYPE_IMG : {};
+  if (vti[s.venue_type] || vti[s.type]) return 'fallback';
+  return 'missing';
+}
+
+function setPhotoStatusFilter(el, val) {
+  _photoStatusFilter = val;
+  document.querySelectorAll('#view-photos .filter-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  renderPhotoGrid();
+}
+
+function togglePhotoSel(id, checked) {
+  if (checked) _photoSelections.add(id); else _photoSelections.delete(id);
+  const n = _photoSelections.size;
+  const btn = document.getElementById('bulk-replace-btn');
+  const cnt = document.getElementById('bulk-sel-count');
+  if (btn) btn.style.display = n > 0 ? 'label' : 'none';
+  if (cnt) cnt.textContent = n;
+}
+
+let _photoFiltered = [];
+let _photoPage     = 0;
+const _PHOTO_PAGE_SIZE = 100;
+
+function _photoCardHtml(s) {
+  const img    = resolveScreenImg(s);
+  const status = photoStatusOf(s);
+  const badgeMeta = {override:['var(--accent)','Override'],own:['var(--green)','Own photo'],fallback:['var(--text3)','Fallback'],missing:['var(--gold)','Missing']};
+  const [bc, bl] = badgeMeta[status] || ['var(--text3)','—'];
+  const checked  = _photoSelections.has(s.id) ? 'checked' : '';
+  const thumb = img
+    ? `<img src="${img}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
+    : `<span>${s.icon || '📍'}</span>`;
+  const revertBtn = status === 'override' ? `<button class="btn sm" onclick="revertScreenPhoto('${s.id}')">↩ Revert</button>` : '';
+  const cropBtn   = img ? `<button class="btn sm" onclick="openCropModal('${s.id}')">✂ Crop</button>` : '';
+  return `
+    <div class="photo-card">
+      <label style="position:absolute;top:6px;left:6px;z-index:2;cursor:pointer">
+        <input type="checkbox" class="photo-sel" ${checked} onchange="togglePhotoSel('${s.id}',this.checked)">
+      </label>
+      <span class="photo-badge" style="background:${bc}">${bl}</span>
+      <div class="photo-card-thumb">${thumb}</div>
+      <div class="photo-card-body">
+        <div class="photo-card-name">${s.name || s.id}</div>
+        <div class="photo-card-sub">${s.venue_type || ''} · ${s.area || ''}</div>
+        <div class="photo-card-sub" style="font-family:monospace;font-size:9px;margin-top:2px;color:var(--text3)">${s.id}</div>
+        <div class="photo-card-actions">
+          ${cropBtn}
+          <label class="btn sm" style="cursor:pointer">
+            📷 Replace
+            <input type="file" accept="image/*" style="display:none" onchange="replaceScreenPhoto('${s.id}',this)">
+          </label>
+          ${revertBtn}
+        </div>
+      </div>
+    </div>`;
+}
+
+function _appendPhotoCards(grid, from) {
+  const slice = _photoFiltered.slice(from, from + _PHOTO_PAGE_SIZE);
+  if (!slice.length) return;
+  grid.insertAdjacentHTML('beforeend', slice.map(_photoCardHtml).join(''));
+}
+
+let _photoObserver = null;
+function _initPhotoObserver(grid) {
+  if (_photoObserver) { _photoObserver.disconnect(); _photoObserver = null; }
+  const loaded = (_photoPage + 1) * _PHOTO_PAGE_SIZE;
+  if (loaded >= _photoFiltered.length) return;
+
+  const sentinel = document.createElement('div');
+  sentinel.id = 'photo-sentinel';
+  sentinel.style.cssText = 'height:1px;grid-column:1/-1';
+  grid.appendChild(sentinel);
+
+  const root = document.querySelector('.content');
+  _photoObserver = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    _photoObserver.disconnect(); _photoObserver = null;
+    sentinel.remove();
+    _photoPage++;
+    _appendPhotoCards(grid, _photoPage * _PHOTO_PAGE_SIZE);
+    _initPhotoObserver(grid);
+  }, { root, rootMargin: '300px' });
+  _photoObserver.observe(sentinel);
+}
+
+function renderPhotoGrid() {
+  const search = (document.getElementById('photo-search')?.value || '').toLowerCase();
+  const vtype  = document.getElementById('photo-vtype')?.value || '';
+  _photoFiltered = INV.filter(s => {
+    if (search && !(s.name||'').toLowerCase().includes(search) && !(s.area||'').toLowerCase().includes(search)) return false;
+    if (vtype && s.venue_type !== vtype) return false;
+    if (_photoStatusFilter !== 'all' && photoStatusOf(s) !== _photoStatusFilter) return false;
+    return true;
+  });
+  _photoPage = 0;
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = '';
+  _appendPhotoCards(grid, 0);
+  _initPhotoObserver(grid);
+}
+
+async function replaceScreenPhoto(screenId, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop() || 'jpg';
+  const path = `${screenId}-${Date.now()}.${ext}`;
+  const { data: uploadData, error: upErr } = await sbClient.storage.from('screen-photos').upload(path, file, { upsert: true });
+  if (upErr) { alert('Upload failed: ' + upErr.message); return; }
+  const { data: urlData } = sbClient.storage.from('screen-photos').getPublicUrl(path);
+  const imageUrl = urlData.publicUrl;
+  const { error: dbErr } = await sbClient.from('screen_photo_overrides').upsert({
+    screen_id: screenId, image_url: imageUrl,
+    updated_by: ADMIN_SESSION?.user?.email || '',
+    updated_at: new Date().toISOString(),
+  });
+  if (dbErr) { alert('DB error: ' + dbErr.message); return; }
+  refreshPhotoOverrides(sbClient).then(() => { renderPhotoQAKPIs(); renderPhotoGrid(); });
+}
+
+async function revertScreenPhoto(screenId) {
+  if (!confirm('Remove override for this screen?')) return;
+  const { error } = await sbClient.from('screen_photo_overrides').delete().eq('screen_id', screenId);
+  if (error) { alert('Revert failed: ' + error.message); return; }
+  refreshPhotoOverrides(sbClient).then(() => { renderPhotoQAKPIs(); renderPhotoGrid(); });
+}
+
+async function bulkReplacePhotos(input) {
+  const file = input.files[0];
+  if (!file || _photoSelections.size === 0) return;
+  const ids = [..._photoSelections];
+  for (const screenId of ids) {
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `${screenId}-${Date.now()}.${ext}`;
+    const { error: upErr } = await sbClient.storage.from('screen-photos').upload(path, file, { upsert: true });
+    if (upErr) { alert('Upload failed for ' + screenId + ': ' + upErr.message); continue; }
+    const { data: urlData } = sbClient.storage.from('screen-photos').getPublicUrl(path);
+    await sbClient.from('screen_photo_overrides').upsert({
+      screen_id: screenId, image_url: urlData.publicUrl,
+      updated_by: ADMIN_SESSION?.user?.email || '',
+      updated_at: new Date().toISOString(),
+    });
+  }
+  _photoSelections.clear();
+  const btn = document.getElementById('bulk-replace-btn');
+  if (btn) btn.style.display = 'none';
+  refreshPhotoOverrides(sbClient).then(() => { renderPhotoQAKPIs(); renderPhotoGrid(); });
+}
+
+function openCropModal(screenId) {
+  const s = INV.find(x => x.id === screenId);
+  if (!s) return;
+  const img = resolveScreenImg(s);
+  if (!img) { alert('No source image — use Replace to upload one first.'); return; }
+  _cropTargetId = screenId;
+  if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+  const modal = document.getElementById('crop-modal');
+  document.getElementById('crop-modal-title').textContent = 'Crop — ' + (s.name || screenId);
+  const cropImg = document.getElementById('crop-img');
+  cropImg.src = img;
+  modal.classList.add('open');
+  cropImg.onload = () => {
+    _cropperInstance = new Cropper(cropImg, {
+      aspectRatio: document.getElementById('crop-free')?.checked ? NaN : 16/9,
+      viewMode: 1, autoCropArea: 1,
+    });
+  };
+}
+
+function closeCropModal() {
+  document.getElementById('crop-modal').classList.remove('open');
+  if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+  _cropTargetId = null;
+}
+
+document.getElementById('crop-free')?.addEventListener('change', function() {
+  if (_cropperInstance) _cropperInstance.setAspectRatio(this.checked ? NaN : 16/9);
+});
+
+async function saveCrop() {
+  if (!_cropperInstance || !_cropTargetId) return;
+  const cropData = _cropperInstance.getData(true); // rounded pixel coords for crop_meta
+  const canvas = _cropperInstance.getCroppedCanvas({ width: 1280, height: 720 });
+  const btn = document.getElementById('crop-save-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  canvas.toBlob(async blob => {
+    const path = `${_cropTargetId}-${Date.now()}.jpg`;
+    const { error: upErr } = await sbClient.storage.from('screen-photos').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+    if (upErr) { alert('Upload failed: ' + upErr.message); if (btn) { btn.disabled=false; btn.textContent='Save crop'; } return; }
+    const { data: urlData } = sbClient.storage.from('screen-photos').getPublicUrl(path);
+    const { error: dbErr } = await sbClient.from('screen_photo_overrides').upsert({
+      screen_id: _cropTargetId, image_url: urlData.publicUrl,
+      crop_meta: cropData,
+      updated_by: ADMIN_SESSION?.user?.email || '',
+      updated_at: new Date().toISOString(),
+    });
+    if (dbErr) { alert('DB error: ' + dbErr.message); if (btn) { btn.disabled=false; btn.textContent='Save crop'; } return; }
+    closeCropModal();
+    refreshPhotoOverrides(sbClient).then(() => { renderPhotoQAKPIs(); renderPhotoGrid(); });
+    if (btn) { btn.disabled=false; btn.textContent='Save crop'; }
+  }, 'image/jpeg', 0.92);
+}
+
 </script>
+<div id="crop-modal">
+  <div id="crop-modal-box">
+    <div id="crop-modal-head">
+      <strong id="crop-modal-title">Crop photo</strong>
+      <button onclick="closeCropModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3)">✕</button>
+    </div>
+    <div id="crop-modal-body">
+      <div id="crop-img-wrap"><img id="crop-img" alt="Crop source"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:12px;justify-content:flex-end">
+        <label style="font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px">
+          <input type="checkbox" id="crop-free"> Free aspect ratio
+        </label>
+        <button class="btn" onclick="closeCropModal()">Cancel</button>
+        <button class="btn accent" id="crop-save-btn" onclick="saveCrop()">Save crop</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
