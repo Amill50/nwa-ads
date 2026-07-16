@@ -25,6 +25,9 @@ const JS_FILES = [
   'book/js/book-map.js',
   'book/js/book-cart.js',
   'book/js/book-flow.js',
+  'netlify/functions/anthropic-proxy.js',
+  'netlify/functions/lead-alert.js',
+  'netlify/functions/leads-digest.js',
 ];
 
 const HTML_FILES = [
