@@ -10,7 +10,8 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/shared/js/env.js?v=20260715b"></script>
-<script src="/shared/js/venue-type-img.js?v=20260715b"></script>
+<script src="/shared/js/venue-type-img.js?v=20260715c"></script>
+<script src="/shared/js/photo-overrides.js?v=20260715c"></script>
 <script src="/shared/js/pricing.js?v=20260715b"></script>
 <style>
 :root {
@@ -502,6 +503,7 @@ const sbClient = window.supabase.createClient(
   window.ENV_CONFIG.supabaseUrl,
   window.ENV_CONFIG.supabaseKey
 );
+loadPhotoOverrides(sbClient);
 
 /* ══════════════ GLOBALS ══════════════ */
 let proposalMap    = null;
@@ -634,7 +636,7 @@ function renderInventory(screens) {
     const color  = venueColor(vk);
     const rate   = Math.round(screenRate(s));
     const city   = [s.city, s.state].filter(Boolean).join(', ') || s.area || '';
-    const imgSrc = s.img || s.image_url || VENUE_TYPE_IMG[s.venue_type] || VENUE_TYPE_IMG[s.type];
+    const imgSrc = resolveScreenImg(s);
     const photoBlock = imgSrc
       ? '<img class="inv-photo" src="' + imgSrc + '" alt="' + (s.name||'') + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="inv-photo-fallback" style="display:none;background:' + color + '18">' + makeIconHtml(vk, 34) + '</div>'

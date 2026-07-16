@@ -25400,7 +25400,7 @@ const WMT_ZONES = [
     color: '#8b4513',
     desc: 'Pinnacle Hills & Country Club — high-income residential & retail' },
 ];
-const WMT_ALLOWED_TYPES = new Set(['digitalbillboard', 'cinemaintheater', 'gym', 'casualdining', 'quickservicerestaurant', 'sportsentertainment', 'recreationalnew']);
+const WMT_ALLOWED_TYPES = new Set(['billboard', 'cinema', 'gym', 'dining', 'sports', 'recreation']);
 
 /* Shared zone check for the Walmart-buyer goal — used by both the map
    visibility gate (isVisible) and the optimizer (fallbackRecommend) so
