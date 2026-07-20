@@ -60,23 +60,28 @@ exports.handler = async (event) => {
 
   const isHighPriority = type === 'INSERT' && record.status !== 'draft';
 
+  // Publish via ntfy's JSON API (POST to root). Titles with emoji cannot be
+  // sent as HTTP headers (headers are ISO-8859-1 only — undici throws), so
+  // everything goes in the JSON body where UTF-8 is fine.
   try {
-    const resp = await fetch(`https://ntfy.sh/${topic}`, {
+    const resp = await fetch('https://ntfy.sh', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-        'Title': title,
-        'Priority': isHighPriority ? 'high' : 'default',
-        'Tags': 'moneybag',
-      },
-      body,
+      body: JSON.stringify({
+        topic,
+        title,
+        message: body,
+        priority: isHighPriority ? 4 : 3,
+        tags: ['moneybag'],
+      }),
     });
     if (!resp.ok) {
       console.error(`lead-alert: ntfy responded ${resp.status}`);
+      return { statusCode: 200, body: `ok (ntfy_failed: ${resp.status})` };
     }
   } catch (err) {
     console.error('lead-alert: failed to reach ntfy.sh:', err.message);
+    return { statusCode: 200, body: `ok (ntfy_failed: ${err.message})` };
   }
 
-  return { statusCode: 200, body: 'ok' };
+  return { statusCode: 200, body: 'ok (sent)' };
 };
