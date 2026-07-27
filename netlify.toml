@@ -24,6 +24,16 @@
   status = 200
 
 [[redirects]]
+  from = "/proposal/approve"
+  to = "/proposal/approve.html"
+  status = 200
+
+[[redirects]]
+  from = "/proposal/terms"
+  to = "/proposal/terms.html"
+  status = 200
+
+[[redirects]]
   from = "/proposal"
   to = "/proposal/view"
   status = 301
