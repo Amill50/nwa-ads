@@ -1,6 +1,7 @@
 function initMap() {
   if (map) { setTimeout(()=>map.invalidateSize(),100); return; }
-  map = L.map('map', { center:[36.28, -94.21], zoom:11, zoomControl:true });
+  var _isMobile = window.matchMedia('(max-width:768px),(pointer:coarse)').matches;
+  map = L.map('map', { center:[36.28, -94.21], zoom:11, zoomControl:true, scrollWheelZoom: !_isMobile });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution:'&copy; <a href="https://carto.com/">CARTO</a>',
@@ -31,7 +32,7 @@ function initMap() {
   const legend = L.control({ position: 'bottomleft' });
   legend.onAdd = function() {
     const div = L.DomUtil.create('div');
-    div.style.cssText = 'background:#fff;padding:12px 16px;border-radius:12px;border:1px solid #e2ddd6;font-family:Instrument Sans,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,0.12);min-width:160px;max-height:calc(100vh - 200px);overflow-y:auto';
+    div.style.cssText = 'background:#fff;padding:12px 16px;border-radius:12px;border:1px solid #e2ddd6;font-family:Instrument Sans,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,0.12);min-width:160px;max-height:calc(100svh - 200px);overflow-y:auto';
     div.innerHTML = buildLegendHtml();
     // (legend HTML is generated dynamically above)
     if (false) { div.innerHTML = `
@@ -125,10 +126,62 @@ function initMap() {
     L.DomEvent.disableClickPropagation(div);
     return div;
   };
-  legend.addTo(map);
+  if (_isMobile) {
+    _injectMobileLegend();
+  } else {
+    legend.addTo(map);
+  }
 
   INV.forEach(s => addMarker(s));
   setTimeout(()=>map.invalidateSize(),200);
+}
+
+function _injectMobileLegend() {
+  var mapEl = document.getElementById('map');
+  if (!mapEl || document.getElementById('mobile-legend-wrap')) return;
+  var types = [
+    { key: 'Digital Billboard',        label: 'Billboard' },
+    { key: 'Gas Station',              label: 'Gas Station' },
+    { key: 'Casual Dining',            label: 'Casual Dining' },
+    { key: 'Quick Service Restaurant', label: 'QSR' },
+    { key: 'Doctors Office',           label: 'Healthcare' },
+    { key: 'Gym',                      label: 'Gym' },
+    { key: 'Cinema (In-Theater)',       label: 'Cinema' },
+    { key: 'Grocery Store',            label: 'Grocery' },
+    { key: 'Airport',                  label: 'Airport' },
+    { key: 'Taxi / Rideshare Interior',label: 'Rideshare' },
+    { key: 'Sports Entertainment',     label: 'Sports' },
+    { key: 'Recreational (NEW)',        label: 'Recreation' },
+    { key: 'Salon & Spa',              label: 'Salon & Spa' },
+    { key: 'Bar/Restaurant TV',        label: 'Bar TV' },
+    { key: 'College Campus',           label: 'Campus' },
+    { key: 'Apartment Building',       label: 'Residential' },
+    { key: 'Office Building (NEW)',    label: 'Office' },
+    { key: 'Convenience Store',        label: 'Convenience' },
+  ];
+  var wrap = document.createElement('div');
+  wrap.id = 'mobile-legend-wrap';
+  wrap.innerHTML =
+    '<button id="ml-toggle" class="ml-toggle-btn" onclick="toggleMobileLegend()">' +
+    '⚙️ Filter venue types (<span id="ml-count">' + types.length + '</span>)</button>' +
+    '<div id="ml-chips" class="ml-chips">' +
+    types.map(function(t) {
+      return '<label class="ml-chip">' +
+        '<input type="checkbox" checked data-vtype="' + t.key.replace(/"/g, '&quot;') + '" onchange="toggleVenueType(this)">' +
+        '<span class="ml-chip-dot" style="background:' + venueColor(t.key) + '"></span>' +
+        t.label + '</label>';
+    }).join('') +
+    '</div>';
+  mapEl.parentNode.insertBefore(wrap, mapEl);
+}
+
+function toggleMobileLegend() {
+  var chips = document.getElementById('ml-chips');
+  var btn = document.getElementById('ml-toggle');
+  if (!chips) return;
+  var isOpen = chips.classList.contains('open');
+  chips.classList.toggle('open', !isOpen);
+  if (btn) btn.classList.toggle('open', !isOpen);
 }
 
 /* ══════════════ VENUE ICON SYSTEM ══════════════ */
@@ -359,7 +412,7 @@ function openPopup(s, m) {
   const badgeTxt = badgeTxtMap[s.type] || s.type;
   const inCart = !!ST.cart[s.id];
   const popupPrice = Math.round(unitRate(s));
-  const popup = L.popup({ maxWidth:260, closeButton:true })
+  const popup = L.popup({ maxWidth: Math.min(window.innerWidth - 32, 300), closeButton:true, autoPan:true, autoPanPadding:[20,60] })
     .setContent(`
       <div class="popup-inner">
         <span class="popup-badge ${cls}">${badgeTxt}</span>
@@ -376,7 +429,7 @@ function openPopup(s, m) {
           <div class="popup-price">$${popupPrice.toLocaleString()} <small>${rateLabel()}</small></div>
           <button class="popup-add${inCart?' added':''}" id="popup-btn-${s.id}" onclick="toggleFromPopup('${s.id}')">${inCart?'✓ Added':'+ Add'}</button>
         </div>
-        <button onclick="map.closePopup();openDrawer('${s.id}')" style="width:100%;padding:7px;background:none;border:1px solid #e2ddd6;border-radius:6px;font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:#4a4540;transition:all 0.15s" onmouseover="this.style.borderColor='#c8440a';this.style.color='#c8440a'" onmouseout="this.style.borderColor='#e2ddd6';this.style.color='#4a4540'">View full details →</button>
+        <button onclick="map.closePopup();openDrawer('${s.id}')" style="width:100%;padding:7px;min-height:44px;background:none;border:1px solid #e2ddd6;border-radius:6px;font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:#4a4540;transition:all 0.15s" onmouseover="this.style.borderColor='#c8440a';this.style.color='#c8440a'" onmouseout="this.style.borderColor='#e2ddd6';this.style.color='#4a4540'">View full details →</button>
       </div>
     `);
 
