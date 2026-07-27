@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWA Ads — Approve Your Campaign</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/css/base.css?v=20260727a">
+<style>
+  body { background: #fffef9; color: #1a1714; }
+  .apv-wrap { max-width: 720px; margin: 0 auto; padding: 60px 24px 100px; }
+  .apv-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: #1a1714; margin-bottom: 40px; }
+  .apv-logo span { color: #c8440a; }
+  h1 { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 6px; }
+  .apv-sub { font-size: 15px; color: #6b6560; margin-bottom: 36px; }
+  .apv-card { background: #fff; border: 1px solid #e2ddd6; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .apv-card-title { font-family: 'Instrument Sans', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: #c8440a; margin-bottom: 14px; }
+  .apv-screens { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .apv-screens th { text-align: left; padding: 6px 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #6b6560; border-bottom: 1px solid #e2ddd6; }
+  .apv-screens td { padding: 10px; border-bottom: 1px solid #f0ede8; }
+  .apv-screens tr:last-child td { border-bottom: none; }
+  .apv-final-badge { display: inline-block; background: #166534; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 4px; padding: 2px 6px; margin-left: 6px; vertical-align: middle; }
+  .apv-total-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 0; border-top: 2px solid #1a1714; margin-top: 6px; }
+  .apv-total-label { font-size: 14px; font-weight: 600; }
+  .apv-total-amount { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; color: #1a1714; }
+  .apv-notes { font-size: 14px; line-height: 1.7; color: #3a3630; white-space: pre-wrap; }
+  .terms-frame { width: 100%; height: 400px; border: 1px solid #e2ddd6; border-radius: 8px; }
+  .apv-checkbox-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; cursor: pointer; }
+  .apv-checkbox-row input[type="checkbox"] { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; cursor: pointer; accent-color: #c8440a; }
+  .apv-label { font-size: 14px; line-height: 1.5; color: #3a3630; }
+  .apv-sig-label { font-size: 13px; font-weight: 600; color: #3a3630; margin-bottom: 6px; }
+  .apv-sig-input { width: 100%; border: 1px solid #d0cdc8; border-radius: 8px; padding: 12px; font-size: 15px; font-family: 'Instrument Sans', sans-serif; box-sizing: border-box; }
+  .apv-sig-input:focus { outline: none; border-color: #c8440a; box-shadow: 0 0 0 3px rgba(200,68,10,0.12); }
+  .apv-btn { display: block; width: 100%; padding: 16px; background: #c8440a; color: #fff; border: none; border-radius: 10px; font-family: 'Instrument Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; text-align: center; margin-top: 20px; }
+  .apv-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .apv-success { text-align: center; padding: 40px 24px; }
+  .apv-success-icon { font-size: 52px; margin-bottom: 16px; }
+  .apv-success h2 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+  .apv-success p { font-size: 15px; color: #6b6560; line-height: 1.6; }
+  .apv-already { background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; padding: 24px; margin-top: 20px; }
+  .apv-already-title { font-weight: 700; color: #166534; font-size: 16px; margin-bottom: 6px; }
+  .apv-already-detail { font-size: 14px; color: #3a3630; }
+  .apv-error { text-align: center; padding: 60px 24px; }
+  .apv-error-icon { font-size: 48px; margin-bottom: 16px; }
+  .apv-error h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #991b1b; }
+  .apv-error p { font-size: 14px; color: #6b6560; }
+  #apv-loading { text-align: center; padding: 80px 24px; color: #6b6560; font-size: 15px; }
+  @media (max-width: 600px) {
+    .apv-wrap { padding: 40px 18px 80px; }
+    h1 { font-size: 24px; }
+    .apv-total-amount { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="apv-wrap">
+  <div class="apv-logo">NWA <span>Ads</span></div>
+  <div id="apv-root"><div id="apv-loading">Loading your campaign…</div></div>
+</div>
+
+<script src="/shared/js/env.js?v=20260727a"></script>
+<script>
+(async function() {
+  const root = document.getElementById('apv-root');
+  const params = new URLSearchParams(location.search);
+  const campaignId = params.get('id');
+  const token = params.get('t');
+
+  function showError(msg) {
+    root.innerHTML = `
+      <div class="apv-error">
+        <div class="apv-error-icon">⚠️</div>
+        <h2>Link not valid</h2>
+        <p>${msg}<br><br>Questions? <a href="mailto:hello@nwa-ads.com" style="color:#c8440a">hello@nwa-ads.com</a></p>
+      </div>`;
+  }
+
+  if (!campaignId || !token) { showError('This approval link is missing required parameters.'); return; }
+
+  const sb = window.supabase.createClient(ENV_CONFIG.supabaseUrl, ENV_CONFIG.supabaseKey);
+
+  const { data: campaign, error } = await sb.rpc('get_approval', { p_id: campaignId, p_token: token });
+
+  if (error || !campaign) { showError('This approval link is invalid or has expired.'); return; }
+
+  if (campaign.status === 'confirmed' && campaign.approved_at) {
+    const approvedDate = new Date(campaign.approved_at).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    root.innerHTML = `
+      <h1>Campaign approved</h1>
+      <p class="apv-sub">${campaign.company_name || 'Your campaign'}</p>
+      <div class="apv-already">
+        <div class="apv-already-title">✓ Already approved</div>
+        <div class="apv-already-detail">Approved on ${approvedDate} by <strong>${campaign.approved_by_name || '—'}</strong>.<br>
+        We'll be in touch with your payment link and next steps.</div>
+      </div>
+      <p style="margin-top:24px;font-size:14px;color:#6b6560">Questions? <a href="mailto:hello@nwa-ads.com" style="color:#c8440a">hello@nwa-ads.com</a></p>
+    `;
+    return;
+  }
+
+  const screens = campaign.screens && typeof campaign.screens === 'object' ? Object.values(campaign.screens) : [];
+  const finalTotal = Number(campaign.final_total) || Number(campaign.budget) || 0;
+  const termsVersion = campaign.terms_version || 'v1.0 — July 2026';
+
+  root.innerHTML = `
+    <h1>Approve your campaign</h1>
+    <p class="apv-sub">Review the final pricing below, agree to the Terms &amp; Conditions, and sign to approve.</p>
+
+    <div class="apv-card">
+      <div class="apv-card-title">Campaign details</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">${campaign.company_name || 'Your campaign'}</div>
+      ${campaign.contact_name ? `<div style="font-size:13px;color:#6b6560;margin-bottom:4px">${campaign.contact_name}</div>` : ''}
+      ${(campaign.flight_start && campaign.flight_end) ? `<div style="font-size:13px;color:#6b6560">Flight: ${campaign.flight_start} → ${campaign.flight_end}</div>` : ''}
+    </div>
+
+    <div class="apv-card">
+      <div class="apv-card-title">Final screens &amp; pricing <span class="apv-final-badge">Final</span></div>
+      <table class="apv-screens">
+        <thead>
+          <tr><th>Screen</th><th style="text-align:right">Rate</th></tr>
+        </thead>
+        <tbody>
+          ${screens.map(s => `
+          <tr>
+            <td>${s.name || s.label || 'Screen'}</td>
+            <td style="text-align:right;font-weight:600">$${Number(s.weekly_rate || s.rate || 0).toLocaleString()}/wk</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="apv-total-row">
+        <div class="apv-total-label">Total</div>
+        <div class="apv-total-amount">$${finalTotal.toLocaleString()}</div>
+      </div>
+      <p style="font-size:12px;color:#6b6560;margin-top:8px;margin-bottom:0">These are final confirmed rates — not an estimate.</p>
+    </div>
+
+    ${campaign.final_notes ? `
+    <div class="apv-card">
+      <div class="apv-card-title">Notes from NWA Ads</div>
+      <div class="apv-notes">${campaign.final_notes}</div>
+    </div>` : ''}
+
+    <div class="apv-card">
+      <div class="apv-card-title">Terms &amp; Conditions</div>
+      <iframe src="/proposal/terms" class="terms-frame" title="Terms and Conditions"></iframe>
+    </div>
+
+    <div id="apv-form">
+      <label class="apv-checkbox-row">
+        <input type="checkbox" id="apv-terms-check">
+        <span class="apv-label">I have read and agree to the Terms &amp; Conditions (${termsVersion})</span>
+      </label>
+
+      <div class="apv-sig-label">Type your full name to sign *</div>
+      <input type="text" id="apv-sig" class="apv-sig-input" placeholder="Your full legal name" autocomplete="name">
+
+      <button class="apv-btn" id="apv-submit-btn" onclick="submitApproval()">Approve campaign</button>
+      <p style="font-size:12px;color:#6b6560;margin-top:12px;text-align:center">By approving, you confirm the pricing above and agree to the Terms &amp; Conditions. A payment link will follow within 24 hours.</p>
+    </div>
+
+    <div id="apv-success" style="display:none" class="apv-success">
+      <div class="apv-success-icon">✅</div>
+      <h2>You're approved!</h2>
+      <p>Thank you — we'll send a secure payment link within 24 hours.<br>
+      Questions? <a href="mailto:hello@nwa-ads.com" style="color:#c8440a">hello@nwa-ads.com</a></p>
+    </div>
+  `;
+
+  window.submitApproval = async function() {
+    const termsChecked = document.getElementById('apv-terms-check').checked;
+    const sigName = (document.getElementById('apv-sig').value || '').trim();
+    const btn = document.getElementById('apv-submit-btn');
+
+    if (!termsChecked) { alert('Please check the box to agree to the Terms & Conditions.'); return; }
+    if (!sigName) { alert('Please type your full name to sign.'); document.getElementById('apv-sig').focus(); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const { data: ok, error: approveErr } = await sb.rpc('record_approval', {
+      p_id: campaignId,
+      p_token: token,
+      p_name: sigName,
+    });
+
+    if (approveErr || !ok) {
+      btn.disabled = false;
+      btn.textContent = 'Approve campaign';
+      alert(approveErr ? 'Error: ' + approveErr.message : 'Could not record your approval. The link may have already been used.');
+      return;
+    }
+
+    document.getElementById('apv-form').style.display = 'none';
+    document.getElementById('apv-success').style.display = 'block';
+  };
+})();
+</script>
+</body>
+</html>
