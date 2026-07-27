@@ -1299,7 +1299,11 @@ function showOptimizerConstraintCard(d) {
     '</div>' +
     '<div class="opt-cc-body">' + d.body + '</div>' +
     (actionsHtml ? '<div class="opt-cc-actions">' + actionsHtml + '</div>' : '');
-  mapEl.appendChild(card);
+  if (window.matchMedia('(max-width:768px),(pointer:coarse)').matches) {
+    mapEl.parentNode.insertBefore(card, mapEl);
+  } else {
+    mapEl.appendChild(card);
+  }
 }
 
 function diagnoseOptimizer(picks, weeklyBudget) {

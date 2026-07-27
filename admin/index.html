@@ -6,12 +6,12 @@
 <title>NWA Ads — Admin Console</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="/shared/js/env.js?v=20260715b"></script>
+<script src="/shared/js/env.js?v=20260727a"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-<script src="/shared/js/venue-type-img.js?v=20260715c"></script>
-<script src="/shared/js/inventory.js?v=20260715c"></script>
-<script src="/shared/js/photo-overrides.js?v=20260715c"></script>
+<script src="/shared/js/venue-type-img.js?v=20260727a"></script>
+<script src="/shared/js/inventory.js?v=20260727a"></script>
+<script src="/shared/js/photo-overrides.js?v=20260727a"></script>
 <style>
 :root {
   /* NWA Ads brand system */
@@ -151,6 +151,7 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .pill.cancelled{background:var(--red-dim);color:#b91c1c;font-weight:700}
 .pill.draft{background:var(--border);color:var(--text2);font-weight:700}
 .pill.pending_confirmation{background:var(--gold-dim);color:#7a5800;font-weight:700}
+.pill.awaiting_approval{background:#dbeafe;color:#1d4ed8;font-weight:700}
 .pill.completed{background:var(--surface2);color:var(--text3);font-weight:700}
 .admin-auth-overlay{display:none;position:fixed;inset:0;background:rgba(14,26,14,0.6);z-index:5000;align-items:center;justify-content:center;padding:20px}
 .admin-auth-overlay.open{display:flex}
@@ -416,6 +417,7 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
           <div class="filter-chip on" onclick="filterCampaigns(this,'all')">All</div>
           <div class="filter-chip" onclick="filterCampaigns(this,'pending')">⏳ Pending</div>
           <div class="filter-chip" onclick="filterCampaigns(this,'creative_review')">🎨 Creative review</div>
+          <div class="filter-chip" onclick="filterCampaigns(this,'awaiting_approval')">🔏 Awaiting approval</div>
           <div class="filter-chip" onclick="filterCampaigns(this,'confirmed')">✓ Confirmed</div>
           <div class="filter-chip" onclick="filterCampaigns(this,'live')">🟢 Live</div>
           <input class="search-input" placeholder="Search campaigns…" oninput="searchCampaigns(this.value)">
@@ -769,6 +771,18 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
       </div>
 
     </main>
+  </div>
+</div>
+
+<!-- Finalize pricing overlay -->
+<div id="finalize-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;padding:16px">
+  <div id="finalize-panel" style="background:#fff;border-radius:12px;max-width:660px;width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.3)">
+    <div style="padding:18px 22px;border-bottom:1px solid #e2ddd6;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:#1a1714">Finalize pricing</div>
+      <button onclick="closeFinalizePanel()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b6560;line-height:1">✕</button>
+    </div>
+    <div id="finalize-body" style="flex:1;overflow-y:auto;padding:20px 22px"></div>
+    <div id="finalize-footer" style="padding:14px 22px;border-top:1px solid #e2ddd6"></div>
   </div>
 </div>
 
@@ -11952,6 +11966,7 @@ sbClient.auth.getSession().then(({ data }) => {
 const SB_STATUS_LABELS = {
   draft: 'Draft',
   pending_confirmation: 'Pending confirmation',
+  awaiting_approval: 'Awaiting approval',
   confirmed: 'Confirmed',
   live: 'Live',
   completed: 'Completed',
@@ -11964,6 +11979,7 @@ function mapSupabaseCampaign(row) {
   return {
     id: row.id,
     _supabase: true,
+    _raw: row,
     status: row.status || 'draft',
     submitted: row.created_at ? new Date(row.created_at).toLocaleString() : '',
     name: row.company_name || 'Untitled campaign',
@@ -12081,7 +12097,9 @@ function renderCampaigns() {
           ${c.status==='pending' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Confirm →</button>` : ''}
           ${c.status==='creative_review' ? `<button class="btn sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Approve</button>` : ''}
           ${c.status==='confirmed' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Go live →</button>` : ''}
-          ${c.status==='pending_confirmation' ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Confirm →</button>` : ''}
+          ${c.status==='pending_confirmation' && !c._supabase ? `<button class="btn green sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Confirm →</button>` : ''}
+          ${c.status==='pending_confirmation' && c._supabase ? `<button class="btn green sm" onclick="event.stopPropagation();openFinalizePanel('${c.id}')">Finalize pricing →</button>` : ''}
+          ${c.status==='awaiting_approval' && c._supabase ? `<button class="btn sm" onclick="event.stopPropagation();showApprovalLink('${c.id}')">Copy approval link</button>` : ''}
           ${c._supabase && c.status==='live' ? `<button class="btn sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Complete</button>` : ''}
           <button class="btn sm" onclick="event.stopPropagation();openDetail('${c.id}')">View</button>
           ${c._supabase ? '' : `<button class="btn sm" style="color:var(--accent);border-color:var(--accent)" onclick="event.stopPropagation();deleteCampaign('${c.id}')">✕</button>`}
@@ -12122,13 +12140,166 @@ function clearTestCampaigns() {
 function statusLabel(s) {
   const m = {
     pending:'⏳ Pending', confirmed:'✓ Confirmed', live:'🟢 Live', creative_review:'🎨 Creative', cancelled:'✗ Cancelled',
-    draft:'📝 Draft', pending_confirmation:'⏳ Pending confirmation', completed:'✓ Completed',
+    draft:'📝 Draft', pending_confirmation:'⏳ Pending confirmation', awaiting_approval:'🔏 Awaiting approval', completed:'✓ Completed',
   };
   return m[s] || s;
 }
 
-const SB_STATUS_FLOW = ['pending_confirmation', 'confirmed', 'live', 'completed'];
+const SB_STATUS_FLOW = ['pending_confirmation', 'awaiting_approval', 'confirmed', 'live', 'completed'];
 const SB_NEXT_LABELS = {pending_confirmation:'Confirm availability →', confirmed:'Mark as live →', live:'Mark as completed →'};
+
+/* ══════════════ FINALIZE PANEL ══════════════ */
+let _finalizeCampaignId = null;
+
+function openFinalizePanel(id) {
+  const c = campaigns.find(x => x.id === id);
+  if (!c || !c._raw) { alert('Campaign data not loaded — try refreshing.'); return; }
+  _finalizeCampaignId = id;
+  const raw = c._raw;
+  const screens = raw.screens && typeof raw.screens === 'object' ? Object.values(raw.screens) : [];
+
+  document.getElementById('finalize-body').innerHTML = `
+    <div style="margin-bottom:16px">
+      <strong style="font-size:15px">${c.name}</strong>
+      <span style="font-size:12px;color:#6b6560;margin-left:8px">${c.contact}${c.email ? ' · ' + c.email : ''}</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px">
+      <thead>
+        <tr style="border-bottom:2px solid #e2ddd6;text-align:left">
+          <th style="padding:6px 8px;font-weight:600">Screen</th>
+          <th style="padding:6px 8px;font-weight:600;text-align:right">Est. rate</th>
+          <th style="padding:6px 8px;font-weight:600;text-align:right">Final rate</th>
+          <th style="padding:6px 8px;font-weight:600;text-align:center">Available</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${screens.map((s, i) => `
+        <tr style="border-bottom:1px solid #f0ede8">
+          <td style="padding:8px 8px">${s.name || s.label || 'Screen ' + (i + 1)}</td>
+          <td style="padding:8px;text-align:right;color:#6b6560">$${Number(s.weekly_rate || s.rate || 0).toLocaleString()}</td>
+          <td style="padding:8px;text-align:right">
+            <input type="number" class="fin-rate" data-idx="${i}"
+              value="${Number(s.weekly_rate || s.rate || 0)}"
+              style="width:90px;border:1px solid #d0cdc8;border-radius:6px;padding:4px 8px;text-align:right;font-size:13px"
+              oninput="updateFinalTotal()">
+          </td>
+          <td style="padding:8px;text-align:center">
+            <input type="checkbox" class="fin-avail" checked style="width:16px;height:16px;cursor:pointer" onchange="updateFinalTotal()">
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f7f5f0;border-radius:8px;margin-bottom:16px">
+      <div style="font-size:13px;color:#6b6560">Final total:</div>
+      <div id="fin-total" style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:#1a1714">$0</div>
+    </div>
+    <label style="display:block;font-size:13px;font-weight:600;color:#3a3630;margin-bottom:6px">Notes to client (optional)</label>
+    <textarea id="fin-notes" rows="3" placeholder="e.g. One screen had rate adjustment; all screens confirmed available…"
+      style="width:100%;border:1px solid #d0cdc8;border-radius:8px;padding:10px;font-size:13px;resize:vertical;box-sizing:border-box"></textarea>
+  `;
+
+  document.getElementById('finalize-footer').innerHTML = `
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeFinalizePanel()" style="padding:10px 20px;border:1px solid #d0cdc8;border-radius:8px;background:#fff;cursor:pointer;font-size:14px">Cancel</button>
+      <button id="fin-save-btn" onclick="saveFinalizePanel()" style="padding:10px 20px;border:none;border-radius:8px;background:#c8440a;color:#fff;cursor:pointer;font-size:14px;font-weight:600">Save &amp; generate approval link</button>
+    </div>
+  `;
+
+  const overlay = document.getElementById('finalize-overlay');
+  overlay.style.display = 'flex';
+  updateFinalTotal();
+}
+
+function updateFinalTotal() {
+  const rates = [...document.querySelectorAll('.fin-rate')].map(i => Number(i.value) || 0);
+  const avails = [...document.querySelectorAll('.fin-avail')].map(i => i.checked);
+  const total = rates.reduce((sum, r, i) => sum + (avails[i] ? r : 0), 0);
+  const el = document.getElementById('fin-total');
+  if (el) el.textContent = '$' + total.toLocaleString();
+}
+
+function closeFinalizePanel() {
+  document.getElementById('finalize-overlay').style.display = 'none';
+  _finalizeCampaignId = null;
+}
+
+async function saveFinalizePanel() {
+  const c = campaigns.find(x => x.id === _finalizeCampaignId);
+  if (!c || !c._raw) return;
+
+  const rates = [...document.querySelectorAll('.fin-rate')].map(i => Number(i.value) || 0);
+  const avails = [...document.querySelectorAll('.fin-avail')].map(i => i.checked);
+  const finalTotal = rates.reduce((sum, r, i) => sum + (avails[i] ? r : 0), 0);
+  const finalNotes = (document.getElementById('fin-notes').value || '').trim();
+  const approvalToken = crypto.randomUUID();
+  const termsVersion = 'v1.0 — July 2026';
+
+  const btn = document.getElementById('fin-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const { error } = await sbClient.from('campaigns').update({
+    final_total: finalTotal,
+    final_notes: finalNotes || null,
+    finalized_at: new Date().toISOString(),
+    approval_token: approvalToken,
+    terms_version: termsVersion,
+    status: 'awaiting_approval',
+    updated_at: new Date().toISOString(),
+  }).eq('id', _finalizeCampaignId);
+
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = 'Save & generate approval link';
+    alert('Failed to save: ' + error.message);
+    return;
+  }
+
+  c.status = 'awaiting_approval';
+  c._raw = { ...c._raw, final_total: finalTotal, final_notes: finalNotes || null, approval_token: approvalToken, status: 'awaiting_approval' };
+
+  const approvalLink = `https://nwa-ads.com/proposal/approve?id=${_finalizeCampaignId}&t=${approvalToken}`;
+
+  document.getElementById('finalize-footer').innerHTML = `
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:600;color:#166534;margin-bottom:8px">✓ Saved — approval link ready to share</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="approval-link-input" value="${approvalLink}" readonly
+          style="flex:1;border:1px solid #d0cdc8;border-radius:6px;padding:8px;font-size:12px;font-family:monospace;background:#fff">
+        <button onclick="copyApprovalLink()" style="padding:8px 16px;border:none;border-radius:6px;background:#166534;color:#fff;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap">Copy link</button>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <button onclick="closeFinalizePanel();renderCampaigns();renderPipeline()" style="padding:8px 20px;border:1px solid #d0cdc8;border-radius:8px;background:#fff;cursor:pointer;font-size:14px">Done</button>
+    </div>
+  `;
+
+  renderCampaigns();
+  renderPipeline();
+}
+
+function copyApprovalLink() {
+  const input = document.getElementById('approval-link-input');
+  if (!input) return;
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = input.nextElementSibling;
+    if (btn) { const orig = btn.textContent; btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = orig; }, 2000); }
+  }).catch(() => { input.select(); document.execCommand('copy'); });
+}
+
+function showApprovalLink(id) {
+  const c = campaigns.find(x => x.id === id);
+  if (!c || !c._raw || !c._raw.approval_token) {
+    alert('Approval token not found — try refreshing the page to reload campaign data.');
+    return;
+  }
+  const link = `https://nwa-ads.com/proposal/approve?id=${id}&t=${c._raw.approval_token}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => alert('Approval link copied to clipboard!\n\n' + link));
+  } else {
+    prompt('Copy this approval link:', link);
+  }
+}
 
 function filterCampaigns(el, f) {
   campFilter = f;

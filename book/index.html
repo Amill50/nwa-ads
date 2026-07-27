@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
 <link rel="stylesheet" href="/shared/css/base.css?v=20260715b">
-<link rel="stylesheet" href="/book/css/book.css?v=20260715b">
+<link rel="stylesheet" href="/book/css/book.css?v=20260720a">
 </head>
 <body>
 
@@ -775,7 +775,7 @@
     <!-- Left: form -->
     <div class="checkout-form">
       <h2 class="step-heading">Almost live.</h2>
-      <p class="step-sub">Review your details below and we'll confirm screen availability, then send a secure payment link within 2 hours.</p>
+      <p class="step-sub">Review your details and submit your request — we'll confirm final pricing within 48 hours and send an approval link. You pay only after approving.</p>
 
       <div class="form-section">
         <h4>Your details</h4>
@@ -819,7 +819,7 @@
       </div>
 
       <div class="no-payment-note">
-        ✓ No payment now — we'll send a secure payment link once we confirm availability. Most campaigns go live within 24 hours of payment.
+        ✓ No payment now — we confirm final pricing within 48 hours and send an approval link. Payment is only requested after you approve.
       </div>
 
       <div style="height:16px"></div>
@@ -842,7 +842,7 @@
         <span class="v" id="os-grand">$0</span>
       </div>
       <div id="os-sched-note" style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:8px;display:none"></div>
-      <div class="os-note">Payment confirmed after availability check. You'll receive a secure link via email.</div>
+      <div class="os-note">Estimate only — final pricing confirmed within 48 hours. You approve before any payment is collected.</div>
     </div>
 
   </div>
@@ -857,7 +857,7 @@
       <div class="conf-emoji">🎉</div>
       <div>
         <h2 class="conf-title">Booking request submitted!</h2>
-        <p class="conf-sub">We'll confirm screen availability and send a secure payment link within 2 hours. Your campaign goes live within 24 hours of payment.</p>
+        <p class="conf-sub">We'll confirm final pricing and screen availability within 48 hours, then send an approval link. Your campaign goes live within 24 hours of payment.</p>
       </div>
     </div>
 
@@ -929,15 +929,17 @@
     <div class="conf-next">
       <div class="conf-next-title">What happens next</div>
       <div class="conf-next-steps">
-        <div class="conf-next-step"><span class="cns-num">1</span>We confirm availability on your selected screens (within 2 hours)</div>
-        <div class="conf-next-step"><span class="cns-num">2</span>You receive a secure payment link via email</div>
-        <div class="conf-next-step"><span class="cns-num">3</span>Creative is reviewed and approved (same day)</div>
-        <div class="conf-next-step"><span class="cns-num">4</span>Campaign goes live — photo proof sent within 48 hours</div>
-        <div class="conf-next-step"><span class="cns-num">5</span>Weekly impression reports land in your inbox automatically</div>
+        <div class="conf-next-step"><span class="cns-num">1</span>We confirm final pricing &amp; availability within 48 hours</div>
+        <div class="conf-next-step"><span class="cns-num">2</span>You receive an approval link — review &amp; sign off before any payment</div>
+        <div class="conf-next-step"><span class="cns-num">3</span>Once approved, we send a secure payment link via email</div>
+        <div class="conf-next-step"><span class="cns-num">4</span>Creative is reviewed and approved (same day)</div>
+        <div class="conf-next-step"><span class="cns-num">5</span>Campaign goes live — photo proof sent within 48 hours</div>
+        <div class="conf-next-step"><span class="cns-num">6</span>Weekly impression reports land in your inbox automatically</div>
       </div>
       <div class="conf-next-actions">
         <a href="mailto:hello@nwaads.com" class="conf-email-btn">✉ hello@nwaads.com</a>
         <button onclick="goTo(1);ST.cart={};renderCart();updateNavSel()" class="conf-restart-btn">Start another campaign</button>
+        <a href="/proposal/terms" class="conf-admin-btn" target="_blank" style="text-decoration:none">Terms &amp; Conditions →</a>
       </div>
     </div>
 
@@ -1080,9 +1082,9 @@
 <script src="/shared/js/pricing.js?v=20260715b"></script>
 <script src="/shared/js/inventory.js?v=20260715b"></script>
 <script src="/book/js/book-ui.js?v=20260715b"></script>
-<script src="/book/js/book-map.js?v=20260715b"></script>
+<script src="/book/js/book-map.js?v=20260720a"></script>
 <script src="/book/js/book-cart.js?v=20260715c"></script>
 <script src="/shared/js/poi-data.js?v=20260715b"></script>
-<script src="/book/js/book-flow.js?v=20260715c"></script>
+<script src="/book/js/book-flow.js?v=20260720a"></script>
 </body>
 </html>
