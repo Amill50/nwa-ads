@@ -58,6 +58,7 @@
   <div id="apv-root"><div id="apv-loading">Loading your campaign…</div></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/shared/js/env.js?v=20260727a"></script>
 <script>
 (async function() {
@@ -65,6 +66,7 @@
   const params = new URLSearchParams(location.search);
   const campaignId = params.get('id');
   const token = params.get('t');
+  const paidReturn = params.get('paid') === '1';
 
   function showError(msg) {
     root.innerHTML = `
@@ -79,19 +81,51 @@
 
   const sb = window.supabase.createClient(ENV_CONFIG.supabaseUrl, ENV_CONFIG.supabaseKey);
 
-  const { data: campaign, error } = await sb.rpc('get_approval', { p_id: campaignId, p_token: token });
+  async function fetchCampaign() {
+    return sb.rpc('get_approval', { p_id: campaignId, p_token: token });
+  }
+
+  function renderConfirmed(c) {
+    const approvedDate = new Date(c.approved_at).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    root.innerHTML = `
+      <h1>Campaign approved &amp; paid</h1>
+      <p class="apv-sub">${c.company_name || 'Your campaign'}</p>
+      <div class="apv-already">
+        <div class="apv-already-title">✓ Payment received</div>
+        <div class="apv-already-detail">Approved and paid in full on ${approvedDate} by <strong>${c.approved_by_name || '—'}</strong>.<br>
+        Your campaign is confirmed — we'll be in touch with next steps.</div>
+      </div>
+      <p style="margin-top:24px;font-size:14px;color:#6b6560">Questions? <a href="mailto:hello@nwa-ads.com" style="color:#c8440a">hello@nwa-ads.com</a></p>
+    `;
+  }
+
+  let { data: campaign, error } = await fetchCampaign();
 
   if (error || !campaign) { showError('This approval link is invalid or has expired.'); return; }
 
+  // Returning from Stripe Checkout — the webhook may take a few seconds to land.
+  if (paidReturn && campaign.status !== 'confirmed') {
+    root.innerHTML = `<div id="apv-loading">Confirming your payment…</div>`;
+    for (let i = 0; i < 10 && campaign.status !== 'confirmed'; i++) {
+      await new Promise(r => setTimeout(r, 1500));
+      const res = await fetchCampaign();
+      if (res.error || !res.data) break;
+      campaign = res.data;
+    }
+  }
+
   if (campaign.status === 'confirmed' && campaign.approved_at) {
-    const approvedDate = new Date(campaign.approved_at).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    renderConfirmed(campaign);
+    return;
+  }
+
+  if (paidReturn) {
     root.innerHTML = `
-      <h1>Campaign approved</h1>
+      <h1>Payment received</h1>
       <p class="apv-sub">${campaign.company_name || 'Your campaign'}</p>
       <div class="apv-already">
-        <div class="apv-already-title">✓ Already approved</div>
-        <div class="apv-already-detail">Approved on ${approvedDate} by <strong>${campaign.approved_by_name || '—'}</strong>.<br>
-        We'll be in touch with your payment link and next steps.</div>
+        <div class="apv-already-title">✓ Payment received</div>
+        <div class="apv-already-detail">We're finalizing your confirmation — this can take a minute. Refresh this page shortly, or we'll email you once it's confirmed.</div>
       </div>
       <p style="margin-top:24px;font-size:14px;color:#6b6560">Questions? <a href="mailto:hello@nwa-ads.com" style="color:#c8440a">hello@nwa-ads.com</a></p>
     `;
@@ -154,15 +188,8 @@
       <div class="apv-sig-label">Type your full name to sign *</div>
       <input type="text" id="apv-sig" class="apv-sig-input" placeholder="Your full legal name" autocomplete="name">
 
-      <button class="apv-btn" id="apv-submit-btn" onclick="submitApproval()">Approve campaign</button>
-      <p style="font-size:12px;color:#6b6560;margin-top:12px;text-align:center">By approving, you confirm the pricing above and agree to the Terms &amp; Conditions. A payment link will follow within 24 hours.</p>
-    </div>
-
-    <div id="apv-success" style="display:none" class="apv-success">
-      <div class="apv-success-icon">✅</div>
-      <h2>You're approved!</h2>
-      <p>Thank you — we'll send a secure payment link within 24 hours.<br>
-      Questions? <a href="mailto:hello@nwa-ads.com" style="color:#c8440a">hello@nwa-ads.com</a></p>
+      <button class="apv-btn" id="apv-submit-btn" onclick="submitApproval()">Approve &amp; Pay $${finalTotal.toLocaleString()}</button>
+      <p style="font-size:12px;color:#6b6560;margin-top:12px;text-align:center">By approving, you confirm the pricing above and agree to the Terms &amp; Conditions. You'll be taken to a secure Stripe checkout to pay the full amount by credit card — NWA Ads does not offer invoiced or net-30 payment.</p>
     </div>
   `;
 
@@ -175,23 +202,24 @@
     if (!sigName) { alert('Please type your full name to sign.'); document.getElementById('apv-sig').focus(); return; }
 
     btn.disabled = true;
-    btn.textContent = 'Submitting…';
+    btn.textContent = 'Redirecting to secure payment…';
 
-    const { data: ok, error: approveErr } = await sb.rpc('record_approval', {
-      p_id: campaignId,
-      p_token: token,
-      p_name: sigName,
-    });
-
-    if (approveErr || !ok) {
+    try {
+      const resp = await fetch('/.netlify/functions/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: campaignId, token, name: sigName }),
+      });
+      const data = await resp.json();
+      if (!resp.ok || !data.url) {
+        throw new Error(data.error || 'Could not start checkout.');
+      }
+      window.location = data.url;
+    } catch (err) {
       btn.disabled = false;
-      btn.textContent = 'Approve campaign';
-      alert(approveErr ? 'Error: ' + approveErr.message : 'Could not record your approval. The link may have already been used.');
-      return;
+      btn.textContent = `Approve & Pay $${finalTotal.toLocaleString()}`;
+      alert('Error: ' + err.message + '\n\nThe link may have already been used, or your session may have expired — try reloading the page.');
     }
-
-    document.getElementById('apv-form').style.display = 'none';
-    document.getElementById('apv-success').style.display = 'block';
   };
 })();
 </script>

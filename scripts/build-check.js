@@ -28,6 +28,8 @@ const JS_FILES = [
   'netlify/functions/anthropic-proxy.js',
   'netlify/functions/lead-alert.js',
   'netlify/functions/leads-digest.js',
+  'netlify/functions/create-checkout-session.js',
+  'netlify/functions/stripe-webhook.js',
 ];
 
 const HTML_FILES = [
