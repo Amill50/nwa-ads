@@ -46,6 +46,26 @@ body { font-family: 'Instrument Sans', 'Inter', system-ui, sans-serif; backgroun
 .nav-wordmark { font-family: Georgia, serif; font-size: 17px; font-weight: 700; color: #fffef9; }
 .nav-wordmark span { color: var(--orange); }
 .nav-label { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+.nav-csv-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fffef9;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.nav-csv-btn:hover { background: rgba(255,255,255,0.16); }
+@media (max-width: 540px) {
+  .nav-label { display: none; }
+}
 
 /* ── BANNER ── */
 .banner {
@@ -398,6 +418,75 @@ function osmSrc(lat, lng) {
   return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - pad},${lat - pad * 0.6},${lng + pad},${lat + pad * 0.6}&layer=mapnik&marker=${lat},${lng}`;
 }
 
+/* Holds the currently rendered proposal so the CSV export button (which
+   fires after renderPage() has already returned its HTML string) can
+   read the same data without re-fetching or re-parsing the URL. */
+let CURRENT_PROPOSAL = null;
+
+function csvCell(v) {
+  const s = (v === null || v === undefined) ? '' : String(v);
+  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function csvRow(arr) {
+  return arr.map(csvCell).join(',');
+}
+
+function downloadProposalCSV() {
+  const d = CURRENT_PROPOSAL;
+  if (!d) return;
+  const screens = d.screens || [];
+  const qty     = d.qty || 1;
+  const lbl     = incLabel(d.inc);
+  const subUnit = screens.reduce((a, s) => a + (s.unitRate || 0), 0);
+  const grand   = Math.round(subUnit * qty);
+  const flightRange = fmtDateRange(d.flightStart, d.flightEnd);
+
+  const rows = [];
+  rows.push(csvRow(['NWA Ads — Campaign Proposal']));
+  rows.push(csvRow(['Prepared for', d.company || '']));
+  if (d.contact)      rows.push(csvRow(['Contact', d.contact]));
+  if (d.contactEmail) rows.push(csvRow(['Email', d.contactEmail]));
+  if (d.contactPhone) rows.push(csvRow(['Phone', d.contactPhone]));
+  if (d.product)      rows.push(csvRow(['Product', d.product]));
+  if (d.goal)         rows.push(csvRow(['Campaign goal', d.goal]));
+  if (flightRange)    rows.push(csvRow(['Flight dates', flightRange]));
+  rows.push(csvRow(['Campaign length', qty + ' ' + lbl.unit + (qty !== 1 ? 's' : '')]));
+  rows.push('');
+  rows.push(csvRow([
+    'Screen Name', 'Type', 'Area', 'Weekly Impressions', 'CPM (USD)',
+    'Rate (USD per ' + lbl.unit + ')', 'Qty (' + lbl.unit + 's) ', 'Total (USD)',
+  ]));
+  screens.forEach(function(s) {
+    rows.push(csvRow([
+      s.name || '',
+      TYPE_LABEL[s.type] || s.type || '',
+      s.area || '',
+      s.wkly_impr || '',
+      s.cpm != null ? Number(s.cpm).toFixed(2) : '',
+      Math.round(s.unitRate || 0),
+      qty,
+      Math.round((s.unitRate || 0) * qty),
+    ]));
+  });
+  rows.push('');
+  rows.push(csvRow(['Subtotal (per ' + lbl.unit + ')', '', '', '', '', '', '', Math.round(subUnit)]));
+  rows.push(csvRow(['Estimated total', '', '', '', '', '', '', grand]));
+
+  const csvContent = rows.join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const slug = (d.company || 'campaign').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'campaign';
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'nwa-ads-proposal-' + slug + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+
 function esc(s) {
   return String(s || '')
     .replace(/&/g, '&amp;')
@@ -603,6 +692,7 @@ function renderPricingRows(screens, qty, inc) {
 }
 
 function renderPage(d) {
+  CURRENT_PROPOSAL = d;
   const screens = d.screens || [];
   const lbl     = incLabel(d.inc);
   const qty     = d.qty || 1;
@@ -624,7 +714,10 @@ function renderPage(d) {
       ${logoSVG()}
       <span class="nav-wordmark">NWA <span>Ads</span></span>
     </div>
-    <span class="nav-label">Campaign Proposal</span>
+    <div class="nav-right">
+      <span class="nav-label">Campaign Proposal</span>
+      <button class="nav-csv-btn" onclick="downloadProposalCSV()">⬇ Download CSV</button>
+    </div>
   </nav>
 
   <div class="banner">📋 PROPOSAL · Prices &amp; availability valid until ${expires}</div>
