@@ -11983,9 +11983,11 @@ function mapSupabaseCampaign(row) {
     status: row.status || 'draft',
     submitted: row.created_at ? new Date(row.created_at).toLocaleString() : '',
     name: row.company_name || 'Untitled campaign',
+    product: row.product || '',
     contact: row.contact_name || '',
     email: row.contact_email || '',
-    goal: '—',
+    phone: row.contact_phone || '',
+    goal: row.goal || '—',
     screens,
     duration: (row.flight_start && row.flight_end) ? `${row.flight_start} → ${row.flight_end}` : 'TBD',
     total: Number(row.budget) || 0,
@@ -12086,7 +12088,7 @@ function renderCampaigns() {
   tbody.innerHTML = filtered.map(c => `
     <tr style="cursor:pointer" onclick="openDetail('${c.id}')">
       <td><span class="mono">${c.id}</span></td>
-      <td><strong>${c.name}</strong><br><span style="font-size:11px;color:var(--text3)">${c.contact}</span></td>
+      <td><strong>${c.name}</strong>${c.product ? `<br><span style="font-size:11px;color:var(--text3)">${c.product}</span>` : ''}<br><span style="font-size:11px;color:var(--text3)">${c.contact}</span></td>
       <td style="font-size:12px">${c.goal}</td>
       <td style="font-size:11px;color:var(--text3)">${c.screens.length} screen${c.screens.length!==1?'s':''}</td>
       <td><strong style="color:var(--text)">$${c.total.toLocaleString()}</strong></td>
@@ -12347,9 +12349,11 @@ function openDetail(id) {
       <div class="dp-section-title">Contact</div>
       <div class="dp-row"><span class="l">Name</span><span class="v">${c.contact}</span></div>
       <div class="dp-row"><span class="l">Email</span><span class="v"><a href="mailto:${c.email}" style="color:var(--blue);text-decoration:none">${c.email}</a></span></div>
+      ${c.phone ? `<div class="dp-row"><span class="l">Phone</span><span class="v"><a href="tel:${c.phone}" style="color:var(--blue);text-decoration:none">${c.phone}</a></span></div>` : ''}
     </div>
     <div class="dp-section">
       <div class="dp-section-title">Campaign details</div>
+      ${c.product ? `<div class="dp-row"><span class="l">Product</span><span class="v">${c.product}</span></div>` : ''}
       <div class="dp-row"><span class="l">Goal</span><span class="v">${c.goal}</span></div>
       <div class="dp-row"><span class="l">Duration</span><span class="v">${c.duration}</span></div>
       <div class="dp-row"><span class="l">Total value</span><span class="v" style="color:var(--accent);font-family:'Fraunces',serif;font-size:16px">$${c.total.toLocaleString()}</span></div>
