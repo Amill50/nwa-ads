@@ -11906,6 +11906,19 @@ function isAllowedAdmin(session) {
 }
 
 function ensureAdminAuth() {
+  // STAGING-ONLY BYPASS: skip the magic-link gate so the admin console is reachable
+  // without an email round-trip while reviewing changes on staging. window.APP_ENV is
+  // set in shared/js/env.js purely from hostname (nwa-ads.com / www.nwa-ads.com = production,
+  // everything else = staging) — this can never evaluate true on the production domain.
+  // NOTE: staging currently points at the same Supabase project as production (see env.js),
+  // so this also means the admin console — including real customer names/emails/phones —
+  // is reachable by anyone with the staging URL, no login required. Revisit if that's a problem.
+  if (window.APP_ENV === 'staging') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+    return;
+  }
   if (isAllowedAdmin(ADMIN_SESSION)) {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
