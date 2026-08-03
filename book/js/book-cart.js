@@ -403,6 +403,7 @@ async function generateProposalLink() {
     id:            proposalId,
     status:        'draft',
     company_name:  ST.advertiserName || '',
+    contact_name:  [document.getElementById('f-fname')?.value?.trim(), document.getElementById('f-lname')?.value?.trim()].filter(Boolean).join(' '),
     contact_email: AUTH_SESSION?.user?.email || document.getElementById('f-email')?.value?.trim() || '',
     product:       ST.product || '',
     goal:          ST.goal || '',
@@ -522,6 +523,7 @@ async function submitBooking() {
   const fname = document.getElementById('f-fname')?.value.trim();
   const lname = document.getElementById('f-lname')?.value.trim();
   const company = document.getElementById('advertiser-name')?.value.trim();
+  const phone = document.getElementById('f-phone')?.value.trim();
   if (!fname || !email) {
     alert('Please fill in your name and email to continue.');
     return;
@@ -540,8 +542,11 @@ async function submitBooking() {
     user_id: AUTH_SESSION.user.id,
     status: 'pending_confirmation',
     company_name: company || null,
+    product: ST.product || null,
+    goal: ST.goal || null,
     contact_name: [fname, lname].filter(Boolean).join(' '),
     contact_email: email,
+    contact_phone: phone || null,
     screens: ST.cart,
     budget: ST.budget || null,
     flight_start: ST.schedStart || null,
