@@ -74,6 +74,10 @@ body { font-family: 'Instrument Sans', 'Inter', system-ui, sans-serif; backgroun
 .cover-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
 .cover-company { font-family: Georgia, serif; font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1.2; }
 .cover-contact { margin-top: 4px; font-size: 14px; color: var(--muted2); }
+.cover-meta { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; gap: 28px; flex-wrap: wrap; }
+.cover-meta-item { display: flex; flex-direction: column; gap: 3px; }
+.cover-meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); }
+.cover-meta-val { font-size: 14px; color: var(--ink2); font-weight: 600; }
 .cover-divider { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
 .cover-note-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
 .cover-note { font-size: 14px; color: var(--ink2); line-height: 1.65; font-style: italic; }
@@ -365,6 +369,30 @@ function expiresDate(created) {
   return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
+function fmtDateShort(str) {
+  if (!str) return '';
+  const d = new Date(str + 'T00:00:00');
+  if (isNaN(d)) return '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function fmtDateRange(start, end) {
+  if (!start && !end) return '';
+  if (start && end) return fmtDateShort(start) + ' – ' + fmtDateShort(end);
+  return fmtDateShort(start || end);
+}
+
+function venueMixSummary(screens) {
+  const counts = {};
+  screens.forEach(function(s) {
+    const label = s.type || 'Screen';
+    counts[label] = (counts[label] || 0) + 1;
+  });
+  return Object.keys(counts)
+    .map(function(label) { return counts[label] + ' ' + label + (counts[label] !== 1 ? 's' : ''); })
+    .join(' · ');
+}
+
 function osmSrc(lat, lng) {
   const pad = 0.003;
   return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - pad},${lat - pad * 0.6},${lng + pad},${lat + pad * 0.6}&layer=mapnik&marker=${lat},${lng}`;
@@ -400,24 +428,34 @@ function normalizeSupabase(row) {
     };
   });
   return {
-    company: row.company_name || '',
-    contact: row.contact_email || '',
-    goal:    row.goal || '',
-    inc:     row.inc || 'weekly',
-    qty:     row.qty || 1,
-    created: (row.created_at || '').slice(0, 10),
-    screens: screens,
+    company:      row.company_name || '',
+    contact:      row.contact_name || row.contact_email || '',
+    contactEmail: row.contact_email || '',
+    contactPhone: row.contact_phone || '',
+    goal:         row.goal || '',
+    product:      row.product || '',
+    flightStart:  row.flight_start || '',
+    flightEnd:    row.flight_end || '',
+    inc:          row.inc || 'weekly',
+    qty:          row.qty || 1,
+    created:      (row.created_at || '').slice(0, 10),
+    screens:      screens,
   };
 }
 
 function normalizeBase64(d) {
   return {
-    company: d.company || '',
-    contact: d.contact || '',
-    goal:    d.goal || '',
-    inc:     d.inc || 'weekly',
-    qty:     d.qty || 1,
-    created: d.created || new Date().toISOString().slice(0, 10),
+    company:      d.company || '',
+    contact:      d.contact || '',
+    contactEmail: d.contactEmail || d.contact || '',
+    contactPhone: d.contactPhone || '',
+    goal:         d.goal || '',
+    product:      d.product || '',
+    flightStart:  d.flightStart || '',
+    flightEnd:    d.flightEnd || '',
+    inc:          d.inc || 'weekly',
+    qty:          d.qty || 1,
+    created:      d.created || new Date().toISOString().slice(0, 10),
     screens: (d.screens || []).map(function(s) {
       return {
         unitRate:  s.unitRate || 0,
@@ -575,6 +613,8 @@ function renderPage(d) {
   const subUnit = screens.reduce((a, s) => a + (s.unitRate || 0), 0);
   const disc    = 0;
   const grand   = Math.round(subUnit * qty);
+  const venueMix = venueMixSummary(screens);
+  const flightRange = fmtDateRange(d.flightStart, d.flightEnd);
 
   document.title = d.company ? `Proposal for ${d.company} · NWA Ads` : 'Campaign Proposal · NWA Ads';
 
@@ -595,7 +635,13 @@ function renderPage(d) {
     <div class="card">
       <div class="cover-eyebrow">Prepared for</div>
       <div class="cover-company">${esc(d.company || 'Your Company')}</div>
-      ${d.contact ? `<div class="cover-contact">Attn: ${esc(d.contact)}</div>` : ''}
+      ${d.contact ? `<div class="cover-contact">Attn: ${esc(d.contact)}${d.contactEmail && d.contactEmail !== d.contact ? ' · ' + esc(d.contactEmail) : ''}${d.contactPhone ? ' · ' + esc(d.contactPhone) : ''}</div>` : ''}
+      ${(d.product || flightRange || venueMix) ? `
+      <div class="cover-meta">
+        ${d.product ? `<div class="cover-meta-item"><span class="cover-meta-label">Product</span><span class="cover-meta-val">${esc(d.product)}</span></div>` : ''}
+        ${flightRange ? `<div class="cover-meta-item"><span class="cover-meta-label">Flight dates</span><span class="cover-meta-val">${esc(flightRange)}</span></div>` : ''}
+        ${venueMix ? `<div class="cover-meta-item"><span class="cover-meta-label">Venue mix</span><span class="cover-meta-val">${esc(venueMix)}</span></div>` : ''}
+      </div>` : ''}
       ${d.note ? `
       <div class="cover-divider">
         <div class="cover-note-label">Personal note</div>
@@ -664,12 +710,7 @@ function renderPage(d) {
       <div class="included-grid">
         ${[
           ['📋', 'This proposal is an estimate. Final costs are confirmed and sent back for your approval within 48 hours.'],
-          ['📸', 'Photo verification within 48 hrs of go-live'],
-          ['📊', 'Weekly impression reports every Monday'],
-          ['✅', 'Creative review & approval (same day)'],
-          ['🌐', 'Web visit lift measurement'],
-          ['📍', 'Geo attribution — exposed vs unexposed zips'],
-          ['🚶', 'Foot traffic lift vs control group'],
+          ['💳', 'Full payment by credit card is required at approval — no invoicing or net-30 terms'],
         ].map(([icon, text]) => `
         <div class="included-item">
           <span class="included-item-icon">${icon}</span>
@@ -681,7 +722,7 @@ function renderPage(d) {
     <!-- CTA -->
     <div class="cta">
       <h2>Ready to book this campaign?</h2>
-      <p>No payment now — we'll confirm pricing within 48 hours and send an approval link. Once you approve, we send a secure payment link and go live.</p>
+      <p>No payment now — we'll confirm final pricing within 48 hours and send an approval link. Approving requires full payment by credit card through Stripe; your campaign goes live once payment is received.</p>
       <div class="cta-btns">
         <a href="/book/" class="cta-btn-primary">Book these screens →</a>
         <a href="mailto:hello@nwa-ads.com" class="cta-btn-secondary">✉ hello@nwa-ads.com</a>
