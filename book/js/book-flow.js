@@ -19,11 +19,7 @@ function goToPanel(step) {
 function goTo(step) {
   // Require a signed-in account before leaving Step 2 (Details) — campaign
   // & contact info should tie to a real account, not just live in the form.
-  // STAGING-ONLY: skip this so the flow can be clicked through end to end while
-  // reviewing changes. submitBooking() in book-cart.js still requires a real
-  // AUTH_SESSION on every environment (including staging) — this only affects
-  // navigation between steps, not the actual database write.
-  if (step >= 3 && !AUTH_SESSION && window.APP_ENV !== 'staging') {
+  if (step >= 3 && !AUTH_SESSION) {
     AUTH_PENDING_STEP = step;
     openAuthModal();
     return;
