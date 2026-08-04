@@ -12104,16 +12104,32 @@ function renderCampaigns() {
           ${c.status==='awaiting_approval' && c._supabase ? `<button class="btn sm" onclick="event.stopPropagation();showApprovalLink('${c.id}')">Copy approval link</button>` : ''}
           ${c._supabase && c.status==='live' ? `<button class="btn sm" onclick="event.stopPropagation();advanceStatus('${c.id}')">Complete</button>` : ''}
           <button class="btn sm" onclick="event.stopPropagation();openDetail('${c.id}')">View</button>
-          ${c._supabase ? '' : `<button class="btn sm" style="color:var(--accent);border-color:var(--accent)" onclick="event.stopPropagation();deleteCampaign('${c.id}')">✕</button>`}
+          <button class="btn sm" style="color:var(--accent);border-color:var(--accent)" onclick="event.stopPropagation();deleteCampaign('${c.id}')">✕</button>
         </div>
       </td>
     </tr>`).join('');
 }
 
 
-function deleteCampaign(id) {
+async function deleteCampaign(id) {
+  const c = campaigns.find(x => x.id === id);
   if (!confirm('Remove campaign ' + id + '?')) return;
-  campaigns = campaigns.filter(c => c.id !== id);
+
+  if (c && c._supabase) {
+    const { error } = await sbClient.from('campaigns').delete().eq('id', id);
+    if (error) {
+      alert('Could not delete campaign: ' + error.message);
+      return;
+    }
+    campaigns = campaigns.filter(x => x.id !== id);
+    closeDetail();
+    renderCampaigns();
+    renderPipeline();
+    log('Campaign ' + id + ' deleted from Supabase');
+    return;
+  }
+
+  campaigns = campaigns.filter(x => x.id !== id);
   saveCampaigns();
   closeDetail();
   renderCampaigns();
@@ -12371,7 +12387,7 @@ function openDetail(id) {
   document.getElementById('dp-footer').innerHTML = `
     ${flow.indexOf(c.status) < flow.length-1 ? `<button class="btn green" style="flex:1" onclick="advanceStatus('${c.id}');renderCampaigns()">${nextLabels[c.status]||'Advance →'}</button>` : ''}
     <button class="btn" onclick="window.open('mailto:${c.email}?subject=Re: ${c.id} — Your NWAAds campaign','_blank')">✉ Email advertiser</button>
-    ${c._supabase ? '' : `<button class="btn" style="color:var(--accent);border-color:var(--accent);margin-left:auto" onclick="deleteCampaign('${c.id}')">✕ Delete</button>`}
+    <button class="btn" style="color:var(--accent);border-color:var(--accent);margin-left:auto" onclick="deleteCampaign('${c.id}')">✕ Delete</button>
   `;
 
   document.getElementById('detail-panel').classList.add('open');

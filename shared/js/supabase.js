@@ -12,6 +12,7 @@
 const sbClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.publishableKey);
 let AUTH_SESSION = null;
 let AUTH_PENDING_STEP = null; // step user was trying to reach when login was required
+let AUTH_PENDING_ACTION = null; // function to re-run once login completes (e.g. generateProposalLink)
 
 function renderNavAccount() {
   const el = document.getElementById('nav-account');
@@ -100,6 +101,14 @@ async function signOut() {
 // whatever the user was doing before the auth gate interrupted them.
 function onAuthReady() {
   renderNavAccount();
+  if (AUTH_SESSION && AUTH_PENDING_ACTION) {
+    const action = AUTH_PENDING_ACTION;
+    AUTH_PENDING_ACTION = null;
+    AUTH_PENDING_STEP = null;
+    closeAuthModal();
+    action();
+    return;
+  }
   if (AUTH_SESSION && AUTH_PENDING_STEP) {
     const step = AUTH_PENDING_STEP;
     AUTH_PENDING_STEP = null;

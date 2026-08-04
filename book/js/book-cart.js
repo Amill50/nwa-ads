@@ -384,6 +384,12 @@ async function generateProposalLink() {
   const cartKeys = Object.keys(ST.cart);
   if (cartKeys.length === 0) { alert('Add at least one screen to generate a proposal.'); return; }
 
+  if (!AUTH_SESSION) {
+    AUTH_PENDING_ACTION = generateProposalLink;
+    openAuthModal();
+    return;
+  }
+
   const btn    = document.getElementById('btn-gen-proposal');
   const errEl  = document.getElementById('proposal-link-error');
   const origText = btn ? btn.textContent : '';
@@ -402,6 +408,7 @@ async function generateProposalLink() {
   const payload = {
     id:            proposalId,
     status:        'draft',
+    user_id:       AUTH_SESSION?.user?.id || null,
     company_name:  ST.advertiserName || '',
     contact_name:  [document.getElementById('f-fname')?.value?.trim(), document.getElementById('f-lname')?.value?.trim()].filter(Boolean).join(' '),
     contact_email: AUTH_SESSION?.user?.email || document.getElementById('f-email')?.value?.trim() || '',
