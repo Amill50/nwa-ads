@@ -461,14 +461,14 @@ function screenMapIcon(type) {
   });
 }
 
+const WALMART_HQ  = [36.3729, -94.2192];
+const WALMART_RES = [36.3200, -94.1800];
 function buildWalmartOverlay(map) {
-  const HQ  = [36.3729, -94.2192];
-  const RES = [36.3200, -94.1800];
-  L.circle(HQ,  { radius: 2600, color: '#1f3d2a', fillColor: '#1f3d2a', fillOpacity: 0.09, weight: 2, opacity: 0.35 })
+  L.circle(WALMART_HQ,  { radius: 2600, color: '#1f3d2a', fillColor: '#1f3d2a', fillOpacity: 0.09, weight: 2, opacity: 0.35 })
     .bindTooltip('Walmart Home Office').addTo(map);
-  L.circle(RES, { radius: 2200, color: '#c8440a', fillColor: '#c8440a', fillOpacity: 0.07, weight: 2, opacity: 0.30 })
+  L.circle(WALMART_RES, { radius: 2200, color: '#c8440a', fillColor: '#c8440a', fillOpacity: 0.07, weight: 2, opacity: 0.30 })
     .bindTooltip('Executive Residential Corridor').addTo(map);
-  L.polyline([HQ, RES], { color: '#1f3d2a', weight: 3, opacity: 0.28, dashArray: '8 6' }).addTo(map);
+  L.polyline([WALMART_HQ, WALMART_RES], { color: '#1f3d2a', weight: 3, opacity: 0.28, dashArray: '8 6' }).addTo(map);
 }
 
 function buildPoiOverlay(map, target) {
@@ -513,6 +513,7 @@ function renderMap(d) {
 
   if (isWalmartGoal(d.goal)) {
     buildWalmartOverlay(PROPOSAL_MAP);
+    boundsPoints.push(WALMART_HQ, WALMART_RES);
   } else if (d.proximityTarget && d.proximityTarget.lat && d.proximityTarget.lng) {
     buildPoiOverlay(PROPOSAL_MAP, d.proximityTarget);
     boundsPoints.push([d.proximityTarget.lat, d.proximityTarget.lng]);
