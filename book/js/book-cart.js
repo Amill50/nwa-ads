@@ -424,6 +424,7 @@ async function generateProposalLink() {
     sched_mode:    ST.schedMode  || 'standard',
     custom_days:   ST.customDays || [],
     custom_day_count: ST.customDayCount || 0,
+    proximity_target: ST.proximityTarget ? { name: ST.proximityTarget.name, lat: ST.proximityTarget.lat, lng: ST.proximityTarget.lng } : null,
   };
   console.log('Proposal payload:', JSON.stringify(payload, null, 2));
 
@@ -558,6 +559,7 @@ async function submitBooking() {
     budget: ST.budget || null,
     flight_start: ST.schedStart || null,
     flight_end: ST.schedEnd || null,
+    proximity_target: ST.proximityTarget ? { name: ST.proximityTarget.name, lat: ST.proximityTarget.lat, lng: ST.proximityTarget.lng } : null,
   });
 
   if (error) {
