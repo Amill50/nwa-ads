@@ -402,6 +402,7 @@ async function generateProposalLink() {
   const payload = {
     id:            proposalId,
     status:        'draft',
+    user_id:       AUTH_SESSION?.user?.id || null,
     company_name:  ST.advertiserName || '',
     contact_name:  [document.getElementById('f-fname')?.value?.trim(), document.getElementById('f-lname')?.value?.trim()].filter(Boolean).join(' '),
     contact_email: AUTH_SESSION?.user?.email || document.getElementById('f-email')?.value?.trim() || '',
