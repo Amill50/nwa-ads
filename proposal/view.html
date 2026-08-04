@@ -509,14 +509,17 @@ function renderMap(d) {
       .addTo(PROPOSAL_MAP);
   });
 
+  const boundsPoints = screens.map(s => [s.lat, s.lng]);
+
   if (isWalmartGoal(d.goal)) {
     buildWalmartOverlay(PROPOSAL_MAP);
   } else if (d.proximityTarget && d.proximityTarget.lat && d.proximityTarget.lng) {
     buildPoiOverlay(PROPOSAL_MAP, d.proximityTarget);
+    boundsPoints.push([d.proximityTarget.lat, d.proximityTarget.lng]);
   }
 
   try {
-    PROPOSAL_MAP.fitBounds(L.latLngBounds(screens.map(s => [s.lat, s.lng])).pad(0.28));
+    PROPOSAL_MAP.fitBounds(L.latLngBounds(boundsPoints).pad(0.28));
   } catch (e) {}
 
   setTimeout(() => { if (PROPOSAL_MAP) PROPOSAL_MAP.invalidateSize(); }, 200);
