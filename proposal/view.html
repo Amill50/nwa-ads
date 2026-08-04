@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Campaign Proposal · NWA Ads</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/shared/js/env.js?v=20260715b"></script>
 <script src="/shared/js/venue-type-img.js?v=20260715c"></script>
@@ -88,6 +90,23 @@ body { font-family: 'Instrument Sans', 'Inter', system-ui, sans-serif; backgroun
   border: 1.5px solid var(--border);
   padding: 28px 32px;
   margin-bottom: 24px;
+}
+
+/* ── MAP ── */
+#proposal-map {
+  height: 340px;
+  width: 100%;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: #eee;
+}
+.map-caption {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--muted2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* ── COVER ── */
@@ -344,6 +363,7 @@ body { font-family: 'Instrument Sans', 'Inter', system-ui, sans-serif; backgroun
   .included-grid { grid-template-columns: 1fr; }
   .cta { padding: 28px 20px; }
   .screen-media { height: 180px; }
+  #proposal-map { height: 240px; }
 }
 </style>
 </head>
@@ -411,6 +431,95 @@ function venueMixSummary(screens) {
   return Object.keys(counts)
     .map(function(label) { return counts[label] + ' ' + label + (counts[label] !== 1 ? 's' : ''); })
     .join(' · ');
+}
+
+function isWalmartGoal(goal) {
+  return !!goal && (goal.includes('Walmart') || goal.includes("Sam's"));
+}
+
+/* ─────────────────────────────────────────
+   Map — renders the coverage/proximity map
+   into #proposal-map after renderPage() has
+   inserted the container into the DOM.
+───────────────────────────────────────── */
+let PROPOSAL_MAP = null;
+const VENUE_MAP_COLOR = {
+  billboard: '#c84f18', gym: '#2f7d5c', cinema: '#5b4b8a', gasstation: '#b5451f',
+  grocery: '#1a7a3a', healthcare: '#2563a8', rideshare: '#6b5d4a', dining: '#c8440a',
+  retail: '#9b6b1f', bar: '#7a3d9b', sports: '#1f6d8c', education: '#8a5a2f',
+  residential: '#4a4540', airport: '#2f5d8a',
+};
+function venueMapColor(type) { return VENUE_MAP_COLOR[type] || '#8b7a5e'; }
+
+function screenMapIcon(type) {
+  const color = venueMapColor(type);
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:24px;height:24px;border-radius:50%;background:${color};border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
+}
+
+function buildWalmartOverlay(map) {
+  const HQ  = [36.3729, -94.2192];
+  const RES = [36.3200, -94.1800];
+  L.circle(HQ,  { radius: 2600, color: '#1f3d2a', fillColor: '#1f3d2a', fillOpacity: 0.09, weight: 2, opacity: 0.35 })
+    .bindTooltip('Walmart Home Office').addTo(map);
+  L.circle(RES, { radius: 2200, color: '#c8440a', fillColor: '#c8440a', fillOpacity: 0.07, weight: 2, opacity: 0.30 })
+    .bindTooltip('Executive Residential Corridor').addTo(map);
+  L.polyline([HQ, RES], { color: '#1f3d2a', weight: 3, opacity: 0.28, dashArray: '8 6' }).addTo(map);
+}
+
+function buildPoiOverlay(map, target) {
+  const label = target.name || 'Target Location';
+  L.circle([target.lat, target.lng], {
+    radius: 2400, color: '#8b5cf6', fillColor: '#8b5cf6', fillOpacity: 0.08, weight: 2, opacity: 0.35,
+  }).addTo(map);
+  const poiIcon = L.divIcon({
+    className: '',
+    html: '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">'
+        + '<div style="width:38px;height:38px;border-radius:50%;background:#8b5cf6;border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 3px 14px rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;font-size:17px">📍</div>'
+        + '<div style="white-space:nowrap;font-size:9px;font-weight:700;color:#8b5cf6;background:#fff;padding:2px 6px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,0.14)">' + esc(label) + '</div>'
+        + '</div>',
+    iconSize:   [80, 54],
+    iconAnchor: [40, 50],
+  });
+  L.marker([target.lat, target.lng], { icon: poiIcon, zIndexOffset: 1000 }).addTo(map);
+}
+
+function renderMap(d) {
+  const el = document.getElementById('proposal-map');
+  if (!el) return;
+  const screens = (d.screens || []).filter(s => s.lat && s.lng);
+  if (!screens.length) return;
+
+  const center = [
+    screens.reduce((a, s) => a + s.lat, 0) / screens.length,
+    screens.reduce((a, s) => a + s.lng, 0) / screens.length,
+  ];
+  PROPOSAL_MAP = L.map('proposal-map', { center, zoom: 11, zoomControl: true, scrollWheelZoom: false });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 19,
+  }).addTo(PROPOSAL_MAP);
+
+  screens.forEach(s => {
+    L.marker([s.lat, s.lng], { icon: screenMapIcon(s.type) })
+      .bindTooltip(s.name || 'Screen', { direction: 'top', offset: [0, -14] })
+      .addTo(PROPOSAL_MAP);
+  });
+
+  if (isWalmartGoal(d.goal)) {
+    buildWalmartOverlay(PROPOSAL_MAP);
+  } else if (d.proximityTarget && d.proximityTarget.lat && d.proximityTarget.lng) {
+    buildPoiOverlay(PROPOSAL_MAP, d.proximityTarget);
+  }
+
+  try {
+    PROPOSAL_MAP.fitBounds(L.latLngBounds(screens.map(s => [s.lat, s.lng])).pad(0.28));
+  } catch (e) {}
+
+  setTimeout(() => { if (PROPOSAL_MAP) PROPOSAL_MAP.invalidateSize(); }, 200);
 }
 
 function osmSrc(lat, lng) {
@@ -529,6 +638,7 @@ function normalizeSupabase(row) {
     qty:          row.qty || 1,
     created:      (row.created_at || '').slice(0, 10),
     screens:      screens,
+    proximityTarget: row.proximity_target || null,
   };
 }
 
@@ -560,6 +670,7 @@ function normalizeBase64(d) {
         icon:      s.icon || null,
       };
     }),
+    proximityTarget: d.proximityTarget || null,
   };
 }
 
@@ -705,6 +816,8 @@ function renderPage(d) {
   const grand   = Math.round(subUnit * qty);
   const venueMix = venueMixSummary(screens);
   const flightRange = fmtDateRange(d.flightStart, d.flightEnd);
+  const hasMapScreens = screens.some(s => s.lat && s.lng);
+  const isWmt = isWalmartGoal(d.goal);
 
   document.title = d.company ? `Proposal for ${d.company} · NWA Ads` : 'Campaign Proposal · NWA Ads';
 
@@ -768,6 +881,18 @@ function renderPage(d) {
     <div class="goal-row">
       <span class="goal-eyebrow">Campaign goal</span>
       <span class="goal-chip">${esc(d.goal)}</span>
+    </div>` : ''}
+
+    <!-- Coverage map -->
+    ${hasMapScreens ? `
+    <div class="card">
+      <h3 style="font-family:Georgia,serif;font-size:18px;font-weight:700;margin-bottom:14px;">Coverage map</h3>
+      <div id="proposal-map"></div>
+      ${isWmt
+        ? `<div class="map-caption">🟢 Walmart Home Office &nbsp;·&nbsp; 🟠 Executive Residential Corridor</div>`
+        : (d.proximityTarget && d.proximityTarget.lat
+          ? `<div class="map-caption">📍 Purple marker shows proximity to <strong>${esc(d.proximityTarget.name || 'your target business')}</strong></div>`
+          : '')}
     </div>` : ''}
 
     <!-- Screen cards -->
@@ -835,6 +960,7 @@ function renderPage(d) {
     '<div style="text-align:center;padding:80px 24px;color:#9b8f7a;font-size:14px">Loading proposal…</div>';
   var d = await loadProposal();
   document.getElementById('root').innerHTML = d ? renderPage(d) : renderError();
+  if (d) renderMap(d);
 })();
 </script>
 </body>
