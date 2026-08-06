@@ -816,14 +816,22 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
               </span>
               <span style="display:flex;align-items:center;gap:5px">
                 <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1f7a3a;border:2px solid rgba(255,255,255,0.8);box-shadow:0 1px 3px rgba(0,0,0,0.3)"></span>
-                Candidate parcel
+                Candidate parcel (passed all filters)
               </span>
               <span style="display:flex;align-items:center;gap:5px">
-                <span style="display:inline-block;width:18px;height:0;border-top:2px dashed #9a7b00;opacity:0.8"></span>
+                <span style="display:inline-block;width:18px;height:0;border-top:3px solid #9a7b00;opacity:0.85"></span>
+                AR-102 centerline
+              </span>
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="display:inline-block;width:18px;height:0;border-top:3px solid #1056a0;opacity:0.85"></span>
+                I-49 centerline
+              </span>
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="display:inline-block;width:18px;height:0;border-top:2px dashed #9a7b00;opacity:0.7"></span>
                 AR-102 660 ft zone
               </span>
               <span style="display:flex;align-items:center;gap:5px">
-                <span style="display:inline-block;width:18px;height:0;border-top:2px dashed #1056a0;opacity:0.8"></span>
+                <span style="display:inline-block;width:18px;height:0;border-top:2px dashed #1056a0;opacity:0.7"></span>
                 I-49 660 ft zone
               </span>
             </div>
@@ -845,6 +853,7 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
                   <div>
                     <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px">Highway proximity</div>
                     <div style="font-size:11px;color:var(--text2);line-height:1.55">Must be within <strong>660 ft</strong> of the I-49 or AR-102 right-of-way, on land zoned or usable as commercial or industrial.</div>
+                    <div style="font-size:11px;color:var(--text3);line-height:1.5;margin-top:5px;padding:5px 8px;background:var(--surface2,#f7f4f0);border-radius:5px">The <strong>shaded zones</strong> on the map show the 660 ft buffer around each highway centerline. A candidate pin appearing inside a shaded zone has already passed this filter — no candidate will ever appear outside the shading.</div>
                   </div>
                 </div>
 
@@ -883,7 +892,7 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
               <span>⚠</span>
               <div style="font-size:11px;line-height:1.55">
                 <div style="margin-bottom:5px">12 Washington County sites have <strong>unresolved landowner data</strong> — parcel lookup pending.</div>
-                <div>Candidate parcels show <strong>raw land-use codes (TYPE_)</strong>. Zoning eligibility is not auto-confirmed — always verify with the city or county before committing to a site.</div>
+                <div>Candidate parcels show the <strong>Bentonville Land Use 2025 category</strong> (MapLabel) where available, with the raw assessor TYPE_ code as backup. Zoning eligibility is not auto-confirmed — always verify with the city or county before committing to a site.</div>
               </div>
             </div>
           </div>
@@ -13642,6 +13651,8 @@ function scoutBuildCorridors() {
 function scoutDrawBuffers() {
   SCOUT_BUF_LAYERS.forEach(l => l.remove());
   SCOUT_BUF_LAYERS = [];
+
+  // Buffer polygons (660 ft shaded zones)
   [[ _ar102Buf, '#9a7b00' ], [ _i49Buf, '#1056a0' ]].forEach(([buf, color]) => {
     if (!buf) return;
     const layer = L.geoJSON(buf, {
@@ -13649,6 +13660,31 @@ function scoutDrawBuffers() {
     }).addTo(SCOUT_MAP);
     SCOUT_BUF_LAYERS.push(layer);
   });
+
+  // Visible corridor centerlines (solid, thicker than the buffer outline)
+  const ar102Latlngs = AR102_COORDS.map(([lng, lat]) => [lat, lng]);
+  const i49Latlngs   = I49_COORDS.map(([lng, lat]) => [lat, lng]);
+  SCOUT_BUF_LAYERS.push(
+    L.polyline(ar102Latlngs, { color: '#9a7b00', weight: 4, opacity: 0.85 }).addTo(SCOUT_MAP)
+  );
+  SCOUT_BUF_LAYERS.push(
+    L.polyline(i49Latlngs, { color: '#1056a0', weight: 4, opacity: 0.85 }).addTo(SCOUT_MAP)
+  );
+
+  // Route label badges at midpoints
+  const makeLabelIcon = (text, color) => L.divIcon({
+    className: '',
+    html: `<div style="font-size:10px;font-weight:700;color:#fff;background:${color};padding:2px 6px;border-radius:3px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.35);pointer-events:none">${text}</div>`,
+    iconSize: null, iconAnchor: [20, 8],
+  });
+  const ar102Mid = AR102_COORDS[Math.floor(AR102_COORDS.length / 2)];
+  const i49Mid   = I49_COORDS[Math.floor(I49_COORDS.length / 2)];
+  SCOUT_BUF_LAYERS.push(
+    L.marker([ar102Mid[1], ar102Mid[0]], { icon: makeLabelIcon('AR-102', '#9a7b00'), interactive: false }).addTo(SCOUT_MAP)
+  );
+  SCOUT_BUF_LAYERS.push(
+    L.marker([i49Mid[1], i49Mid[0]], { icon: makeLabelIcon('I-49', '#1056a0'), interactive: false }).addTo(SCOUT_MAP)
+  );
 }
 
 // Average the outer ring vertices to get an approximate centroid from ArcGIS polygon rings.
@@ -13773,7 +13809,10 @@ async function scoutFetchTraffic([lng, lat]) {
 }
 
 function scoutCandidatePopupHtml(key) {
-  const { attrs, corridor, landUse, traffic } = _scoutCandData[key];
+  const { attrs, corridor, landUse, traffic, lngLat } = _scoutCandData[key];
+  const [cLng, cLat] = lngLat;
+  const svUrl  = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${cLat},${cLng}`;
+  const satUrl = `https://www.google.com/maps/@${cLat},${cLng},19z/data=!3m1!1e3`;
   const NA = '<span style="color:#7a7570;font-style:italic">Not available</span>';
   function row(label, val) {
     // Always render the label; show "Not available" when val is absent
@@ -13814,9 +13853,22 @@ function scoutCandidatePopupHtml(key) {
       </div>
       ${row('Est. traffic (AADT)', trafficDisplay)}
       ${trafficDisplay ? `<div style="font-size:10px;color:#7a7570;margin-top:-3px;margin-bottom:5px">Nearest station estimate — not a count at this parcel</div>` : ''}
-      <div style="margin-bottom:10px;padding:7px 9px;background:${vacBg};border-radius:5px">
+      <div style="margin-bottom:8px;padding:7px 9px;background:${vacBg};border-radius:5px">
         <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700;margin-bottom:2px">Vacant-land signal</div>
         <div style="font-size:11px;color:${vacColor};font-weight:600">${vac.label}</div>
+      </div>
+      <div style="margin-bottom:10px;padding:5px 9px;background:#eaf2ec;border-radius:5px;font-size:10px;color:#1f3d2a;font-weight:600">
+        ✓ Within 660 ft of ${corridor} right-of-way
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <a href="${svUrl}" target="_blank" rel="noopener"
+          style="flex:1;text-align:center;padding:5px 0;background:#f3eeff;border:1px solid #c4b5e8;border-radius:5px;font-size:10px;font-weight:600;color:#5b21b6;text-decoration:none">
+          📍 Street View
+        </a>
+        <a href="${satUrl}" target="_blank" rel="noopener"
+          style="flex:1;text-align:center;padding:5px 0;background:#eaf2ec;border:1px solid #a5c8b0;border-radius:5px;font-size:10px;font-weight:600;color:#1f3d2a;text-decoration:none">
+          🛰️ Satellite
+        </a>
       </div>
       <button id="${btnId}" onclick="scoutSaveCandidate('${key}','${btnId}')"
         style="width:100%;padding:7px;border:1.5px solid #1f7a3a;border-radius:6px;background:#eaf2ec;color:#1f3d2a;font-size:11px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif">
@@ -13965,6 +14017,8 @@ function scoutPopupHtml(site) {
     const display = (val !== null && val !== undefined && val !== '') ? val : NA;
     return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${display}</div></div>`;
   }
+  const svUrl  = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${site.lat},${site.lng}`;
+  const satUrl = `https://www.google.com/maps/@${site.lat},${site.lng},19z/data=!3m1!1e3`;
   const landowner = site.landowner_name
     ? site.landowner_name
     : '<em style="color:#9a7b00">Landowner not yet resolved — Washington County parcel data needed</em>';
@@ -13983,6 +14037,16 @@ function scoutPopupHtml(site) {
       ${row('County', site.county)}
       ${row('Corridor', site.road_corridor)}
       ${site.notes ? `<div style="margin-top:8px;padding:7px 9px;background:#fefbe8;border-radius:5px;font-size:11px;color:#6b5900;line-height:1.45">${site.notes}</div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <a href="${svUrl}" target="_blank" rel="noopener"
+          style="flex:1;text-align:center;padding:5px 0;background:#f3eeff;border:1px solid #c4b5e8;border-radius:5px;font-size:10px;font-weight:600;color:#5b21b6;text-decoration:none">
+          📍 Street View
+        </a>
+        <a href="${satUrl}" target="_blank" rel="noopener"
+          style="flex:1;text-align:center;padding:5px 0;background:#f0f4ff;border:1px solid #b5c4e8;border-radius:5px;font-size:10px;font-weight:600;color:#1056a0;text-decoration:none">
+          🛰️ Satellite
+        </a>
+      </div>
     </div>`;
 }
 
@@ -14020,9 +14084,19 @@ async function initBillboardScout() {
     center: [36.22, -94.24], zoom: 11,
     zoomControl: true, scrollWheelZoom: true,
   });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 19,
-  }).addTo(SCOUT_MAP);
+  const _streetLayer = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    { attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>', maxZoom: 19 }
+  ).addTo(SCOUT_MAP);
+  const _satelliteLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { attribution: '&copy; Esri &mdash; Esri, USGS, NOAA', maxZoom: 19 }
+  );
+  L.control.layers(
+    { 'Street': _streetLayer, 'Satellite': _satelliteLayer },
+    {},
+    { position: 'topright' }
+  ).addTo(SCOUT_MAP);
 
   scoutSetRegion('nwa');
 
