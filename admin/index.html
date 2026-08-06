@@ -13718,20 +13718,88 @@ function vacancySignal(attrs) {
   return          { label: `Built out (imp/land = ${r.toFixed(2)})`,             level: 'built'  };
 }
 
+// Bentonville Land Use 2025 — point-in-polygon query returning MapLabel (plain language).
+// Only covers Bentonville planning jurisdiction; unincorporated parcels return null.
+async function scoutFetchLandUse([lng, lat]) {
+  const params = new URLSearchParams({
+    geometry:       `${lng},${lat}`,
+    geometryType:   'esriGeometryPoint',
+    inSR:           '4326',
+    spatialRel:     'esriSpatialRelIntersects',
+    outFields:      'MapLabel',
+    returnGeometry: 'false',
+    f:              'json',
+  });
+  const resp = await fetch(
+    `https://gis.bentonvillear.com/arcgis/rest/services/Planning/Land_Use_2025/FeatureServer/0/query?${params}`
+  );
+  if (!resp.ok) return null;
+  const json = await resp.json();
+  if (json.error || !json.features?.length) return null;
+  return json.features[0].attributes.MapLabel || null;
+}
+
+// Bentonville 2025 Traffic Counts — nearest station within 0.5-mile envelope.
+// Returns { adt, routeSign, distMi } or null if no station found nearby.
+async function scoutFetchTraffic([lng, lat]) {
+  const d = 0.0085; // ~0.5 mile in degrees
+  const params = new URLSearchParams({
+    geometry:       `${lng-d},${lat-d},${lng+d},${lat+d}`,
+    geometryType:   'esriGeometryEnvelope',
+    inSR:           '4326',
+    outSR:          '4326',
+    spatialRel:     'esriSpatialRelIntersects',
+    outFields:      'MostRecentADT,RouteSign,FunctionalClass',
+    returnGeometry: 'true',
+    f:              'json',
+  });
+  const resp = await fetch(
+    `https://gis.bentonvillear.com/arcgis/rest/services/Planning/2025_Traffic_Counts/MapServer/0/query?${params}`
+  );
+  if (!resp.ok) return null;
+  const json = await resp.json();
+  if (json.error || !json.features?.length) return null;
+  const pt = turf.point([lng, lat]);
+  let best = null, minDist = Infinity;
+  for (const feat of json.features) {
+    if (!feat.geometry) continue;
+    const dist = turf.distance(pt, turf.point([feat.geometry.x, feat.geometry.y]), { units: 'miles' });
+    if (dist < minDist) {
+      minDist = dist;
+      best = { adt: feat.attributes.MostRecentADT, routeSign: feat.attributes.RouteSign, distMi: dist };
+    }
+  }
+  return best;
+}
+
 function scoutCandidatePopupHtml(key) {
-  const { attrs, corridor } = _scoutCandData[key];
+  const { attrs, corridor, landUse, traffic } = _scoutCandData[key];
+  const NA = '<span style="color:#7a7570;font-style:italic">Not available</span>';
   function row(label, val) {
-    if (!val && val !== 0) return '';
-    return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${val}</div></div>`;
+    // Always render the label; show "Not available" when val is absent
+    const display = (val !== null && val !== undefined && val !== '') ? val : NA;
+    return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${display}</div></div>`;
   }
   const vac = vacancySignal(attrs);
   const vacBg    = { vacant:'#eaf2ec', light:'#fefbe8', built:'#fdf1eb', unknown:'#f3eeff' }[vac.level];
   const vacColor = { vacant:'#1f7a3a', light:'#9a7b00', built:'#c8440a', unknown:'#5b21b6' }[vac.level];
   const acreage  = attrs.ACRE_AREA ? Number(attrs.ACRE_AREA).toFixed(2) + ' ac' : null;
   const addr     = attrs.OW_ADD || attrs.PH_ADD || null;
-  const btnId    = `save-${key}`;
+
+  // Land use: MapLabel from Bentonville Land Use 2025 layer (primary)
+  // TYPE_ tax code kept as secondary small-print
+  const landUseDisplay = landUse
+    ? landUse
+    : `${NA}<div style="font-size:10px;color:#7a7570;margin-top:2px">Outside Bentonville planning jurisdiction or no match</div>`;
+
+  // Traffic: nearest ArDOT count station within 0.5 mi
+  const trafficDisplay = traffic
+    ? `~${Number(traffic.adt).toLocaleString()} vehicles/day · Route ${traffic.routeSign || '—'} · ${traffic.distMi.toFixed(1)} mi from site · 2023 count`
+    : null;
+
+  const btnId = `save-${key}`;
   return `
-    <div style="min-width:240px;max-width:290px;font-family:'Instrument Sans',sans-serif;padding:2px 0">
+    <div style="min-width:240px;max-width:300px;font-family:'Instrument Sans',sans-serif;padding:2px 0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:#eaf2ec;color:#1f3d2a;text-transform:uppercase;letter-spacing:0.5px">Candidate parcel</span>
         <span style="font-size:10px;color:#7a7570;font-family:'Geist Mono',monospace">${corridor}</span>
@@ -13739,11 +13807,13 @@ function scoutCandidatePopupHtml(key) {
       ${row('Owner', attrs.OW_NAME || null)}
       ${row('Mailing address', addr)}
       ${row('Acreage', acreage)}
-      <div style="margin-bottom:8px">
-        <span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">Land use code (uncoded)</span>
-        <div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px;font-family:'Geist Mono',monospace">${attrs.TYPE_ || '—'}</div>
-        <div style="font-size:10px;color:#7a7570;margin-top:2px">Zoning eligibility needs manual confirmation</div>
+      <div style="margin-bottom:5px">
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">Land use</span>
+        <div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${landUseDisplay}</div>
+        ${landUse ? `<div style="font-size:10px;color:#7a7570;margin-top:1px">Verify zoning eligibility before committing · assessor code: <span style="font-family:'Geist Mono',monospace">${attrs.TYPE_ || '—'}</span></div>` : ''}
       </div>
+      ${row('Est. traffic (AADT)', trafficDisplay)}
+      ${trafficDisplay ? `<div style="font-size:10px;color:#7a7570;margin-top:-3px;margin-bottom:5px">Nearest station estimate — not a count at this parcel</div>` : ''}
       <div style="margin-bottom:10px;padding:7px 9px;background:${vacBg};border-radius:5px">
         <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700;margin-bottom:2px">Vacant-land signal</div>
         <div style="font-size:11px;color:${vacColor};font-weight:600">${vac.label}</div>
@@ -13758,8 +13828,11 @@ function scoutCandidatePopupHtml(key) {
 async function scoutSaveCandidate(key, btnId) {
   const btn = document.getElementById(btnId);
   if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
-  const { attrs, lngLat, corridor } = _scoutCandData[key];
+  const { attrs, lngLat, corridor, landUse, traffic } = _scoutCandData[key];
   const [cLng, cLat] = lngLat;
+  const zoningStatus = landUse
+    ? `${landUse}${attrs.TYPE_ ? ` (assessor code: ${attrs.TYPE_})` : ''}`
+    : (attrs.TYPE_ ? `Uncoded: ${attrs.TYPE_} — verify before use` : null);
   const { error } = await sbClient.from('billboard_sites').insert({
     site_type:         'candidate',
     lat:               cLat,
@@ -13768,8 +13841,9 @@ async function scoutSaveCandidate(key, btnId) {
     road_corridor:     corridor,
     landowner_name:    attrs.OW_NAME || null,
     landowner_address: attrs.OW_ADD || attrs.PH_ADD || null,
-    zoning_status:     attrs.TYPE_ ? `Code: ${attrs.TYPE_} (uncoded — verify before use)` : null,
-    notes:             `Parcel ${attrs.PARCELID || ''} · ${attrs.ACRE_AREA || '?'} ac · Zoning not confirmed — review TYPE_ before outreach.`,
+    zoning_status:     zoningStatus,
+    traffic_aadt:      traffic?.adt ? Math.round(traffic.adt) : null,
+    notes:             `Parcel ${attrs.PARCELID || ''} · ${attrs.ACRE_AREA || '?'} ac · Zoning not confirmed — review before outreach.${traffic ? ` Traffic est: ~${Number(traffic.adt).toLocaleString()} AADT ${traffic.distMi.toFixed(1)} mi from site (2023).` : ''}`,
     source:            'Benton County ArcGIS parcel service (computed candidate)',
   });
   if (error) {
@@ -13822,18 +13896,32 @@ async function scoutFindCandidates(regionKey) {
     SCOUT_CAND_MARKERS = [];
     _scoutCandData = {};
 
+    // Phase 1: collect candidates that pass spatial filters (sync)
+    const candidates = [];
     for (const feat of features) {
       const rings = feat.geometry?.rings;
       if (!rings?.length) continue;
       const lngLat = ringCentroid(rings);
-
       if (!inCorridorBuffer(lngLat)) continue;
       const { corridor, spacingFt } = scoutWhichCorridor(lngLat);
       if (!passesSpacingCheck(lngLat, spacingFt)) continue;
+      candidates.push({ attrs: feat.attributes, lngLat, corridor });
+    }
 
-      const attrs = feat.attributes;
+    // Phase 2: enrich all candidates with land-use + traffic in parallel
+    if (candidates.length) {
+      scoutSetStatus(`${candidates.length} parcel${candidates.length !== 1 ? 's' : ''} pass filter — fetching land use and traffic…`, '');
+    }
+    const enriched = await Promise.all(candidates.map(async c => ({
+      ...c,
+      landUse: await scoutFetchLandUse(c.lngLat).catch(() => null),
+      traffic: await scoutFetchTraffic(c.lngLat).catch(() => null),
+    })));
+
+    // Phase 3: render markers
+    for (const { attrs, lngLat, corridor, landUse, traffic } of enriched) {
       const key = `cand_${attrs.PARCELID || Math.random().toString(36).slice(2)}`;
-      _scoutCandData[key] = { attrs, lngLat, corridor };
+      _scoutCandData[key] = { attrs, lngLat, corridor, landUse, traffic };
       const [cLng, cLat] = lngLat;
       const marker = L.marker([cLat, cLng], { icon: scoutMarkerIcon('candidate') })
         .bindPopup(() => scoutCandidatePopupHtml(key), { maxWidth: 320 })
@@ -13872,9 +13960,10 @@ function scoutMarkerIcon(siteType) {
 }
 
 function scoutPopupHtml(site) {
+  const NA = '<span style="color:#7a7570;font-style:italic">Not available</span>';
   function row(label, val) {
-    if (!val) return '';
-    return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${val}</div></div>`;
+    const display = (val !== null && val !== undefined && val !== '') ? val : NA;
+    return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${display}</div></div>`;
   }
   const landowner = site.landowner_name
     ? site.landowner_name
