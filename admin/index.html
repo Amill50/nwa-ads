@@ -7,6 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/shared/js/env.js?v=20260727a"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script src="/shared/js/venue-type-img.js?v=20260727a"></script>
@@ -399,6 +402,10 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
       <div class="nav-item" onclick="showView('rateconfig')" id="nav-rateconfig">
         <span class="ni-icon">⚙️</span> Margin &amp; rate settings
       </div>
+      <div class="nav-section">Site Scouting</div>
+      <div class="nav-item" onclick="showView('billboard-scout')" id="nav-billboard-scout">
+        <span class="ni-icon">📍</span> Billboard scout
+      </div>
     </nav>
 
     <!-- Content -->
@@ -767,6 +774,120 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
         <div class="notice info" style="margin-top:4px">
           <span>ℹ</span>
           <div id="rate-config-status">Not yet saved this session — click <strong>Save &amp; apply</strong> to commit changes.</div>
+        </div>
+      </div>
+
+      <!-- ════ BILLBOARD SCOUT ════ -->
+      <div class="view" id="view-billboard-scout">
+        <div class="page-head">
+          <div class="page-title">Billboard scout</div>
+          <div class="page-sub">Existing Lamar structures and future candidate sites — read from the <code style="font-size:11px;background:var(--surface2);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">billboard_sites</code> table</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start">
+
+          <!-- Left: map + controls -->
+          <div>
+            <div class="filter-bar" style="margin-bottom:8px">
+              <label style="font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap">Region:</label>
+              <select id="scout-region" onchange="scoutSetRegion(this.value)"
+                style="padding:6px 12px;border:1px solid var(--border2);border-radius:8px;font-size:13px;background:var(--surface);color:var(--text);cursor:pointer;outline:none">
+                <option value="nwa">NWA (all)</option>
+                <option value="benton">Benton County</option>
+                <option value="washington">Washington County</option>
+                <option value="ar102">AR-102 corridor</option>
+                <option value="i49">I-49 corridor</option>
+              </select>
+              <button id="scout-find-btn" class="btn green sm"
+                onclick="scoutFindCandidates(document.getElementById('scout-region').value)"
+                style="white-space:nowrap">↻ Find candidates</button>
+              <span id="scout-count" style="font-size:12px;color:var(--text3)"></span>
+            </div>
+            <div id="scout-status" style="font-size:12px;color:var(--text3);margin-bottom:10px;min-height:16px"></div>
+
+            <div class="card" style="margin-bottom:0;overflow:visible">
+              <div id="scout-map" style="height:540px;border-radius:9px"></div>
+            </div>
+
+            <div style="display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--text3);align-items:center;flex-wrap:wrap">
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#c8440a;border:2px solid rgba(255,255,255,0.8);box-shadow:0 1px 3px rgba(0,0,0,0.3)"></span>
+                Existing sign (Lamar)
+              </span>
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1f7a3a;border:2px solid rgba(255,255,255,0.8);box-shadow:0 1px 3px rgba(0,0,0,0.3)"></span>
+                Candidate parcel
+              </span>
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="display:inline-block;width:18px;height:0;border-top:2px dashed #9a7b00;opacity:0.8"></span>
+                AR-102 660 ft zone
+              </span>
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="display:inline-block;width:18px;height:0;border-top:2px dashed #1056a0;opacity:0.8"></span>
+                I-49 660 ft zone
+              </span>
+            </div>
+          </div>
+
+          <!-- Right: regulatory checklist -->
+          <div>
+            <div class="card" style="margin-bottom:12px">
+              <div class="card-head">
+                <div>
+                  <div class="card-title">Siting checklist</div>
+                  <div class="card-sub">AR state rules + Bentonville overlay — plain language</div>
+                </div>
+              </div>
+              <div style="padding:16px 18px;display:flex;flex-direction:column;gap:14px">
+
+                <div style="display:flex;gap:10px;align-items:flex-start">
+                  <span style="font-size:15px;flex-shrink:0;margin-top:1px">📏</span>
+                  <div>
+                    <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px">Highway proximity</div>
+                    <div style="font-size:11px;color:var(--text2);line-height:1.55">Must be within <strong>660 ft</strong> of the I-49 or AR-102 right-of-way, on land zoned or usable as commercial or industrial.</div>
+                  </div>
+                </div>
+
+                <div style="border-top:1px solid var(--border);padding-top:14px;display:flex;gap:10px;align-items:flex-start">
+                  <span style="font-size:15px;flex-shrink:0;margin-top:1px">↔️</span>
+                  <div>
+                    <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px">Sign spacing</div>
+                    <div style="font-size:11px;color:var(--text2);line-height:1.55">
+                      <div style="margin-bottom:4px">• <strong>I-49:</strong> at least <strong>500 ft</strong> between signs (same side of road)</div>
+                      <div style="margin-bottom:4px">• <strong>AR-102 outside Bentonville:</strong> at least <strong>300 ft</strong> apart</div>
+                      <div>• <strong>AR-102 inside Bentonville city limits:</strong> at least <strong>100 ft</strong> apart</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="border-top:1px solid var(--border);padding-top:14px;display:flex;gap:10px;align-items:flex-start">
+                  <span style="font-size:15px;flex-shrink:0;margin-top:1px">📐</span>
+                  <div>
+                    <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px">Static sign size limits</div>
+                    <div style="font-size:11px;color:var(--text2);line-height:1.55">Max <strong>1,200 sq ft</strong> per face · Max <strong>25 ft tall</strong> · Max <strong>60 ft long</strong></div>
+                  </div>
+                </div>
+
+                <div style="border-top:1px solid var(--border);padding-top:14px;display:flex;gap:10px;align-items:flex-start">
+                  <span style="font-size:15px;flex-shrink:0;margin-top:1px">💡</span>
+                  <div>
+                    <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px">Digital billboards (Bentonville)</div>
+                    <div style="font-size:11px;color:var(--text2);line-height:1.55">Require Bentonville's <strong>separate sign permit</strong> on top of the state permit. Confirm exact size and brightness limits with the city before committing to a site.</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="notice warn">
+              <span>⚠</span>
+              <div style="font-size:11px;line-height:1.55">
+                <div style="margin-bottom:5px">12 Washington County sites have <strong>unresolved landowner data</strong> — parcel lookup pending.</div>
+                <div>Candidate parcels show <strong>raw land-use codes (TYPE_)</strong>. Zoning eligibility is not auto-confirmed — always verify with the city or county before committing to a site.</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -12050,6 +12171,7 @@ function showView(id) {
   document.getElementById('nav-'+id).classList.add('active');
   closeDetail();
   if (id === 'photos') initPhotoQA();
+  if (id === 'billboard-scout') initBillboardScout();
 }
 
 
@@ -13428,6 +13550,410 @@ async function saveCrop() {
     refreshPhotoOverrides(sbClient).then(() => { renderPhotoQAKPIs(); renderPhotoGrid(); });
     if (btn) { btn.disabled=false; btn.textContent='Save crop'; }
   }, 'image/jpeg', 0.92);
+}
+
+/* ══════════════ BILLBOARD SCOUT ══════════════
+   Reads billboard_sites from Supabase (existing Lamar signs) and computes
+   candidate parcels live from Benton County ArcGIS parcel data.
+
+   site_type = 'existing'  → orange/red pin  (Lamar competitor structures, informational)
+   site_type = 'candidate' → green pin        (open opportunities)
+
+   Candidate filter (applied client-side, computed fresh on each region change):
+     1. Parcel centroid within 660 ft of AR-102 or I-49 corridor centerline
+     2. No existing billboard_sites row within spacing radius of the centroid:
+          I-49 corridor  → 500 ft minimum spacing
+          AR-102 corridor → 100 ft (entire AR-102 study segment is inside Bentonville)
+   TYPE_ (zoning code) is NOT auto-filtered — no decoded legend available.
+   Surface raw code for human review; never assume eligibility from the code alone.
+   ═════════════════════════════════════════════ */
+
+let SCOUT_MAP         = null;
+let SCOUT_MARKERS     = [];    // billboard_sites existing pins
+let SCOUT_CAND_MARKERS = [];   // computed candidate parcel pins (not persisted until saved)
+let SCOUT_BUF_LAYERS  = [];    // Leaflet layers for corridor buffer polygons
+let SCOUT_SITES       = [];
+let _scoutReady       = false; // true after Supabase sites are loaded
+let _scoutRegionKey   = 'nwa';
+let _scoutFindTimer   = null;
+let _scoutCandData    = {};    // key → { attrs, lngLat, corridor } — avoids passing data through onclick attrs
+
+const SCOUT_REGIONS = {
+  nwa:        { bounds: [[35.85, -94.62], [36.57, -93.86]] },
+  benton:     { bounds: [[36.22, -94.62], [36.57, -94.02]] },
+  washington: { bounds: [[35.85, -94.30], [36.25, -93.86]] },
+  ar102:      { center: [36.275, -94.185], zoom: 13 },
+  i49:        { bounds: [[35.95, -94.35], [36.50, -94.10]] },
+};
+
+// Bounding boxes for ArcGIS parcel queries [xmin, ymin, xmax, ymax] WGS84
+// washington → null: no public Benton County parcel endpoint located
+const SCOUT_PARCEL_BBOXES = {
+  nwa:        [-94.62, 36.22, -94.02, 36.57],
+  benton:     [-94.62, 36.22, -94.02, 36.57],
+  ar102:      [-94.24, 36.30, -94.14, 36.40],
+  i49:        [-94.26, 36.20, -94.14, 36.50],
+  washington: null,
+};
+
+// ── Corridor polylines — hardcoded waypoints, directionally correct, not survey-grade.
+// A future iteration can pull exact centerlines from ArDOT's ARNOLD dataset.
+// AR-102 / SE Walton Blvd through Bentonville (east↔west).
+// Anchored on known Lamar device positions: 4049 (36.356, -94.175), 4058 (36.357, -94.213).
+const AR102_COORDS = [
+  [-94.226, 36.325],
+  [-94.215, 36.332],
+  [-94.200, 36.348],
+  [-94.190, 36.354],
+  [-94.175, 36.356],
+  [-94.160, 36.356],
+  [-94.148, 36.352],
+];
+// I-49 through Rogers/Bentonville (north↔south).
+// Anchored on devices: 4210 (36.245, -94.152), 4084 (36.268, -94.151), 4071 (36.289, -94.160).
+const I49_COORDS = [
+  [-94.152, 36.240],
+  [-94.155, 36.268],
+  [-94.160, 36.289],
+  [-94.175, 36.316],
+  [-94.185, 36.334],
+  [-94.198, 36.357],
+  [-94.208, 36.378],
+  [-94.218, 36.400],
+  [-94.222, 36.420],
+];
+
+const FT_TO_KM        = 0.0003048;
+const CORRIDOR_FT     = 660;
+const SPACING_I49_FT  = 500;
+const SPACING_AR102_FT = 100; // inside Bentonville city limits
+
+let _ar102Line = null, _i49Line = null;
+let _ar102Buf  = null, _i49Buf  = null;
+
+function scoutBuildCorridors() {
+  if (_ar102Line) return; // built once, reused across region changes
+  _ar102Line = turf.lineString(AR102_COORDS);
+  _i49Line   = turf.lineString(I49_COORDS);
+  _ar102Buf  = turf.buffer(_ar102Line, CORRIDOR_FT * FT_TO_KM, { units: 'kilometers' });
+  _i49Buf    = turf.buffer(_i49Line,   CORRIDOR_FT * FT_TO_KM, { units: 'kilometers' });
+}
+
+function scoutDrawBuffers() {
+  SCOUT_BUF_LAYERS.forEach(l => l.remove());
+  SCOUT_BUF_LAYERS = [];
+  [[ _ar102Buf, '#9a7b00' ], [ _i49Buf, '#1056a0' ]].forEach(([buf, color]) => {
+    if (!buf) return;
+    const layer = L.geoJSON(buf, {
+      style: { color, fillColor: color, fillOpacity: 0.07, weight: 1.5, dashArray: '6 4', opacity: 0.55 },
+    }).addTo(SCOUT_MAP);
+    SCOUT_BUF_LAYERS.push(layer);
+  });
+}
+
+// Average the outer ring vertices to get an approximate centroid from ArcGIS polygon rings.
+function ringCentroid(rings) {
+  const ring = rings[0];
+  let sumLng = 0, sumLat = 0;
+  ring.forEach(([lng, lat]) => { sumLng += lng; sumLat += lat; });
+  return [sumLng / ring.length, sumLat / ring.length]; // [lng, lat]
+}
+
+// Benton County ArcGIS parcel service — public, no auth required.
+async function scoutQueryParcels(bbox) {
+  const [xmin, ymin, xmax, ymax] = bbox;
+  const params = new URLSearchParams({
+    geometry:          `${xmin},${ymin},${xmax},${ymax}`,
+    geometryType:      'esriGeometryEnvelope',
+    inSR:              '4326',
+    outSR:             '4326',
+    spatialRel:        'esriSpatialRelIntersects',
+    outFields:         'PARCELID,ACRE_AREA,OW_NAME,OW_ADD,PH_ADD,TYPE_,IMP_VAL,LAND_VAL,TOTAL_VAL',
+    returnGeometry:    'true',
+    resultRecordCount: '500',
+    f:                 'json',
+  });
+  const resp = await fetch(
+    `https://gis.bentonvillear.com/arcgis/rest/services/Base_map/Benton_County_Data/MapServer/2/query?${params}`
+  );
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const json = await resp.json();
+  if (json.error) throw new Error(json.error.message || JSON.stringify(json.error));
+  return json.features || [];
+}
+
+// Determine which corridor a point [lng, lat] is closer to, and what spacing rule applies.
+function scoutWhichCorridor(lngLat) {
+  const pt   = turf.point(lngLat);
+  const dAR  = turf.nearestPointOnLine(_ar102Line, pt, { units: 'feet' }).properties.dist;
+  const dI49 = turf.nearestPointOnLine(_i49Line,   pt, { units: 'feet' }).properties.dist;
+  return dAR <= dI49
+    ? { corridor: 'AR-102', spacingFt: SPACING_AR102_FT }
+    : { corridor: 'I-49',   spacingFt: SPACING_I49_FT  };
+}
+
+function inCorridorBuffer(lngLat) {
+  const pt = turf.point(lngLat);
+  return turf.booleanPointInPolygon(pt, _ar102Buf) ||
+         turf.booleanPointInPolygon(pt, _i49Buf);
+}
+
+// Returns false if any existing sign is within spacingFt of lngLat.
+function passesSpacingCheck(lngLat, spacingFt) {
+  const pt = turf.point(lngLat);
+  return !SCOUT_SITES.some(site => {
+    if (!site.lat || !site.lng || site.site_type !== 'existing') return false;
+    return turf.distance(pt, turf.point([site.lng, site.lat]), { units: 'feet' }) < spacingFt;
+  });
+}
+
+// Low imp/land ratio → likely vacant land. Surfaced as a signal, not a filter.
+function vacancySignal(attrs) {
+  const imp  = Number(attrs.IMP_VAL)  || 0;
+  const land = Number(attrs.LAND_VAL) || 0;
+  if (!land) return { label: 'No land value on record', level: 'unknown' };
+  const r = imp / land;
+  if (r < 0.10) return { label: `Likely vacant (imp/land = ${r.toFixed(2)})`, level: 'vacant' };
+  if (r < 0.50) return { label: `Lightly improved (imp/land = ${r.toFixed(2)})`, level: 'light'  };
+  return          { label: `Built out (imp/land = ${r.toFixed(2)})`,             level: 'built'  };
+}
+
+function scoutCandidatePopupHtml(key) {
+  const { attrs, corridor } = _scoutCandData[key];
+  function row(label, val) {
+    if (!val && val !== 0) return '';
+    return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${val}</div></div>`;
+  }
+  const vac = vacancySignal(attrs);
+  const vacBg    = { vacant:'#eaf2ec', light:'#fefbe8', built:'#fdf1eb', unknown:'#f3eeff' }[vac.level];
+  const vacColor = { vacant:'#1f7a3a', light:'#9a7b00', built:'#c8440a', unknown:'#5b21b6' }[vac.level];
+  const acreage  = attrs.ACRE_AREA ? Number(attrs.ACRE_AREA).toFixed(2) + ' ac' : null;
+  const addr     = attrs.OW_ADD || attrs.PH_ADD || null;
+  const btnId    = `save-${key}`;
+  return `
+    <div style="min-width:240px;max-width:290px;font-family:'Instrument Sans',sans-serif;padding:2px 0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:#eaf2ec;color:#1f3d2a;text-transform:uppercase;letter-spacing:0.5px">Candidate parcel</span>
+        <span style="font-size:10px;color:#7a7570;font-family:'Geist Mono',monospace">${corridor}</span>
+      </div>
+      ${row('Owner', attrs.OW_NAME || null)}
+      ${row('Mailing address', addr)}
+      ${row('Acreage', acreage)}
+      <div style="margin-bottom:8px">
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">Land use code (uncoded)</span>
+        <div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px;font-family:'Geist Mono',monospace">${attrs.TYPE_ || '—'}</div>
+        <div style="font-size:10px;color:#7a7570;margin-top:2px">Zoning eligibility needs manual confirmation</div>
+      </div>
+      <div style="margin-bottom:10px;padding:7px 9px;background:${vacBg};border-radius:5px">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700;margin-bottom:2px">Vacant-land signal</div>
+        <div style="font-size:11px;color:${vacColor};font-weight:600">${vac.label}</div>
+      </div>
+      <button id="${btnId}" onclick="scoutSaveCandidate('${key}','${btnId}')"
+        style="width:100%;padding:7px;border:1.5px solid #1f7a3a;border-radius:6px;background:#eaf2ec;color:#1f3d2a;font-size:11px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif">
+        Save as candidate →
+      </button>
+    </div>`;
+}
+
+async function scoutSaveCandidate(key, btnId) {
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  const { attrs, lngLat, corridor } = _scoutCandData[key];
+  const [cLng, cLat] = lngLat;
+  const { error } = await sbClient.from('billboard_sites').insert({
+    site_type:         'candidate',
+    lat:               cLat,
+    lng:               cLng,
+    county:            'Benton',
+    road_corridor:     corridor,
+    landowner_name:    attrs.OW_NAME || null,
+    landowner_address: attrs.OW_ADD || attrs.PH_ADD || null,
+    zoning_status:     attrs.TYPE_ ? `Code: ${attrs.TYPE_} (uncoded — verify before use)` : null,
+    notes:             `Parcel ${attrs.PARCELID || ''} · ${attrs.ACRE_AREA || '?'} ac · Zoning not confirmed — review TYPE_ before outreach.`,
+    source:            'Benton County ArcGIS parcel service (computed candidate)',
+  });
+  if (error) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Save as candidate →'; }
+    alert('Save failed: ' + error.message);
+    return;
+  }
+  if (btn) { btn.textContent = '✓ Saved'; btn.style.background = '#1f7a3a'; btn.style.color = '#fff'; btn.style.borderColor = '#1f7a3a'; }
+  // Refresh cached sites so subsequent spacing checks stay accurate
+  const { data } = await sbClient
+    .from('billboard_sites')
+    .select('id,site_type,device_id,lat,lng,county,road_corridor,sales_operator,landowner_name,landowner_address,notes')
+    .order('site_type');
+  if (data) { SCOUT_SITES = data; scoutPlotSites(SCOUT_SITES); }
+}
+
+function scoutSetStatus(msg, type) {
+  const el = document.getElementById('scout-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = type === 'err' ? '#c8440a' : type === 'ok' ? '#1f7a3a' : '#7a7570';
+}
+
+async function scoutFindCandidates(regionKey) {
+  if (!SCOUT_MAP || !_scoutReady) return;
+  scoutBuildCorridors();
+
+  const bbox = SCOUT_PARCEL_BBOXES[regionKey];
+  if (!bbox) {
+    SCOUT_CAND_MARKERS.forEach(m => m.remove());
+    SCOUT_CAND_MARKERS = [];
+    SCOUT_BUF_LAYERS.forEach(l => l.remove());
+    SCOUT_BUF_LAYERS = [];
+    _scoutCandData = {};
+    scoutSetStatus('Washington County parcel data not yet available — no public REST endpoint located.', 'err');
+    return;
+  }
+
+  scoutSetStatus('Querying Benton County parcel data…', '');
+  const btn = document.getElementById('scout-find-btn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const features = await scoutQueryParcels(bbox);
+    const hitLimit = features.length >= 500;
+    scoutSetStatus(`${features.length} parcels returned — filtering to corridor + spacing criteria…`, '');
+    scoutDrawBuffers();
+
+    SCOUT_CAND_MARKERS.forEach(m => m.remove());
+    SCOUT_CAND_MARKERS = [];
+    _scoutCandData = {};
+
+    for (const feat of features) {
+      const rings = feat.geometry?.rings;
+      if (!rings?.length) continue;
+      const lngLat = ringCentroid(rings);
+
+      if (!inCorridorBuffer(lngLat)) continue;
+      const { corridor, spacingFt } = scoutWhichCorridor(lngLat);
+      if (!passesSpacingCheck(lngLat, spacingFt)) continue;
+
+      const attrs = feat.attributes;
+      const key = `cand_${attrs.PARCELID || Math.random().toString(36).slice(2)}`;
+      _scoutCandData[key] = { attrs, lngLat, corridor };
+      const [cLng, cLat] = lngLat;
+      const marker = L.marker([cLat, cLng], { icon: scoutMarkerIcon('candidate') })
+        .bindPopup(() => scoutCandidatePopupHtml(key), { maxWidth: 320 })
+        .addTo(SCOUT_MAP);
+      SCOUT_CAND_MARKERS.push(marker);
+    }
+
+    const nCand = Object.keys(_scoutCandData).length;
+    const ex = SCOUT_SITES.filter(s => s.site_type === 'existing').length;
+    const countEl = document.getElementById('scout-count');
+    if (countEl) countEl.textContent = `${ex} existing · ${nCand} candidate${nCand !== 1 ? 's' : ''}`;
+
+    const limitNote = hitLimit ? ' · 500-record limit reached — try a narrower region' : '';
+    scoutSetStatus(
+      nCand
+        ? `${nCand} candidate parcel${nCand !== 1 ? 's' : ''} found — verify zoning before outreach${limitNote}`
+        : `No candidates found in this area — all parcels outside corridor or within existing-sign spacing${limitNote}`,
+      nCand ? 'ok' : ''
+    );
+  } catch (err) {
+    console.error('scoutFindCandidates:', err);
+    scoutSetStatus('Parcel query failed — ' + err.message, 'err');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function scoutMarkerIcon(siteType) {
+  const color  = siteType === 'candidate' ? '#1f7a3a' : '#c8440a';
+  const border = siteType === 'candidate' ? '#0d4a22' : '#8f2800';
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2.5px solid ${border};box-shadow:0 2px 6px rgba(0,0,0,0.35)"></div>`,
+    iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -10],
+  });
+}
+
+function scoutPopupHtml(site) {
+  function row(label, val) {
+    if (!val) return '';
+    return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${val}</div></div>`;
+  }
+  const landowner = site.landowner_name
+    ? site.landowner_name
+    : '<em style="color:#9a7b00">Landowner not yet resolved — Washington County parcel data needed</em>';
+  const typePill = site.site_type === 'candidate'
+    ? '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:#eaf2ec;color:#1f3d2a;text-transform:uppercase;letter-spacing:0.5px">Candidate</span>'
+    : '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:#fdf1eb;color:#c8440a;text-transform:uppercase;letter-spacing:0.5px">Existing sign</span>';
+  return `
+    <div style="min-width:220px;max-width:280px;font-family:'Instrument Sans',sans-serif;padding:2px 0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        ${typePill}
+        ${site.device_id ? `<span style="font-family:'Geist Mono',monospace;font-size:10px;color:#7a7570">#${site.device_id}</span>` : ''}
+      </div>
+      ${row('Operator', site.sales_operator)}
+      <div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">Landowner</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${landowner}</div></div>
+      ${row('Address', site.landowner_address)}
+      ${row('County', site.county)}
+      ${row('Corridor', site.road_corridor)}
+      ${site.notes ? `<div style="margin-top:8px;padding:7px 9px;background:#fefbe8;border-radius:5px;font-size:11px;color:#6b5900;line-height:1.45">${site.notes}</div>` : ''}
+    </div>`;
+}
+
+function scoutPlotSites(sites) {
+  SCOUT_MARKERS.forEach(m => m.remove());
+  SCOUT_MARKERS = [];
+  sites.forEach(site => {
+    if (!site.lat || !site.lng) return;
+    const m = L.marker([site.lat, site.lng], { icon: scoutMarkerIcon(site.site_type) })
+      .bindPopup(scoutPopupHtml(site), { maxWidth: 300 })
+      .addTo(SCOUT_MAP);
+    SCOUT_MARKERS.push(m);
+  });
+}
+
+function scoutSetRegion(val) {
+  _scoutRegionKey = val;
+  if (!SCOUT_MAP) return;
+  const r = SCOUT_REGIONS[val] || SCOUT_REGIONS.nwa;
+  if (r.bounds) { SCOUT_MAP.fitBounds(r.bounds); }
+  else          { SCOUT_MAP.setView(r.center, r.zoom); }
+  if (_scoutReady) {
+    clearTimeout(_scoutFindTimer);
+    _scoutFindTimer = setTimeout(() => scoutFindCandidates(val), 700);
+  }
+}
+
+async function initBillboardScout() {
+  if (SCOUT_MAP) {
+    setTimeout(() => SCOUT_MAP.invalidateSize(), 50);
+    return;
+  }
+
+  SCOUT_MAP = L.map('scout-map', {
+    center: [36.22, -94.24], zoom: 11,
+    zoomControl: true, scrollWheelZoom: true,
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 19,
+  }).addTo(SCOUT_MAP);
+
+  scoutSetRegion('nwa');
+
+  const { data, error } = await sbClient
+    .from('billboard_sites')
+    .select('id,site_type,device_id,lat,lng,county,road_corridor,sales_operator,landowner_name,landowner_address,notes')
+    .order('site_type');
+
+  if (error) {
+    console.error('billboard_sites fetch error:', error.message);
+    scoutSetStatus('Error loading billboard_sites — ' + error.message, 'err');
+    return;
+  }
+
+  SCOUT_SITES = data || [];
+  scoutPlotSites(SCOUT_SITES);
+  setTimeout(() => SCOUT_MAP.invalidateSize(), 100);
+
+  _scoutReady = true;
+  scoutFindCandidates(_scoutRegionKey); // auto-run on first load
 }
 
 </script>
