@@ -13577,15 +13577,17 @@ async function saveCrop() {
    Surface raw code for human review; never assume eligibility from the code alone.
    ═════════════════════════════════════════════ */
 
-let SCOUT_MAP         = null;
-let SCOUT_MARKERS     = [];    // billboard_sites existing pins
-let SCOUT_CAND_MARKERS = [];   // computed candidate parcel pins (not persisted until saved)
-let SCOUT_BUF_LAYERS  = [];    // Leaflet layers for corridor buffer polygons
-let SCOUT_SITES       = [];
-let _scoutReady       = false; // true after Supabase sites are loaded
-let _scoutRegionKey   = 'nwa';
-let _scoutFindTimer   = null;
-let _scoutCandData    = {};    // key → { attrs, lngLat, corridor } — avoids passing data through onclick attrs
+let SCOUT_MAP          = null;
+let SCOUT_MARKERS      = [];    // billboard_sites existing pins
+let SCOUT_CAND_MARKERS = [];    // computed candidate parcel pins (not persisted until saved)
+let SCOUT_BUF_LAYERS   = [];    // Leaflet layers for corridor buffer polygons + centerlines
+let SCOUT_SITES        = [];
+let _scoutReady        = false; // true after Supabase sites are loaded
+let _scoutRegionKey    = 'nwa';
+let _scoutFindTimer    = null;
+let _scoutCandData     = {};    // key → { attrs, lngLat, rings, corridor, zoning, landUse, traffic }
+let _zoningLayerGroup  = null;  // overlay: Bentonville zoning district polygons
+let _exitsLayerGroup   = null;  // overlay: I-49 interchange/exit markers
 
 const SCOUT_REGIONS = {
   nwa:        { bounds: [[35.85, -94.62], [36.57, -93.86]] },
@@ -13919,16 +13921,17 @@ function scoutCandidatePopupHtml(key) {
       <div style="margin-bottom:10px;padding:5px 9px;background:#eaf2ec;border-radius:5px;font-size:10px;color:#1f3d2a;font-weight:600">
         ✓ Within 660 ft of ${corridor} right-of-way
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:10px">
+      <div style="display:flex;gap:8px;margin-bottom:4px">
+        <a href="${satUrl}" target="_blank" rel="noopener"
+          style="flex:1;text-align:center;padding:6px 0;background:#eaf2ec;border:1.5px solid #a5c8b0;border-radius:5px;font-size:10px;font-weight:700;color:#1f3d2a;text-decoration:none">
+          🛰️ Satellite (accurate)
+        </a>
         <a href="${svUrl}" target="_blank" rel="noopener"
-          style="flex:1;text-align:center;padding:5px 0;background:#f3eeff;border:1px solid #c4b5e8;border-radius:5px;font-size:10px;font-weight:600;color:#5b21b6;text-decoration:none">
+          style="flex:1;text-align:center;padding:6px 0;background:#f7f4f0;border:1px solid #d4cec9;border-radius:5px;font-size:10px;font-weight:600;color:#4a4440;text-decoration:none">
           📍 Street View
         </a>
-        <a href="${satUrl}" target="_blank" rel="noopener"
-          style="flex:1;text-align:center;padding:5px 0;background:#eaf2ec;border:1px solid #a5c8b0;border-radius:5px;font-size:10px;font-weight:600;color:#1f3d2a;text-decoration:none">
-          🛰️ Satellite
-        </a>
       </div>
+      <div style="font-size:9px;color:#7a7570;margin-bottom:10px;line-height:1.4">Street View snaps to nearest photographed panorama — multiple nearby parcels may show the same imagery. Satellite always centers on exact coordinates.</div>
       <button id="${btnId}" onclick="scoutSaveCandidate('${key}','${btnId}')"
         style="width:100%;padding:7px;border:1.5px solid #1f7a3a;border-radius:6px;background:#eaf2ec;color:#1f3d2a;font-size:11px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif">
         Save as candidate →
@@ -14016,7 +14019,7 @@ async function scoutFindCandidates(regionKey) {
       if (!inCorridorBuffer(lngLat)) continue;
       const { corridor, spacingFt } = scoutWhichCorridor(lngLat);
       if (!passesSpacingCheck(lngLat, spacingFt)) continue;
-      candidates.push({ attrs: feat.attributes, lngLat, corridor });
+      candidates.push({ attrs: feat.attributes, lngLat, rings, corridor });
     }
 
     // Phase 2: enrich all candidates with zoning, land-use + traffic in parallel
@@ -14038,13 +14041,30 @@ async function scoutFindCandidates(regionKey) {
     );
     const nDisqualified = enriched.length - zoningPassed.length;
 
-    // Phase 3: render markers for parcels that passed all filters
-    for (const { attrs, lngLat, corridor, landUse, traffic, zoning } of zoningPassed) {
+    // Phase 3: render parcel boundaries + centroid markers for parcels that passed all filters
+    for (const { attrs, lngLat, rings, corridor, landUse, traffic, zoning } of zoningPassed) {
       const key = `cand_${attrs.PARCELID || Math.random().toString(36).slice(2)}`;
-      _scoutCandData[key] = { attrs, lngLat, corridor, landUse, traffic, zoning };
+      _scoutCandData[key] = { attrs, lngLat, rings, corridor, landUse, traffic, zoning };
       const [cLng, cLat] = lngLat;
+
+      // Log per-candidate coords so Street View discrepancy can be verified in console
+      console.log('[scout candidate]', attrs.PARCELID, 'lngLat', lngLat);
+
+      // Parcel boundary polygon (rings are [lng,lat]; Leaflet wants [lat,lng])
+      if (rings?.length) {
+        const latlngs = rings.map(ring => ring.map(([rLng, rLat]) => [rLat, rLng]));
+        const poly = L.polygon(latlngs, {
+          color: '#1f7a3a', weight: 1.5, opacity: 0.8,
+          fill: true, fillColor: '#1f7a3a', fillOpacity: 0.1,
+        })
+        .bindPopup(() => scoutCandidatePopupHtml(key), { maxWidth: 340 })
+        .addTo(SCOUT_MAP);
+        SCOUT_CAND_MARKERS.push(poly);
+      }
+
+      // Centroid dot — remains the primary click/popup target
       const marker = L.marker([cLat, cLng], { icon: scoutMarkerIcon('candidate') })
-        .bindPopup(() => scoutCandidatePopupHtml(key), { maxWidth: 320 })
+        .bindPopup(() => scoutCandidatePopupHtml(key), { maxWidth: 340 })
         .addTo(SCOUT_MAP);
       SCOUT_CAND_MARKERS.push(marker);
     }
@@ -14143,6 +14163,64 @@ function scoutSetRegion(val) {
   }
 }
 
+// Fetch all Bentonville zoning district polygons and add them to layerGroup.
+// Color-codes eligible (green) vs ineligible (grey) districts for quick visual confirmation.
+async function scoutLoadZoningLayer(layerGroup) {
+  try {
+    const params = new URLSearchParams({
+      geometry: '-94.40,36.20,-94.10,36.45', geometryType: 'esriGeometryEnvelope',
+      inSR: '4326', outSR: '4326', spatialRel: 'esriSpatialRelIntersects',
+      outFields: 'ZONE', returnGeometry: 'true', resultRecordCount: '1000', f: 'json',
+    });
+    const resp = await fetch(
+      `https://gis.bentonvillear.com/arcgis/rest/services/Planning/Community_Development23/MapServer/0/query?${params}`
+    );
+    if (!resp.ok) return;
+    const json = await resp.json();
+    if (json.error || !json.features?.length) return;
+    for (const feat of json.features) {
+      const zone = feat.attributes?.ZONE;
+      if (!feat.geometry?.rings || !zone) continue;
+      const eligible = SCOUT_BILLBOARD_ZONES.has(zone);
+      const color = eligible ? '#1f7a3a' : '#7a7570';
+      const latlngs = feat.geometry.rings.map(ring => ring.map(([lng, lat]) => [lat, lng]));
+      L.polygon(latlngs, {
+        color, weight: 1, opacity: 0.5,
+        fill: true, fillColor: color, fillOpacity: eligible ? 0.07 : 0.03,
+        interactive: true,
+      })
+      .bindTooltip(SCOUT_ZONE_NAMES[zone] || zone, { sticky: true, direction: 'auto' })
+      .addTo(layerGroup);
+    }
+  } catch (e) { console.warn('scoutLoadZoningLayer:', e); }
+}
+
+// Fetch I-49 interchange nodes from Overpass and add labeled exit markers to layerGroup.
+async function scoutLoadI49Exits(layerGroup) {
+  try {
+    const query = '[out:json];node["highway"="motorway_junction"](36.20,-94.35,36.50,-94.10);out body;';
+    const resp = await fetch(
+      `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
+    );
+    if (!resp.ok) return;
+    const json = await resp.json();
+    if (!json.elements?.length) return;
+    for (const node of json.elements) {
+      if (!node.lat || !node.lon) continue;
+      const exitNum = node.tags?.ref || '?';
+      const name    = node.tags?.name || '';
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="background:#1056a0;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.45);border:1.5px solid #fff;letter-spacing:0.3px">⬡ ${exitNum}</div>`,
+        iconAnchor: [18, 10],
+      });
+      L.marker([node.lat, node.lon], { icon })
+        .bindPopup(`<div style="font-family:'Instrument Sans',sans-serif;min-width:140px"><div style="font-size:11px;font-weight:700;color:#1056a0;margin-bottom:3px">I-49 Exit ${exitNum}</div>${name ? `<div style="font-size:11px;color:#2c2825">${name}</div>` : ''}</div>`, { maxWidth: 240 })
+        .addTo(layerGroup);
+    }
+  } catch (e) { console.warn('scoutLoadI49Exits:', e); }
+}
+
 async function initBillboardScout() {
   if (SCOUT_MAP) {
     setTimeout(() => SCOUT_MAP.invalidateSize(), 50);
@@ -14161,11 +14239,18 @@ async function initBillboardScout() {
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     { attribution: '&copy; Esri &mdash; Esri, USGS, NOAA', maxZoom: 19 }
   );
+  _zoningLayerGroup = L.layerGroup();
+  _exitsLayerGroup  = L.layerGroup();
+
   L.control.layers(
     { 'Street': _streetLayer, 'Satellite': _satelliteLayer },
-    {},
-    { position: 'topright' }
+    { 'Zoning districts': _zoningLayerGroup, 'I-49 exits': _exitsLayerGroup },
+    { position: 'topright', collapsed: false }
   ).addTo(SCOUT_MAP);
+
+  // Load overlay data in background — non-blocking
+  scoutLoadZoningLayer(_zoningLayerGroup);
+  scoutLoadI49Exits(_exitsLayerGroup);
 
   scoutSetRegion('nwa');
 
