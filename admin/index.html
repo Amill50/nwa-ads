@@ -13775,6 +13775,44 @@ async function scoutFetchLandUse([lng, lat]) {
   return json.features[0].attributes.MapLabel || null;
 }
 
+// Bentonville zoning districts eligible for billboards per city sign code.
+const SCOUT_BILLBOARD_ZONES = new Set(['A-1', 'C-1', 'C-2', 'I-1', 'I-2']);
+
+// Full names for display in popup.
+const SCOUT_ZONE_NAMES = {
+  'A-1':'A-1 Agricultural', 'C-1':'C-1 Neighborhood Commercial', 'C-2':'C-2 General Commercial',
+  'C-3':'C-3 Highway Commercial', 'D-C':'D-C Downtown Core', 'D-E':'D-E Downtown Edge',
+  'DN-1':'DN-1 Downtown Neighborhood', 'DN-2':'DN-2 Downtown Neighborhood',
+  'DN-3':'DN-3 Downtown Neighborhood', 'DN-4':'DN-4 Downtown Neighborhood',
+  'I-1':'I-1 Light Industrial', 'I-2':'I-2 Heavy Industrial',
+  'PRD':'PRD Planned Residential', 'PUD':'PUD Planned Unit Development',
+  'R-1':'R-1 Single-Family', 'R-2':'R-2 Single-Family', 'R-3':'R-3 Multi-Family',
+  'R-4':'R-4 Multi-Family', 'R-E':'R-E Residential Estate', 'R-MHP':'R-MHP Mobile Home Park',
+  'R-O':'R-O Residential-Office', 'R-ZL':'R-ZL Zero Lot Line',
+  'RC-2':'RC-2 Regional Commercial', 'RC-3':'RC-3 Regional Commercial',
+};
+
+// Bentonville Community Development zoning layer — authoritative district boundaries.
+// Returns ZONE code (e.g. 'C-2') or null if parcel is outside Bentonville's jurisdiction.
+async function scoutFetchZoning([lng, lat]) {
+  const params = new URLSearchParams({
+    geometry:       `${lng},${lat}`,
+    geometryType:   'esriGeometryPoint',
+    inSR:           '4326',
+    spatialRel:     'esriSpatialRelIntersects',
+    outFields:      'ZONE',
+    returnGeometry: 'false',
+    f:              'json',
+  });
+  const resp = await fetch(
+    `https://gis.bentonvillear.com/arcgis/rest/services/Planning/Community_Development23/MapServer/0/query?${params}`
+  );
+  if (!resp.ok) return null;
+  const json = await resp.json();
+  if (json.error || !json.features?.length) return null;
+  return json.features[0].attributes.ZONE || null;
+}
+
 // Bentonville 2025 Traffic Counts — nearest station within 0.5-mile envelope.
 // Returns { adt, routeSign, distMi } or null if no station found nearby.
 async function scoutFetchTraffic([lng, lat]) {
@@ -13809,13 +13847,12 @@ async function scoutFetchTraffic([lng, lat]) {
 }
 
 function scoutCandidatePopupHtml(key) {
-  const { attrs, corridor, landUse, traffic, lngLat } = _scoutCandData[key];
+  const { attrs, corridor, landUse, traffic, zoning, lngLat } = _scoutCandData[key];
   const [cLng, cLat] = lngLat;
   const svUrl  = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${cLat},${cLng}`;
   const satUrl = `https://www.google.com/maps/@${cLat},${cLng},19z/data=!3m1!1e3`;
   const NA = '<span style="color:#7a7570;font-style:italic">Not available</span>';
   function row(label, val) {
-    // Always render the label; show "Not available" when val is absent
     const display = (val !== null && val !== undefined && val !== '') ? val : NA;
     return `<div style="margin-bottom:5px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">${label}</span><div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${display}</div></div>`;
   }
@@ -13825,13 +13862,37 @@ function scoutCandidatePopupHtml(key) {
   const acreage  = attrs.ACRE_AREA ? Number(attrs.ACRE_AREA).toFixed(2) + ' ac' : null;
   const addr     = attrs.OW_ADD || attrs.PH_ADD || null;
 
-  // Land use: MapLabel from Bentonville Land Use 2025 layer (primary)
-  // TYPE_ tax code kept as secondary small-print
-  const landUseDisplay = landUse
-    ? landUse
-    : `${NA}<div style="font-size:10px;color:#7a7570;margin-top:2px">Outside Bentonville planning jurisdiction or no match</div>`;
+  // Authoritative zoning district (Community_Development23 layer)
+  let zoningHtml;
+  if (zoning === null) {
+    zoningHtml = `
+      <div style="margin-bottom:8px;padding:7px 9px;background:#f7f4f0;border-radius:5px">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700;margin-bottom:2px">Zoning district</div>
+        <div style="font-size:11px;color:#7a7570;font-style:italic">Not available — outside Bentonville zoning jurisdiction</div>
+        <div style="font-size:10px;color:#7a7570;margin-top:3px">Verify commercial/industrial use directly with Benton County before committing.</div>
+      </div>`;
+  } else if (SCOUT_BILLBOARD_ZONES.has(zoning)) {
+    const zoneName = SCOUT_ZONE_NAMES[zoning] || zoning;
+    zoningHtml = `
+      <div style="margin-bottom:8px;padding:7px 9px;background:#eaf2ec;border:1px solid #a5c8b0;border-radius:5px">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#1f3d2a;font-weight:700;margin-bottom:2px">Zoning district</div>
+        <div style="font-size:12px;color:#1f7a3a;font-weight:700">✓ ${zoneName}</div>
+        <div style="font-size:10px;color:#2d6b42;margin-top:2px">Eligible district for billboards per Bentonville sign code.</div>
+      </div>`;
+  } else {
+    const zoneName = SCOUT_ZONE_NAMES[zoning] || zoning;
+    zoningHtml = `
+      <div style="margin-bottom:8px;padding:7px 9px;background:#fdf1eb;border:1px solid #e8c4a5;border-radius:5px">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#8f2800;font-weight:700;margin-bottom:2px">Zoning district</div>
+        <div style="font-size:12px;color:#c8440a;font-weight:700">✗ ${zoneName}</div>
+        <div style="font-size:10px;color:#8f2800;margin-top:2px">Not an eligible billboard district per Bentonville sign code.</div>
+      </div>`;
+  }
 
-  // Traffic: nearest ArDOT count station within 0.5 mi
+  // Future land use (planning context — not the eligibility answer)
+  const futureUseDisplay = landUse || null;
+
+  // Traffic: nearest count station within 0.5 mi
   const trafficDisplay = traffic
     ? `~${Number(traffic.adt).toLocaleString()} vehicles/day · Route ${traffic.routeSign || '—'} · ${traffic.distMi.toFixed(1)} mi from site · 2023 count`
     : null;
@@ -13846,11 +13907,9 @@ function scoutCandidatePopupHtml(key) {
       ${row('Owner', attrs.OW_NAME || null)}
       ${row('Mailing address', addr)}
       ${row('Acreage', acreage)}
-      <div style="margin-bottom:5px">
-        <span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#7a7570;font-weight:700">Land use</span>
-        <div style="font-size:12px;color:#0e1a0e;font-weight:500;margin-top:1px">${landUseDisplay}</div>
-        ${landUse ? `<div style="font-size:10px;color:#7a7570;margin-top:1px">Verify zoning eligibility before committing · assessor code: <span style="font-family:'Geist Mono',monospace">${attrs.TYPE_ || '—'}</span></div>` : ''}
-      </div>
+      ${zoningHtml}
+      ${row('Future land use (planning)', futureUseDisplay)}
+      ${futureUseDisplay ? `<div style="font-size:10px;color:#7a7570;margin-top:-3px;margin-bottom:5px">Planning character designation — not a zoning determination · assessor code: <span style="font-family:'Geist Mono',monospace">${attrs.TYPE_ || '—'}</span></div>` : ''}
       ${row('Est. traffic (AADT)', trafficDisplay)}
       ${trafficDisplay ? `<div style="font-size:10px;color:#7a7570;margin-top:-3px;margin-bottom:5px">Nearest station estimate — not a count at this parcel</div>` : ''}
       <div style="margin-bottom:8px;padding:7px 9px;background:${vacBg};border-radius:5px">
@@ -13880,11 +13939,11 @@ function scoutCandidatePopupHtml(key) {
 async function scoutSaveCandidate(key, btnId) {
   const btn = document.getElementById(btnId);
   if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
-  const { attrs, lngLat, corridor, landUse, traffic } = _scoutCandData[key];
+  const { attrs, lngLat, corridor, landUse, traffic, zoning } = _scoutCandData[key];
   const [cLng, cLat] = lngLat;
-  const zoningStatus = landUse
-    ? `${landUse}${attrs.TYPE_ ? ` (assessor code: ${attrs.TYPE_})` : ''}`
-    : (attrs.TYPE_ ? `Uncoded: ${attrs.TYPE_} — verify before use` : null);
+  const zoningStatus = zoning
+    ? `${SCOUT_ZONE_NAMES[zoning] || zoning} — ${SCOUT_BILLBOARD_ZONES.has(zoning) ? 'eligible' : 'INELIGIBLE'}`
+    : (landUse ? `Future land use: ${landUse} (outside Bentonville zoning jurisdiction)` : null);
   const { error } = await sbClient.from('billboard_sites').insert({
     site_type:         'candidate',
     lat:               cLat,
@@ -13960,20 +14019,29 @@ async function scoutFindCandidates(regionKey) {
       candidates.push({ attrs: feat.attributes, lngLat, corridor });
     }
 
-    // Phase 2: enrich all candidates with land-use + traffic in parallel
+    // Phase 2: enrich all candidates with zoning, land-use + traffic in parallel
     if (candidates.length) {
-      scoutSetStatus(`${candidates.length} parcel${candidates.length !== 1 ? 's' : ''} pass filter — fetching land use and traffic…`, '');
+      scoutSetStatus(`${candidates.length} parcel${candidates.length !== 1 ? 's' : ''} pass corridor + spacing filters — checking zoning, land use, and traffic…`, '');
     }
     const enriched = await Promise.all(candidates.map(async c => ({
       ...c,
+      zoning:  await scoutFetchZoning(c.lngLat).catch(() => null),
       landUse: await scoutFetchLandUse(c.lngLat).catch(() => null),
       traffic: await scoutFetchTraffic(c.lngLat).catch(() => null),
     })));
 
-    // Phase 3: render markers
-    for (const { attrs, lngLat, corridor, landUse, traffic } of enriched) {
+    // Drop parcels with a confirmed ineligible zoning district (hard disqualifier —
+    // authoritative data). Parcels outside Bentonville's jurisdiction (zoning === null)
+    // are NOT dropped; lack of data is not a disqualifier.
+    const zoningPassed = enriched.filter(c =>
+      c.zoning === null || SCOUT_BILLBOARD_ZONES.has(c.zoning)
+    );
+    const nDisqualified = enriched.length - zoningPassed.length;
+
+    // Phase 3: render markers for parcels that passed all filters
+    for (const { attrs, lngLat, corridor, landUse, traffic, zoning } of zoningPassed) {
       const key = `cand_${attrs.PARCELID || Math.random().toString(36).slice(2)}`;
-      _scoutCandData[key] = { attrs, lngLat, corridor, landUse, traffic };
+      _scoutCandData[key] = { attrs, lngLat, corridor, landUse, traffic, zoning };
       const [cLng, cLat] = lngLat;
       const marker = L.marker([cLat, cLng], { icon: scoutMarkerIcon('candidate') })
         .bindPopup(() => scoutCandidatePopupHtml(key), { maxWidth: 320 })
@@ -13986,11 +14054,12 @@ async function scoutFindCandidates(regionKey) {
     const countEl = document.getElementById('scout-count');
     if (countEl) countEl.textContent = `${ex} existing · ${nCand} candidate${nCand !== 1 ? 's' : ''}`;
 
-    const limitNote = hitLimit ? ' · 500-record limit reached — try a narrower region' : '';
+    const limitNote     = hitLimit      ? ' · 500-record limit reached — try a narrower region' : '';
+    const zoningNote    = nDisqualified ? ` · ${nDisqualified} removed for confirmed ineligible zoning` : '';
     scoutSetStatus(
       nCand
-        ? `${nCand} candidate parcel${nCand !== 1 ? 's' : ''} found — verify zoning before outreach${limitNote}`
-        : `No candidates found in this area — all parcels outside corridor or within existing-sign spacing${limitNote}`,
+        ? `${nCand} candidate parcel${nCand !== 1 ? 's' : ''} found — zoning confirmed${zoningNote}${limitNote}`
+        : `No candidates found — parcels outside corridor, spacing, or confirmed ineligible zoning${zoningNote}${limitNote}`,
       nCand ? 'ok' : ''
     );
   } catch (err) {
