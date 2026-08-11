@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reach Walmart Buyers — interactive prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f4ef; --ink:#1a1714; --ink2:#4a4540; --muted:#6b6560; --border:#e2ddd6;
+    --white:#fffef9; --accent:#c8440a; --accent-light:#fdf1eb; --accent2:#1f3d2a; --accent2-light:#eaf2ec;
+    --pill-bg:#f0ece5; --r:14px; --r-sm:8px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:'Instrument Sans',-apple-system,sans-serif; background:var(--bg); color:var(--ink);}
+  .page{max-width:1240px; margin:0 auto; padding:28px 20px 60px;}
+  .browserbar{display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid var(--border); border-bottom:none; border-radius:16px 16px 0 0; background:#FAFAF8;}
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--border);}
+  .urlbar{flex:1; margin-left:10px; background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:12px; color:var(--muted);}
+  .app-topbar{display:flex; align-items:center; gap:12px; padding:16px 22px; border:1px solid var(--border); border-top:none; background:var(--white);}
+  .brand{font-weight:700; font-size:16px;}
+  .brand span{color:var(--accent);}
+  .goalpill{display:flex; align-items:center; gap:6px; background:var(--accent-light); color:var(--accent); font-size:12px; font-weight:700; padding:6px 12px; border-radius:999px;}
+  .livepill{margin-left:auto; font-size:11px; font-weight:700; color:var(--accent2); background:var(--accent2-light); padding:5px 11px; border-radius:8px;}
+  .app-hero{padding:16px 22px 0; border:1px solid var(--border); border-top:none; background:var(--white);}
+  .app-hero h1{font-size:20px; font-weight:700; margin:0 0 4px;}
+  .app-hero p{font-size:13px; color:var(--muted); margin:0 0 14px; max-width:640px; line-height:1.55;}
+  .statrow{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:0 22px 18px; border:1px solid var(--border); border-top:none; background:var(--white);}
+  .statcard{background:var(--pill-bg); border-radius:var(--r-sm); padding:12px 14px;}
+  .statcard .num{font-size:20px; font-weight:700; color:var(--ink);}
+  .statcard .lbl{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  #map{height:600px; width:100%; border:1px solid var(--border); border-top:none; background:#eceae3; position:relative;}
+  #map-status{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; text-align:center; padding:24px; font-size:13px; color:var(--muted); z-index:500;}
+  #map-status .spin{width:22px; height:22px; border-radius:50%; border:3px solid var(--border); border-top-color:var(--accent); animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #map-status.err{color:var(--ink);}
+  #map-status a{color:var(--accent); font-weight:700;}
+  .footer-note{padding:14px 22px; border:1px solid var(--border); border-top:none; border-radius:0 0 16px 16px; background:var(--white); font-size:12px; color:var(--muted); font-style:italic;}
+
+  .nwa-legend{background:var(--white); padding:12px 14px; border-radius:12px; border:1px solid var(--border); font-family:'Instrument Sans',sans-serif; box-shadow:0 2px 10px rgba(0,0,0,0.12); min-width:206px; max-height:520px; overflow-y:auto;}
+  .nwa-legend .lg-title{font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:8px;}
+  .nwa-legend label{display:flex; align-items:center; gap:7px; cursor:pointer; padding:3px 0; user-select:none; font-size:12px; color:var(--ink);}
+  .nwa-legend input{width:13px; height:13px; cursor:pointer; flex-shrink:0;}
+  .nwa-legend .dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .nwa-legend .zone-row{display:flex; align-items:center; gap:8px; padding:3px 0; font-size:12px; color:var(--ink);}
+  .nwa-legend .zone-row .cnt{margin-left:auto; font-size:10.5px; color:var(--muted); font-weight:600;}
+  .zone-hex{width:14px; height:14px; flex-shrink:0; clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);}
+  .nwa-legend .lg-sub{margin-top:8px; padding-top:8px; border-top:1px solid var(--border); font-size:10px; color:var(--muted); line-height:1.5;}
+  .nwa-legend .lg-divider{margin:10px 0; border-top:1px solid var(--border);}
+
+  .nwa-popup .lp-badge{display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:6px; color:#fff; margin-bottom:6px;}
+  .nwa-popup .lp-name{font-size:13px; font-weight:700; color:var(--ink); margin:0 0 2px;}
+  .nwa-popup .lp-sub{font-size:11.5px; color:var(--muted); margin:0 0 8px;}
+  .nwa-popup .lp-row{display:flex; justify-content:space-between; font-size:11.5px; padding:3px 0; border-top:1px solid var(--border);}
+  .nwa-popup .lp-row span:first-child{color:var(--muted);}
+  .nwa-popup .lp-row span:last-child{font-weight:700; color:var(--ink);}
+
+  .poi-tip{background:var(--ink) !important; color:#fffef9 !important; border:none !important; font-weight:700; font-size:11px; font-family:'Instrument Sans',sans-serif; padding:4px 9px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .poi-tip::before{border-top-color:var(--ink) !important;}
+  .dir-tip{background:#fff !important; color:var(--ink) !important; border:1px solid var(--border) !important; font-family:'Instrument Sans',sans-serif; font-size:11px; padding:5px 9px; border-radius:8px; box-shadow:0 3px 12px rgba(0,0,0,0.14);}
+  .hex-tip{background:#fff !important; color:var(--ink) !important; border:1px solid var(--border) !important; font-family:'Instrument Sans',sans-serif; font-size:10.5px; padding:4px 8px; border-radius:7px; box-shadow:0 2px 8px rgba(0,0,0,0.12); font-weight:600;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="browserbar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="urlbar">nwa-ads.com/ReachWalmartBuyers</div></div>
+  <div class="app-topbar">
+    <div class="brand">NWA <span>Ads</span></div>
+    <div class="goalpill">🎯 Reach Walmart &amp; Sam's Club buyers</div>
+    <div class="livepill">Live inventory + POI data</div>
+  </div>
+  <div class="app-hero">
+    <h1>Put your brand where Walmart and Sam's Club buyers actually are</h1>
+    <p>A working prototype — real Leaflet map, real device coordinates from NWA_Ads_Inventory.csv, real Walmart facilities from poi-data.js. Honeycomb shading replaces floating map labels — each hex is colored by its nearest Walmart target point, fading with distance, so proximity reads as a shape instead of overlapping text. Zoom out to see the corridor cluster; zoom in (or click a cluster) and every billboard face spiderfies apart on its own.</p>
+  </div>
+  <div class="statrow" id="stat-row"></div>
+  <div id="map"><div id="map-status"><div class="spin"></div><div>Loading map library&hellip;</div></div></div>
+  <div class="footer-note">Click a dark cluster to zoom in. Two-face billboards sit at the same physical address, so clicking them spiderfies both faces apart instead of merging into one pin — real Leaflet.markercluster behavior, not a static illustration. Toggle asset types in the legend, bottom-left.</div>
+
+</div>
+
+<script>
+// Loads Leaflet + Leaflet.markercluster with automatic CDN fallback (cdnjs -> jsdelivr -> unpkg),
+// since a single blocked CDN was the most likely cause of a blank map here.
+const CDN_BASES = [
+  { css: n => 'https://cdnjs.cloudflare.com/ajax/libs/' + n, tag: 'cdnjs' },
+  { css: n => 'https://cdn.jsdelivr.net/npm/' + n, tag: 'jsdelivr' },
+  { css: n => 'https://unpkg.com/' + n, tag: 'unpkg' },
+];
+const RESOURCES = {
+  leafletCss: { cdnjs: 'leaflet/1.9.4/leaflet.min.css', jsdelivr: 'leaflet@1.9.4/dist/leaflet.css', unpkg: 'leaflet@1.9.4/dist/leaflet.css' },
+  leafletJs: { cdnjs: 'leaflet/1.9.4/leaflet.js', jsdelivr: 'leaflet@1.9.4/dist/leaflet.js', unpkg: 'leaflet@1.9.4/dist/leaflet.js' },
+  mcCss: { cdnjs: 'leaflet.markercluster/1.5.3/MarkerCluster.min.css', jsdelivr: 'leaflet.markercluster@1.5.3/dist/MarkerCluster.css', unpkg: 'leaflet.markercluster@1.5.3/dist/MarkerCluster.css' },
+  mcDefaultCss: { cdnjs: 'leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css', jsdelivr: 'leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css', unpkg: 'leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css' },
+  mcJs: { cdnjs: 'leaflet.markercluster/1.5.3/leaflet.markercluster.js', jsdelivr: 'leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js', unpkg: 'leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js' },
+};
+function urlsFor(key) {
+  return [
+    'https://cdnjs.cloudflare.com/ajax/libs/' + RESOURCES[key].cdnjs,
+    'https://cdn.jsdelivr.net/npm/' + RESOURCES[key].jsdelivr,
+    'https://unpkg.com/' + RESOURCES[key].unpkg,
+  ];
+}
+function loadFirstWorking(urls, isCss) {
+  return new Promise((resolve, reject) => {
+    let i = 0;
+    function tryNext() {
+      if (i >= urls.length) { reject(new Error('all CDNs failed for ' + urls[0])); return; }
+      const url = urls[i++];
+      const el = document.createElement(isCss ? 'link' : 'script');
+      if (isCss) { el.rel = 'stylesheet'; el.href = url; } else { el.src = url; }
+      el.onload = () => resolve(url);
+      el.onerror = () => tryNext();
+      document.head.appendChild(el);
+    }
+    tryNext();
+  });
+}
+function setStatus(html, isErr) {
+  const s = document.getElementById('map-status');
+  if (s) { s.innerHTML = html; s.className = isErr ? 'err' : ''; }
+}
+
+Promise.all([
+  loadFirstWorking(urlsFor('leafletCss'), true),
+  loadFirstWorking(urlsFor('mcCss'), true),
+  loadFirstWorking(urlsFor('mcDefaultCss'), true),
+]).then(() => loadFirstWorking(urlsFor('leafletJs'), false))
+  .then(() => loadFirstWorking(urlsFor('mcJs'), false))
+  .then(() => {
+    setStatus('', false);
+    document.getElementById('map-status').remove();
+    renderStats();
+    initMap();
+  })
+  .catch(() => {
+    setStatus('<div style="font-size:15px;font-weight:700;">Map library couldn\'t load</div>'
+      + '<div style="max-width:340px;">This file needs internet access to fetch Leaflet from a CDN. Try opening it directly in Chrome or Safari (not an in-app preview), or check your connection / firewall.</div>', true);
+  });
+</script>
+<script>
+const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
+
+// Zone palette — distinct hues per targeting zone, separate from asset-type colors so the
+// two color systems (translucent hex fill vs. solid asset marker) never get confused at a glance.
+const ZONE_COLORS = {
+  hq: '#1f3d2a',
+  supercenter: '#c8440a',
+  samsclub: '#7c5cbf',
+  nbhdmarket: '#0e7d72',
+  supplierrow: '#6b6560',
+};
+
+const WALMART_POIS = [
+  { name: "Walmart Home Office", lat: 36.3729, lng: -94.2192, kind: "hq", zone: "hq", zoneLabel: "Home Office zone" },
+  { name: "Walmart Supercenter — Bentonville", lat: 36.3728, lng: -94.2083, kind: "store", zone: "supercenter", zoneLabel: "Supercenter zone" },
+  { name: "Sam's Club — Bentonville", lat: 36.3502, lng: -94.2148, kind: "store", zone: "samsclub", zoneLabel: "Sam's Club zone" },
+  { name: "Walmart Neighborhood Market — Bentonville", lat: 36.3524, lng: -94.2198, kind: "store", zone: "nbhdmarket", zoneLabel: "Neighborhood Market zone" },
+  { name: "Supplier Row — NE A St corridor", lat: 36.3641, lng: -94.2241, kind: "office", zone: "supplierrow", zoneLabel: "Supplier Row zone" },
+];
+
+const VENUE_COLORS = { billboard_in: '#1f3d2a', billboard_out: '#c8440a', gasstation: '#b45309', retail: '#4f46e5', gym: '#4a5da8' };
+
+const ASSETS = [
+  { id:'595409', name:'Walton Blvd E/S 0.5mi N/O SH-102', type:'billboard', dir:'inbound', lat:36.361985, lng:-94.217264, cpm:7.25 },
+  { id:'595434', name:'14th & S. Walton (N face)', type:'billboard', dir:'outbound', lat:36.35672137, lng:-94.21256944, cpm:7.25 },
+  { id:'595435', name:'14th & S. Walton (S face)', type:'billboard', dir:'inbound', lat:36.35672137, lng:-94.21256944, cpm:7.25 },
+  { id:'595444', name:'401 SE Walton (W face)', type:'billboard', dir:'outbound', lat:36.33566111, lng:-94.20545833, cpm:7.25, priority:true },
+  { id:'595445', name:'401 SE Walton (E face)', type:'billboard', dir:'inbound', lat:36.33566111, lng:-94.20545833, cpm:7.25, priority:true },
+  { id:'595446', name:'1080 SE 14th St (W face)', type:'billboard', dir:'outbound', lat:36.35646027, lng:-94.19786173, cpm:7.25 },
+  { id:'595447', name:'1080 SE 14th St (E face)', type:'billboard', dir:'inbound', lat:36.35646027, lng:-94.19786173, cpm:7.25 },
+  { id:'595411', name:'I-49 E/S 0.3mi S/O SH-102', type:'billboard', dir:'inbound', lat:36.352892, lng:-94.178432, cpm:7.25 },
+  { id:'595432', name:'I-49 W/S at MM 85 (N face)', type:'billboard', dir:'outbound', lat:36.33389195, lng:-94.18483746, cpm:7.25 },
+  { id:'595433', name:'I-49 W/S at MM 85 (S face)', type:'billboard', dir:'inbound', lat:36.33389195, lng:-94.18483746, cpm:7.25 },
+  { id:'2547810', name:'Gas Station TV — 100 SE J St', type:'gasstation', lat:36.3715085, lng:-94.1974226, cpm:20.29 },
+  { id:'2551020', name:'Gas Station TV — 900 SW 14th St', type:'gasstation', lat:36.3575042, lng:-94.2214649, cpm:20.29 },
+  { id:'2063692', name:'Strider Bikes Bentonville', type:'retail', lat:36.3727136, lng:-94.2089687, cpm:12.07 },
+  { id:'708804', name:'Planet Fitness — Bentonville', type:'gym', lat:36.35858, lng:-94.22269, cpm:5.80 },
+];
+
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function nearestWalmart(asset) {
+  let best = null, bestD = Infinity;
+  WALMART_POIS.forEach(p => {
+    const d = haversineMiles(asset.lat, asset.lng, p.lat, p.lng);
+    if (d < bestD) { bestD = d; best = p; }
+  });
+  return { poi: best, dist: bestD };
+}
+
+// --- Honeycomb targeting-zone grid ---------------------------------------
+// Replaces floating map labels: every hex is colored by the nearest Walmart
+// target point, with fill fading out the farther that hex sits from it. No
+// text lives on the map itself, so nothing can overlap.
+function milesToLatLng(originLat, originLng, xMiles, yMiles) {
+  const lat = originLat + yMiles / 69.0;
+  const lng = originLng + xMiles / (69.0 * Math.cos(originLat * Math.PI / 180));
+  return [lat, lng];
+}
+function buildHexGrid(originLat, originLng) {
+  const R = 0.26;                 // hex radius in miles (center to vertex)
+  const hexW = Math.sqrt(3) * R;  // horizontal spacing between column centers
+  const hexV = 1.5 * R;           // vertical spacing between row centers
+  const xRange = [-2.1, 3.3];     // miles east(+)/west(-) of origin, padded past the data extent
+  const yRange = [-3.7, 1.1];     // miles north(+)/south(-) of origin
+  const layer = L.layerGroup();
+  let row = 0;
+  for (let y = yRange[0]; y <= yRange[1]; y += hexV) {
+    const xOffset = (Math.abs(row % 2) === 1) ? hexW / 2 : 0;
+    for (let x = xRange[0] + xOffset; x <= xRange[1]; x += hexW) {
+      const [clat, clng] = milesToLatLng(originLat, originLng, x, y);
+      let best = null, bestD = Infinity;
+      WALMART_POIS.forEach(p => {
+        const d = haversineMiles(clat, clng, p.lat, p.lng);
+        if (d < bestD) { bestD = d; best = p; }
+      });
+      const color = ZONE_COLORS[best.zone];
+      const fillOpacity = Math.max(0.05, Math.min(0.5, 0.52 - bestD * 0.17));
+      const pts = [];
+      for (let i = 0; i < 6; i++) {
+        const ang = Math.PI / 180 * (90 + 60 * i);
+        pts.push(milesToLatLng(originLat, originLng, x + R * Math.cos(ang), y + R * Math.sin(ang)));
+      }
+      const hex = L.polygon(pts, {
+        color: '#d8d2c6', weight: 1, opacity: 0.55,
+        fillColor: color, fillOpacity: fillOpacity,
+        interactive: true,
+      });
+      hex.on('mouseover', function () { this.setStyle({ weight: 2, opacity: 0.9, fillOpacity: Math.min(0.65, fillOpacity + 0.15) }); });
+      hex.on('mouseout', function () { this.setStyle({ weight: 1, opacity: 0.55, fillOpacity: fillOpacity }); });
+      if (bestD <= 1.6) {
+        hex.bindTooltip(best.zoneLabel + ' · ' + bestD.toFixed(2) + ' mi from ' + best.name.replace('Walmart ', ''), { className: 'hex-tip', sticky: true });
+      }
+      layer.addLayer(hex);
+    }
+    row++;
+  }
+  return layer;
+}
+function zoneCounts() {
+  const counts = {};
+  WALMART_POIS.forEach(p => counts[p.zone] = 0);
+  ASSETS.forEach(a => { counts[nearestWalmart(a).poi.zone]++; });
+  return counts;
+}
+
+const BILLBOARD_SVG = '<svg width="15" height="15" viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="24" height="13" rx="1"/><line x1="8" y1="16.5" x2="8" y2="24"/><line x1="20" y1="16.5" x2="20" y2="24"/></svg>';
+const GAS_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"/></svg>';
+const RETAIL_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>';
+const GYM_SVG = '<svg width="13" height="13" viewBox="0 0 28 28" fill="white" stroke="none"><rect x="1" y="9" width="4" height="10" rx="1.5"/><rect x="20.5" y="11" width="2.5" height="6" rx="1"/><rect x="7.5" y="12.5" width="13" height="3" rx="1"/></svg>';
+
+function assetColor(a) {
+  if (a.type === 'billboard') return a.dir === 'inbound' ? VENUE_COLORS.billboard_in : VENUE_COLORS.billboard_out;
+  return VENUE_COLORS[a.type];
+}
+function assetGlyph(a) {
+  if (a.type === 'billboard') return BILLBOARD_SVG;
+  if (a.type === 'gasstation') return GAS_SVG;
+  if (a.type === 'retail') return RETAIL_SVG;
+  if (a.type === 'gym') return GYM_SVG;
+  return BILLBOARD_SVG;
+}
+function makeAssetIcon(a) {
+  const color = assetColor(a);
+  const glyph = assetGlyph(a);
+  const star = a.priority ? '<div style="position:absolute; top:-9px; right:-5px; font-size:12px;">&#9733;</div>' : '';
+  let pill = '';
+  if (a.type === 'billboard') {
+    const arrow = a.dir === 'inbound' ? '&#9654; HQ' : '&#9664; Home';
+    pill = '<div style="position:absolute; left:50%; top:38px; transform:translateX(-50%); white-space:nowrap; background:' + color + '; color:#fff; font-size:9px; font-weight:700; padding:2px 7px; border-radius:7px;">' + arrow + '</div>';
+  }
+  const html = '<div style="position:relative; width:32px; height:32px;">'
+    + star
+    + '<div style="width:32px; height:32px; border-radius:50%; background:' + color + '; border:2.5px solid #fffef9; box-shadow:0 3px 10px rgba(0,0,0,0.28); display:flex; align-items:center; justify-content:center;">' + glyph + '</div>'
+    + pill
+    + '</div>';
+  return L.divIcon({ className:'', html: html, iconSize:[32,32], iconAnchor:[16,16], popupAnchor:[0,-18] });
+}
+function poiIcon(kind, zoneColor) {
+  const glyphMap = {
+    hq: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    store: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+    office: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  };
+  const size = kind === 'hq' ? 42 : 34;
+  // Ring color now carries the zone identity (matches the hex fill beneath it) instead of a floating text label.
+  const html = '<div style="width:' + size + 'px; height:' + size + 'px; border-radius:50%; background:#1a1714; border:4px solid ' + zoneColor + '; box-shadow:0 3px 12px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center;">' + glyphMap[kind] + '</div>';
+  return L.divIcon({ className:'', html: html, iconSize:[size,size], iconAnchor:[size/2,size/2], popupAnchor:[0,-size/2-4] });
+}
+
+function initMap() {
+  const map = L.map('map', { center:[36.353, -94.205], zoom:13, zoomControl:true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom:19
+  }).addTo(map);
+
+  // Honeycomb targeting-zone layer sits beneath every marker (Leaflet's default pane order
+  // already renders polygons under markers) — this replaces the old floating text labels.
+  buildHexGrid(WALMART_HQ.lat, WALMART_HQ.lng).addTo(map);
+
+  WALMART_POIS.forEach(p => {
+    const zoneColor = ZONE_COLORS[p.zone];
+    const m = L.marker([p.lat, p.lng], { icon: poiIcon(p.kind, zoneColor), zIndexOffset: 1000 }).addTo(map);
+    // Non-permanent: shows on hover/tap only, so five nearby facility pins never collide on screen.
+    m.bindTooltip(p.zoneLabel + ' — ' + p.name, { direction:'top', offset:[0, p.kind==='hq'?-26:-22], className:'poi-tip' });
+    m.bindPopup('<div class="nwa-popup"><span class="lp-badge" style="background:' + zoneColor + '">' + p.zoneLabel + '</span><p class="lp-name">' + p.name + '</p></div>');
+  });
+
+  const clusterGroup = L.markerClusterGroup({
+    maxClusterRadius: 60,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    spiderfyOnMaxZoom: true,
+    disableClusteringAtZoom: 14,
+    iconCreateFunction: function(cluster) {
+      const count = cluster.getChildCount();
+      const size = count >= 8 ? 42 : count >= 4 ? 36 : 30;
+      return L.divIcon({
+        html: '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:#1a1714;border:3px solid #fffef9;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fffef9;box-shadow:0 3px 12px rgba(0,0,0,0.28);font-family:Instrument Sans,sans-serif">' + count + '</div>',
+        className: '', iconSize: [size, size], iconAnchor: [size/2, size/2],
+      });
+    }
+  });
+
+  const layersByType = { billboard: [], gasstation: [], retail: [], gym: [] };
+
+  ASSETS.forEach(a => {
+    const marker = L.marker([a.lat, a.lng], { icon: makeAssetIcon(a) });
+    const { poi, dist } = nearestWalmart(a);
+    const color = assetColor(a);
+    const dirLabel = a.type === 'billboard' ? (a.dir === 'inbound' ? 'Inbound — reads toward Home Office' : 'Outbound — reads toward residential') : null;
+    let html = '<div class="nwa-popup">';
+    html += '<span class="lp-badge" style="background:' + color + '">' + (a.type === 'billboard' ? '🛣 Billboard' : a.type === 'gasstation' ? '⛽ Gas Station' : a.type === 'retail' ? '🏪 Retail' : '🏋️ Gym') + (a.priority ? ' · ★ priority' : '') + '</span>';
+    html += '<p class="lp-name">' + a.name + '</p>';
+    html += '<p class="lp-sub">Device ' + a.id + (dirLabel ? ' · ' + dirLabel : '') + '</p>';
+    html += '<div class="lp-row"><span>Nearest Walmart facility</span><span>' + poi.name.replace('Walmart ','').replace(' — Bentonville','') + '</span></div>';
+    html += '<div class="lp-row"><span>Distance</span><span>' + dist.toFixed(2) + ' mi</span></div>';
+    html += '<div class="lp-row"><span>CPM</span><span>$' + a.cpm.toFixed(2) + '</span></div>';
+    html += '</div>';
+    marker.bindPopup(html, { maxWidth: 260 });
+    if (a.type === 'billboard' && a.dir) {
+      const arrow = a.dir === 'inbound' ? '▶ HQ' : '◀ Home';
+      const tipColor = color;
+      const tipHtml = '<div style="display:flex;align-items:center;gap:6px"><span style="background:' + tipColor + ';color:#fff;border-radius:6px;padding:2px 6px;font-size:10px;font-weight:700">' + arrow + '</span><span style="font-size:11px;color:#1a1714">' + dist.toFixed(2) + ' mi to ' + poi.name.replace('Walmart ','') + '</span></div>';
+      marker.bindTooltip(tipHtml, { direction:'top', offset:[0,-16], className:'dir-tip' });
+    }
+    clusterGroup.addLayer(marker);
+    layersByType[a.type].push(marker);
+  });
+
+  map.addLayer(clusterGroup);
+
+  const legend = L.control({ position: 'bottomleft' });
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'nwa-legend');
+    const counts = zoneCounts();
+    const zoneRows = WALMART_POIS.map(p =>
+      '<div class="zone-row"><span class="zone-hex" style="background:' + ZONE_COLORS[p.zone] + '"></span>'
+      + p.zoneLabel + '<span class="cnt">' + counts[p.zone] + ' asset' + (counts[p.zone] === 1 ? '' : 's') + '</span></div>'
+    ).join('');
+    div.innerHTML = '<div class="lg-title">Targeting zones</div>' + zoneRows
+      + '<div class="lg-divider"></div>'
+      + '<div class="lg-title">Asset type</div>'
+      + '<label><input type="checkbox" checked data-type="billboard"><span class="dot" style="background:#1f3d2a"></span>Billboards (inbound)</label>'
+      + '<label><input type="checkbox" checked data-type="billboard"><span class="dot" style="background:#c8440a"></span>Billboards (outbound)</label>'
+      + '<label><input type="checkbox" checked data-type="gasstation"><span class="dot" style="background:#b45309"></span>Gas Station TV</label>'
+      + '<label><input type="checkbox" checked data-type="retail"><span class="dot" style="background:#4f46e5"></span>Retail screens</label>'
+      + '<label><input type="checkbox" checked data-type="gym"><span class="dot" style="background:#4a5da8"></span>Gym screens</label>'
+      + '<div class="lg-sub">Hex shading = distance to the nearest Walmart target point, fading out with distance. Dark rings = Walmart facilities, color-matched to their zone. Hover a hex or pin for exact distance.</div>';
+    L.DomEvent.disableClickPropagation(div);
+    div.querySelectorAll('input').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const type = this.dataset.type;
+        layersByType[type].forEach(m => {
+          if (this.checked) clusterGroup.addLayer(m); else clusterGroup.removeLayer(m);
+        });
+      });
+    });
+    return div;
+  };
+  legend.addTo(map);
+
+  return { map, clusterGroup };
+}
+
+function renderStats() {
+  const distances = ASSETS.map(a => nearestWalmart(a).dist);
+  const avg = distances.reduce((s,d) => s+d, 0) / distances.length;
+  const within1 = distances.filter(d => d <= 1).length;
+  const priorityCount = ASSETS.filter(a => a.priority).length;
+  const el = document.getElementById('stat-row');
+  const stats = [
+    { num: ASSETS.length, lbl: 'assets in this view' },
+    { num: avg.toFixed(2) + ' mi', lbl: 'avg. distance to a Walmart facility' },
+    { num: within1, lbl: 'assets within 1 mile' },
+    { num: priorityCount, lbl: 'priority faces (Exit 86 / SE Walton)' },
+  ];
+  el.innerHTML = stats.map(s => '<div class="statcard"><div class="num">' + s.num + '</div><div class="lbl">' + s.lbl + '</div></div>').join('');
+}
+
+</script>
+</body>
+</html>

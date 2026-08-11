@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reach Walmart Buyers — package-based booking flow (v2, interactive map)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f4ef; --ink:#1a1714; --ink2:#4a4540; --muted:#6b6560; --border:#e2ddd6;
+    --white:#fffef9; --accent:#c8440a; --accent-text:#a83a09; --accent-light:#fdf1eb; --accent2:#1f3d2a; --accent2-light:#eaf2ec;
+    --pill-bg:#f0ece5; --r:14px; --r-sm:8px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:'Instrument Sans',-apple-system,sans-serif; background:var(--bg); color:var(--ink);}
+  .page{max-width:1180px; margin:0 auto; padding:28px 20px 70px;}
+  .browserbar{display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid var(--border); border-bottom:none; border-radius:16px 16px 0 0; background:#FAFAF8;}
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--border);}
+  .urlbar{flex:1; margin-left:10px; background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:12px; color:var(--muted);}
+  .app-topbar{display:flex; align-items:center; gap:12px; padding:16px 22px; border:1px solid var(--border); border-top:none; background:var(--white); flex-wrap:wrap;}
+  .brand{font-weight:700; font-size:16px;}
+  .brand span{color:var(--accent);}
+  .goalpill{display:flex; align-items:center; gap:6px; background:var(--accent-light); color:var(--accent-text); font-size:12px; font-weight:700; padding:6px 12px; border-radius:999px;}
+  .livepill{margin-left:auto; font-size:11px; font-weight:700; color:var(--accent2); background:var(--accent2-light); padding:5px 11px; border-radius:8px;}
+  .frame{border:1px solid var(--border); border-top:none; background:var(--white); border-radius:0 0 16px 16px; overflow:hidden;}
+
+  button{-webkit-appearance:none;}
+  button:focus-visible, [tabindex]:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  /* step tracker */
+  .steptrack{display:flex; align-items:center; padding:22px 28px 6px; gap:0; flex-wrap:wrap;}
+  .step{display:flex; align-items:center; gap:10px; cursor:pointer; background:none; border:none; padding:2px; font-family:inherit; text-align:left; border-radius:6px;}
+  .step .circ{width:28px; height:28px; border-radius:50%; background:var(--pill-bg); color:var(--muted); font-size:12.5px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:2px solid transparent;}
+  .step.active .circ{background:var(--ink); color:#fff;}
+  .step.done .circ{background:var(--accent2); color:#fff;}
+  .step .stxt{font-size:12.5px; font-weight:600; color:var(--muted); white-space:nowrap;}
+  .step.active .stxt, .step.done .stxt{color:var(--ink);}
+  .steplink{flex:1; height:2px; background:var(--border); margin:0 12px; min-width:20px;}
+  .steplink.done{background:var(--accent2);}
+
+  .panel{display:none; padding:8px 28px 26px;}
+  .panel.active{display:block;}
+  .panel h2{font-size:19px; font-weight:700; margin:10px 0 4px;}
+  .panel p.sub{font-size:13px; color:var(--muted); margin:0 0 22px; max-width:640px; line-height:1.55;}
+
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:640px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  .field label{font-size:12px; font-weight:700; color:var(--ink2);}
+  .field input, .field select{border:1px solid var(--border); border-radius:var(--r-sm); padding:10px 12px; font-size:13.5px; font-family:inherit; color:var(--ink); background:#fff;}
+  .field input:focus, .field select:focus{outline:none; border-color:var(--accent);}
+
+  .removed-note{display:flex; align-items:flex-start; gap:9px; background:var(--accent2-light); border-radius:var(--r-sm); padding:11px 14px; margin-top:20px; max-width:640px; font-size:12px; color:var(--accent2); line-height:1.5;}
+  .removed-note b{font-weight:700;}
+
+  .pkg-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pkg-card{border:2px solid var(--border); border-radius:16px; padding:18px 20px; background:#fff; cursor:pointer; transition:border-color .15s, box-shadow .15s; position:relative;}
+  .pkg-card:hover{border-color:#cfc8bc;}
+  .pkg-card.selected{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-light);}
+  .pkg-card .pnum{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px;}
+  .pkg-card h3{font-size:16px; font-weight:700; margin:0 0 6px; color:var(--ink);}
+  .pkg-card .price{font-size:22px; font-weight:700; color:var(--ink); margin-bottom:2px;}
+  .pkg-card .price span{font-size:12px; font-weight:600; color:var(--muted);}
+  .pkg-card .tagline{font-size:12.5px; color:var(--ink2); line-height:1.5; margin:8px 0 12px;}
+  .pkg-card .countchip{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--accent2); background:var(--accent2-light); padding:4px 9px; border-radius:7px; margin-bottom:10px;}
+  .pkg-card .devlist{border-top:1px solid var(--border); margin-top:10px; padding-top:10px; display:none;}
+  .pkg-card.expanded .devlist{display:block;}
+  .devrow{display:flex; justify-content:space-between; gap:10px; font-size:11px; padding:4px 0; color:var(--ink2);}
+  .devrow .dname{font-weight:600; color:var(--ink);}
+  .devrow .ddist{color:var(--muted); text-align:right; flex-shrink:0;}
+  .toggle-devs{font-size:11px; font-weight:700; color:var(--accent-text); background:none; border:none; padding:0; margin-top:8px; cursor:pointer; font-family:inherit;}
+  .radiomark{position:absolute; top:16px; right:16px; width:20px; height:20px; border-radius:50%; border:2px solid var(--border); background:#fff;}
+  .pkg-card.selected .radiomark{border-color:var(--accent); background:var(--accent);}
+  .pkg-card.selected .radiomark::after{content:''; display:block; width:8px; height:8px; border-radius:50%; background:#fff; margin:4px auto;}
+
+  .subchoices{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .subchoice{border:1.5px solid var(--border); border-radius:10px; padding:8px 10px; font-size:11px; flex:1; min-width:120px; background:#fdfcfa;}
+  .subchoice.on{border-color:var(--accent2); background:var(--accent2-light);}
+  .subchoice .sc-name{font-weight:700; color:var(--ink); margin-bottom:2px;}
+  .subchoice .sc-sub{color:var(--muted);}
+  .subchoice label{display:flex; align-items:flex-start; gap:6px; cursor:pointer;}
+  .subchoice input{margin-top:2px;}
+
+  .review-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:22px;}
+  .review-block{border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-bottom:14px; background:#fff;}
+  .review-block .rb-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:10px;}
+  .review-row{display:flex; justify-content:space-between; font-size:13px; padding:5px 0; border-top:1px solid #f1eee8;}
+  .review-row:first-of-type{border-top:none;}
+  .review-row span:first-child{color:var(--muted);}
+  .review-row span:last-child{font-weight:600; color:var(--ink); text-align:right;}
+  .summary-card{border:1px solid var(--border); border-radius:14px; padding:18px 20px; background:var(--ink); color:#fff; position:sticky; top:20px;}
+  .summary-card .sc-pkgname{font-size:14px; font-weight:700; margin-bottom:2px;}
+  .summary-card .sc-price{font-size:26px; font-weight:700; margin:6px 0 2px;}
+  .summary-card .sc-price span{font-size:12px; font-weight:500; opacity:.7;}
+  .summary-card .sc-total{font-size:12.5px; opacity:.85; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.15);}
+  .summary-card .sc-line{display:flex; justify-content:space-between; font-size:12px; padding:4px 0; opacity:.9;}
+  .cta{display:block; width:100%; text-align:center; background:var(--accent); color:#fff; font-weight:700; font-size:13.5px; padding:12px; border-radius:10px; border:none; margin-top:16px; cursor:pointer; font-family:inherit;}
+  .cta:disabled{background:#5a5650; opacity:.6; cursor:not-allowed;}
+
+  .navrow{display:flex; justify-content:space-between; padding:18px 28px 26px; border-top:1px solid var(--border); margin-top:6px;}
+  .btn{font-family:inherit; font-size:13px; font-weight:700; padding:10px 20px; border-radius:10px; cursor:pointer; border:1px solid var(--border); background:#fff; color:var(--ink);}
+  .btn.primary{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .btn.primary:disabled{opacity:.4; cursor:not-allowed;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  .footer-note{padding:14px 22px; border:1px solid var(--border); border-top:none; border-radius:0 0 16px 16px; background:var(--white); font-size:12px; color:var(--muted); font-style:italic; margin-top:-2px;}
+
+  /* ---------- Step 4 — interactive map v2 ---------- */
+  .mapstatrow{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; max-width:760px;}
+  .mapstat{background:var(--pill-bg); border-radius:var(--r-sm); padding:11px 14px;}
+  .mapstat .num{font-size:18px; font-weight:700; color:var(--ink);}
+  .mapstat .lbl{font-size:11px; color:var(--muted); margin-top:2px;}
+
+  .map-toolbar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; flex-wrap:wrap;}
+  .map-toolbar-group{display:flex; align-items:center; gap:6px;}
+  .map-ctrl-btn{font-family:inherit; font-size:13px; font-weight:700; min-width:36px; min-height:36px; padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--ink); cursor:pointer;}
+  .map-ctrl-btn:hover{border-color:#cfc8bc;}
+  .map-ctrl-btn:disabled{opacity:.4; cursor:not-allowed;}
+  .zoom-level{font-size:11.5px; font-weight:700; color:var(--muted); min-width:40px; text-align:center;}
+  .legend-toggle[aria-expanded="true"]{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  .map-canvas{position:relative; width:100%; aspect-ratio:1040/460; border:1px solid var(--border); border-radius:var(--r); background:#fbfaf7; overflow:hidden; touch-action:none;}
+  .map-canvas.dragging{cursor:grabbing;}
+  .map-zoom-layer{position:absolute; inset:0; transform-origin:center center; transition:transform .12s ease-out;}
+  .map-bg, .map-markers{position:absolute; inset:0;}
+  .map-bg svg{width:100%; height:100%; display:block;}
+  .map-markers{pointer-events:none;}
+
+  .poi-marker, .dev-marker, .cluster-marker{
+    position:absolute; transform:translate(-50%,-50%); pointer-events:auto;
+    border:none; background:none; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .poi-marker{width:40px; height:40px;}
+  .poi-marker-dot{width:26px; height:26px; border-radius:50%; background:var(--mc); border:2.5px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.22); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff; transition:transform .1s;}
+  .poi-marker-dot.hq{width:30px; height:30px; font-size:9.5px;}
+  .poi-marker:hover .poi-marker-dot, .poi-marker:focus-visible .poi-marker-dot{transform:scale(1.15);}
+
+  /* geofenced target zones (Home Office, Residential corridor) — label chip anchored above the polygon */
+  .geofence-chip{
+    position:absolute; transform:translate(-50%,-100%); margin-top:-8px; pointer-events:auto;
+    border:1.5px solid var(--mc); background:#fffef9; color:var(--mc); font-family:inherit;
+    font-size:10.5px; font-weight:700; white-space:nowrap; padding:4px 9px; border-radius:999px;
+    cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.16); transition:transform .1s, box-shadow .1s;
+  }
+  .geofence-chip:hover, .geofence-chip:focus-visible{transform:translate(-50%,-100%) scale(1.08); box-shadow:0 4px 12px rgba(0,0,0,.24);}
+
+  /* Walmart store locations — a single generic reference pin, not a targeting zone */
+  .walmart-pin{position:absolute; transform:translate(-50%,-100%); pointer-events:auto; border:none; background:none; padding:0; cursor:pointer; width:auto; display:flex; flex-direction:column; align-items:center; gap:3px;}
+  .pin-label{border:1.3px solid var(--mc); background:#fffef9; color:var(--mc); font-family:inherit; font-size:9.5px; font-weight:700; white-space:nowrap; padding:2px 7px; border-radius:999px; box-shadow:0 1px 5px rgba(0,0,0,.16);}
+  .walmart-pin-shape{width:22px; height:22px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); background:var(--mc); border:2.3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.24); display:flex; align-items:center; justify-content:center; transition:transform .1s;}
+  .walmart-pin-shape svg{transform:rotate(45deg);}
+  .walmart-pin:hover .walmart-pin-shape, .walmart-pin:focus-visible .walmart-pin-shape{transform:rotate(-45deg) scale(1.12);}
+
+  .dev-marker{width:34px; height:34px;}
+  .dev-marker-dot{width:18px; height:18px; border-radius:50%; background:var(--mc); border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.22); display:flex; align-items:center; justify-content:center; transition:transform .1s, box-shadow .1s;}
+  .dev-marker:hover .dev-marker-dot, .dev-marker:focus-visible .dev-marker-dot, .dev-marker.hover-linked .dev-marker-dot{transform:scale(1.35); box-shadow:0 3px 10px rgba(0,0,0,.32);}
+  .dev-marker.selected .dev-marker-dot{transform:scale(1.4); box-shadow:0 0 0 4px rgba(200,68,10,0.3), 0 3px 10px rgba(0,0,0,.32);}
+
+  .cluster-marker{width:38px; height:38px;}
+  .cluster-marker span{width:30px; height:30px; border-radius:50%; background:var(--ink); border:2.5px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; transition:transform .1s;}
+  .cluster-marker:hover span, .cluster-marker:focus-visible span{transform:scale(1.1);}
+  .cluster-marker.expanded span{background:var(--accent);}
+
+  .spider-leg{position:absolute; height:1px; background:#cfc8bc; transform-origin:0 0; pointer-events:none;}
+
+  .map-tooltip{position:absolute; display:none; left:0; top:0; transform:translate(-50%,-100%) translateY(-12px); background:var(--ink); color:#fff; padding:9px 11px; border-radius:9px; font-size:11.5px; box-shadow:0 6px 18px rgba(0,0,0,.28); pointer-events:none; z-index:20; max-width:220px; white-space:normal;}
+  .map-tooltip.below{transform:translate(-50%,18px);}
+  .map-tooltip .tip-title{font-weight:700; margin-bottom:2px;}
+  .map-tooltip .tip-sub{opacity:.75; margin-bottom:5px;}
+  .map-tooltip .tip-row{display:flex; justify-content:space-between; gap:10px; font-weight:600;}
+
+  .map-legend-panel{position:absolute; top:10px; right:10px; max-width:220px; background:rgba(255,254,249,0.98); border:1px solid var(--border); border-radius:10px; padding:11px 13px; font-size:11px; box-shadow:0 4px 14px rgba(0,0,0,.14); display:none; max-height:calc(100% - 20px); overflow-y:auto;}
+  .map-legend-panel.open{display:block;}
+  .lg-group{margin-bottom:8px;}
+  .lg-group:last-child{margin-bottom:0;}
+  .lg-grouplabel{display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:5px;}
+  .lg-item{display:flex; align-items:center; gap:6px; padding:2px 0; color:var(--ink2);}
+  .lg-dot{width:11px; height:11px; border-radius:50%; flex-shrink:0; border:2px solid #fff; box-shadow:0 0 0 1px var(--border);}
+  .lg-swatch-area{width:15px; height:10px; border-radius:3px; flex-shrink:0; border:2px solid #fff; box-shadow:0 0 0 1px var(--border);}
+  .lg-pin{width:10px; height:10px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); flex-shrink:0; border:1.5px solid #fff; box-shadow:0 0 0 1px var(--border); margin:0 2px;}
+  .lg-line{width:16px; height:0; border-top:2px dashed #a89f8f; flex-shrink:0;}
+
+  .zone-cards{display:flex; flex-direction:column; gap:12px; margin-top:16px;}
+  .zone-card{border:1px solid var(--border); border-radius:14px; overflow:hidden; background:#fff;}
+  .zc-head{display:flex; align-items:center; gap:9px; padding:11px 16px; background:var(--pill-bg);}
+  .zc-swatch{width:12px; height:12px; border-radius:50%; flex-shrink:0;}
+  .zc-headtext{flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;}
+  .zc-kind{font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.045em; color:var(--muted);}
+  .zc-name{font-size:12.5px; font-weight:700; color:var(--ink);}
+  .zc-count{font-size:11px; font-weight:700; color:var(--muted); flex-shrink:0;}
+  .zc-row{display:grid; grid-template-columns:1.8fr 0.8fr 0.8fr; gap:10px; align-items:center; padding:9px 16px; border-top:1px solid #f1eee8; font-size:12.5px; width:100%; text-align:left; background:none; border-left:none; border-right:none; border-bottom:none; font-family:inherit; cursor:pointer; transition:background-color .12s;}
+  .zc-row:first-of-type{border-top:none;}
+  .zc-row:hover, .zc-row.hover-linked{background:var(--pill-bg);}
+  .zc-row.selected{background:var(--accent-light);}
+  .zc-devname{font-weight:600; color:var(--ink);}
+  .zc-devtype{color:var(--muted); font-size:11px; margin-top:1px;}
+  .zc-dist{color:var(--ink2); font-weight:700; text-align:right;}
+  .zc-price{color:var(--ink); font-weight:700; text-align:right;}
+
+  @media (max-width:720px){
+    .form-grid, .pkg-grid, .review-grid{grid-template-columns:1fr;}
+    .zc-row{grid-template-columns:1fr; row-gap:3px;}
+    .zc-dist, .zc-price{text-align:left;}
+    .zc-dist::before{content:'Distance: '; color:var(--muted); font-weight:400;}
+    .zc-price::before{content:'Price: '; color:var(--muted); font-weight:400;}
+    .summary-card{position:static;}
+    .map-legend-panel{left:10px; right:10px; max-width:none;}
+  }
+  @media (max-width:480px){
+    .mapstat .num{font-size:15px;}
+    .mapstat .lbl{font-size:9.5px;}
+    .panel{padding:8px 16px 20px;}
+    .navrow{padding:16px 16px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="browserbar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="urlbar">nwa-ads.com/ReachWalmartBuyers</div></div>
+  <div class="app-topbar">
+    <div class="brand">NWA <span>Ads</span></div>
+    <div class="goalpill">🎯 Reach Walmart &amp; Sam's Club buyers</div>
+    <div class="livepill">Real inventory · package pricing</div>
+  </div>
+
+  <div class="frame">
+    <div class="steptrack" id="steptrack"></div>
+
+    <!-- STEP 1 — Business info -->
+    <div class="panel active" id="panel-1">
+      <h2>Tell us about your business</h2>
+      <p class="sub">This is the only information we need before showing you packages — no separate budget question. Every package below has a fixed monthly price.</p>
+      <div class="form-grid">
+        <div class="field"><label>Business name</label><input type="text" placeholder="e.g. Ozark Coffee Roasters"></div>
+        <div class="field"><label>Contact name</label><input type="text" placeholder="Full name"></div>
+        <div class="field"><label>Email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="field"><label>Phone</label><input type="tel" placeholder="(479) 555-0100"></div>
+        <div class="field full"><label>What are you advertising?</label><input type="text" placeholder="Brief description of the product or service"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2 — Dates -->
+    <div class="panel" id="panel-2">
+      <h2>When should your campaign run?</h2>
+      <p class="sub">Pick a start date and a length. That's it — pricing is fixed per package in the next step, so there's nothing to budget out here.</p>
+      <div class="form-grid">
+        <div class="field"><label>Start date</label><input type="date" id="startDate"></div>
+        <div class="field">
+          <label>Campaign length</label>
+          <select id="durationSelect">
+            <option value="1">1 month</option>
+            <option value="3" selected>3 months</option>
+            <option value="6">6 months</option>
+            <option value="12">12 months</option>
+          </select>
+        </div>
+      </div>
+      <div class="removed-note">
+        <span>✓</span>
+        <div><b>Budget input removed.</b> Buyers no longer set a target spend — the four packages on the next screen carry their own fixed monthly price, so this step is just dates.</div>
+      </div>
+    </div>
+
+    <!-- STEP 3 — Packages -->
+    <div class="panel" id="panel-3">
+      <h2>Choose your package</h2>
+      <p class="sub">Every package is built from real NWA Ads inventory around the Walmart Home Office. Pick the one that matches how wide you want your reach.</p>
+      <div class="pkg-grid" id="pkgGrid" role="radiogroup" aria-label="Choose your package"></div>
+    </div>
+
+    <!-- STEP 4 — Your map -->
+    <div class="panel" id="panel-4">
+      <h2 id="map-heading">Your package on the map</h2>
+      <p class="sub" id="map-sub">Hover or tap any marker for exact details. Overlapping assets group into a numbered cluster — tap it to spread them out.</p>
+      <div class="mapstatrow" id="mapStatRow"></div>
+
+      <div class="map-toolbar">
+        <div class="map-toolbar-group">
+          <button type="button" class="map-ctrl-btn" id="btnZoomOut" aria-label="Zoom out">–</button>
+          <span class="zoom-level" id="zoomLevel">100%</span>
+          <button type="button" class="map-ctrl-btn" id="btnZoomIn" aria-label="Zoom in">+</button>
+          <button type="button" class="map-ctrl-btn" id="btnZoomReset" aria-label="Reset view">Reset view</button>
+        </div>
+        <button type="button" class="map-ctrl-btn legend-toggle" id="legendToggle" aria-expanded="false">Legend</button>
+      </div>
+
+      <div class="map-canvas" id="mapCanvas">
+        <div class="map-zoom-layer" id="mapZoomLayer">
+          <div class="map-bg" id="mapBackground"></div>
+          <div class="map-markers" id="mapMarkerLayer"></div>
+        </div>
+        <div class="map-tooltip" id="mapTooltip"></div>
+        <div class="map-legend-panel" id="mapLegend"></div>
+      </div>
+
+      <div class="zone-cards" id="mapCards"></div>
+    </div>
+
+    <!-- STEP 5 — Review -->
+    <div class="panel" id="panel-5">
+      <h2>Review &amp; book</h2>
+      <p class="sub">Confirm the details below. Nothing here is charged yet — this hands off to the same proposal/approval flow the rest of NWA Ads uses today.</p>
+      <div class="review-grid">
+        <div>
+          <div class="review-block">
+            <div class="rb-title">Business</div>
+            <div class="review-row" id="rev-business"><span>Business</span><span>—</span></div>
+            <div class="review-row" id="rev-contact"><span>Contact</span><span>—</span></div>
+          </div>
+          <div class="review-block">
+            <div class="rb-title">Campaign dates</div>
+            <div class="review-row" id="rev-start"><span>Start date</span><span>—</span></div>
+            <div class="review-row" id="rev-length"><span>Length</span><span>—</span></div>
+          </div>
+          <div class="review-block">
+            <div class="rb-title">What's included</div>
+            <div id="rev-devices"></div>
+          </div>
+        </div>
+        <div>
+          <div class="summary-card">
+            <div class="sc-pkgname" id="sum-pkgname">—</div>
+            <div class="sc-price" id="sum-price">$0<span>/mo</span></div>
+            <div class="sc-total" id="sum-total">$0 total</div>
+            <div class="sc-line" id="sum-choice"></div>
+            <div class="sc-line"><span>Assets included</span><span id="sum-count">—</span></div>
+            <button class="cta">Confirm &amp; send to booking</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navrow">
+      <button class="btn" id="btnBack" onclick="prevStep()">Back</button>
+      <button class="btn primary" id="btnNext" onclick="nextStep()">Continue</button>
+    </div>
+  </div>
+  <div class="footer-note">Package 1 lets you choose one of three billboard structures within 1.7 miles of the Home Office — all three land within a few dollars of each other, so the package price doesn't change based on which you pick. Prices on every package are calculated, not guessed: each device's real cpm × weekly impressions from NWA Ads' own inventory data, run through the same weekly→monthly formula (× 4.33) the live booking flow already uses. Expand "What's included" on any card to see the per-device math.</div>
+
+</div>
+
+<script>
+const STEPS = ['Business info', 'Dates', 'Choose package', 'Your map', 'Review & book'];
+
+const PACKAGES = [
+  {
+    id: 'p1', label: 'Package 1', name: 'Home Office Spotlight',
+    tagline: 'The single most prominent billboard near the Home Office — one structure, one message, maximum share of voice.',
+    devices: [],
+    choices: [
+      { id:'595409', name:'Walton Blvd E/S', sub:'0.76 mi from Home Office · S face', lat:36.361985, lng:-94.217264, type:'Digital billboard', mo:5153 },
+      { id:'595434', name:'14th & S. Walton', sub:'1.18 mi from Home Office · N face', lat:36.35672137, lng:-94.21256944, type:'Digital billboard', mo:5153 },
+      { id:'595446', name:'1080 SE 14th St', sub:'1.64 mi from Home Office · W face', lat:36.35646027, lng:-94.19786173, type:'Digital billboard', mo:5153 },
+    ],
+  },
+  {
+    id: 'p2', label: 'Package 2', name: 'Supercenter & Neighborhood Market Package',
+    tagline: 'Key billboard inventory targeting only the Walmart Supercenter and Neighborhood Market locations.',
+    devices: [
+      { id:'595434', name:'14th & S. Walton (N face)', type:'Digital billboard', lat:36.35672137, lng:-94.21256944, dist:'0.50 mi to Neighborhood Market', mo:5153 },
+      { id:'595435', name:'14th & S. Walton (S face)', type:'Digital billboard', lat:36.35672137, lng:-94.21256944, dist:'0.50 mi to Neighborhood Market', mo:5153 },
+      { id:'595409', name:'Walton Blvd E/S', type:'Digital billboard', lat:36.361985, lng:-94.217264, dist:'0.68 mi to Neighborhood Market', mo:5153 },
+      { id:'2551020', name:'Gas Station TV — 900 SW 14th St', type:'Gas station screen', lat:36.3575042, lng:-94.2214649, dist:'0.36 mi to Neighborhood Market', mo:1980 },
+      { id:'2063692', name:'Strider Bikes Bentonville', type:'Retail screen', lat:36.3727136, lng:-94.2089687, dist:'0.04 mi — on the Supercenter lot', mo:627 },
+      { id:'2685845', name:'Walmart Health Station — Attract Screen', type:'In-store screen', lat:36.373586, lng:-94.2092307, dist:'0.08 mi — inside the Supercenter', mo:1591 },
+    ],
+  },
+  {
+    id: 'p3', label: 'Package 3', name: 'Home Office Surround Package',
+    tagline: 'Surround package of key billboards and complementary media across every zone near the Home Office.',
+    devices: [
+      { id:'595434', name:'14th & S. Walton (N face)', type:'Digital billboard', lat:36.35672137, lng:-94.21256944, dist:'0.50 mi to Neighborhood Market', mo:5153 },
+      { id:'595435', name:'14th & S. Walton (S face)', type:'Digital billboard', lat:36.35672137, lng:-94.21256944, dist:'0.50 mi to Neighborhood Market', mo:5153 },
+      { id:'595409', name:'Walton Blvd E/S', type:'Digital billboard', lat:36.361985, lng:-94.217264, dist:'0.68 mi to Neighborhood Market', mo:5153 },
+      { id:'2551020', name:'Gas Station TV — 900 SW 14th St', type:'Gas station screen', lat:36.3575042, lng:-94.2214649, dist:'0.36 mi to Neighborhood Market', mo:1980 },
+      { id:'2063692', name:'Strider Bikes Bentonville', type:'Retail screen', lat:36.3727136, lng:-94.2089687, dist:'0.04 mi — on the Supercenter lot', mo:627 },
+      { id:'2685845', name:'Walmart Health Station — Attract Screen', type:'In-store screen', lat:36.373586, lng:-94.2092307, dist:'0.08 mi — inside the Supercenter', mo:1591 },
+      { id:'595444', name:'401 SE Walton (W face)', type:'Digital billboard', lat:36.33566111, lng:-94.20545833, dist:"1.13 mi to Sam's Club · priority unit", mo:5153 },
+      { id:'595445', name:'401 SE Walton (E face)', type:'Digital billboard', lat:36.33566111, lng:-94.20545833, dist:"1.13 mi to Sam's Club · priority unit", mo:5153 },
+      { id:'595446', name:'1080 SE 14th St (W face)', type:'Digital billboard', lat:36.35646027, lng:-94.19786173, dist:'1.27 mi to Supercenter', mo:5153 },
+      { id:'595447', name:'1080 SE 14th St (E face)', type:'Digital billboard', lat:36.35646027, lng:-94.19786173, dist:'1.27 mi to Supercenter', mo:5153 },
+      { id:'595411', name:'I-49 E/S, 0.3 mi S/O SH-102', type:'Digital billboard', lat:36.352892, lng:-94.178432, dist:'2.15 mi to Supercenter', mo:3074 },
+      { id:'2547810', name:'Gas Station TV — 100 SE J St', type:'Gas station screen', lat:36.3715085, lng:-94.1974226, dist:'0.61 mi to Supercenter', mo:1980 },
+      { id:'708804', name:'Planet Fitness — Bentonville', type:'Gym screen', lat:36.35858, lng:-94.22269, dist:'0.39 mi to Residential Corridor', mo:583 },
+      { id:'1447318', name:'PlanetFitness (Rockbot)', type:'Gym screen', lat:36.358582, lng:-94.222687, dist:'0.46 mi to Neighborhood Market', mo:583 },
+    ],
+  },
+  {
+    id: 'p4', label: 'Package 4', name: 'Home Office Surround + Airport Package',
+    tagline: 'Everything in the Surround package, plus Northwest Arkansas National Airport (XNA) gate inventory.',
+    devices: [
+      { id:'595434', name:'14th & S. Walton (N face)', type:'Digital billboard', lat:36.35672137, lng:-94.21256944, dist:'0.50 mi to Neighborhood Market', mo:5153 },
+      { id:'595435', name:'14th & S. Walton (S face)', type:'Digital billboard', lat:36.35672137, lng:-94.21256944, dist:'0.50 mi to Neighborhood Market', mo:5153 },
+      { id:'595409', name:'Walton Blvd E/S', type:'Digital billboard', lat:36.361985, lng:-94.217264, dist:'0.68 mi to Neighborhood Market', mo:5153 },
+      { id:'2551020', name:'Gas Station TV — 900 SW 14th St', type:'Gas station screen', lat:36.3575042, lng:-94.2214649, dist:'0.36 mi to Neighborhood Market', mo:1980 },
+      { id:'2063692', name:'Strider Bikes Bentonville', type:'Retail screen', lat:36.3727136, lng:-94.2089687, dist:'0.04 mi — on the Supercenter lot', mo:627 },
+      { id:'2685845', name:'Walmart Health Station — Attract Screen', type:'In-store screen', lat:36.373586, lng:-94.2092307, dist:'0.08 mi — inside the Supercenter', mo:1591 },
+      { id:'595444', name:'401 SE Walton (W face)', type:'Digital billboard', lat:36.33566111, lng:-94.20545833, dist:"1.13 mi to Sam's Club · priority unit", mo:5153 },
+      { id:'595445', name:'401 SE Walton (E face)', type:'Digital billboard', lat:36.33566111, lng:-94.20545833, dist:"1.13 mi to Sam's Club · priority unit", mo:5153 },
+      { id:'595446', name:'1080 SE 14th St (W face)', type:'Digital billboard', lat:36.35646027, lng:-94.19786173, dist:'1.27 mi to Supercenter', mo:5153 },
+      { id:'595447', name:'1080 SE 14th St (E face)', type:'Digital billboard', lat:36.35646027, lng:-94.19786173, dist:'1.27 mi to Supercenter', mo:5153 },
+      { id:'595411', name:'I-49 E/S, 0.3 mi S/O SH-102', type:'Digital billboard', lat:36.352892, lng:-94.178432, dist:'2.15 mi to Supercenter', mo:3074 },
+      { id:'2547810', name:'Gas Station TV — 100 SE J St', type:'Gas station screen', lat:36.3715085, lng:-94.1974226, dist:'0.61 mi to Supercenter', mo:1980 },
+      { id:'708804', name:'Planet Fitness — Bentonville', type:'Gym screen', lat:36.35858, lng:-94.22269, dist:'0.39 mi to Residential Corridor', mo:583 },
+      { id:'1447318', name:'PlanetFitness (Rockbot)', type:'Gym screen', lat:36.358582, lng:-94.222687, dist:'0.46 mi to Neighborhood Market', mo:583 },
+      { id:'2422408', name:'XNA Airport — Gate screen 5', type:'Airport (United Airlines)', lat:36.278333, lng:-94.306111, dist:'Highfill, AR', mo:8704 },
+      { id:'2422857', name:'XNA Airport — Gate screen 6', type:'Airport (United Airlines)', lat:36.278333, lng:-94.306111, dist:'Highfill, AR', mo:8704 },
+      { id:'2421754', name:'XNA Airport — Gate screen 7', type:'Airport (United Airlines)', lat:36.278333, lng:-94.306111, dist:'Highfill, AR', mo:8704 },
+      { id:'2423021', name:'XNA Airport — Gate screen 8', type:'Airport (United Airlines)', lat:36.278333, lng:-94.306111, dist:'Highfill, AR', mo:8704 },
+    ],
+  },
+];
+
+let currentStep = 1;
+let selectedPkgId = null;
+let selectedChoiceId = '595409';
+
+function renderSteptrack() {
+  const el = document.getElementById('steptrack');
+  el.innerHTML = STEPS.map((label, i) => {
+    const n = i + 1;
+    const cls = n === currentStep ? 'active' : (n < currentStep ? 'done' : '');
+    const circHtml = n < currentStep ? '&#10003;' : n;
+    const link = i < STEPS.length - 1 ? '<div class="steplink' + (n < currentStep ? ' done' : '') + '"></div>' : '';
+    return '<button type="button" class="step ' + cls + '" onclick="goStep(' + n + ')" aria-current="' + (n === currentStep ? 'step' : 'false') + '"><div class="circ">' + circHtml + '</div><div class="stxt">' + label + '</div></button>' + link;
+  }).join('');
+}
+
+function goStep(n) {
+  if (n > currentStep && !canAdvance(n)) return;
+  currentStep = n;
+  render();
+}
+function nextStep() {
+  const target = Math.min(5, currentStep + 1);
+  if (!canAdvance(target)) return;
+  currentStep = target;
+  render();
+}
+function prevStep() { currentStep = Math.max(1, currentStep - 1); render(); }
+
+function canAdvance(targetStep) {
+  if (targetStep >= 4 && !selectedPkgId) return false;
+  return true;
+}
+
+function render() {
+  renderSteptrack();
+  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i + 1 === currentStep));
+  document.getElementById('btnBack').disabled = currentStep === 1;
+  document.getElementById('btnNext').style.display = currentStep === 5 ? 'none' : 'inline-block';
+  document.getElementById('btnNext').disabled = currentStep === 3 && !selectedPkgId;
+  if (currentStep === 4) showPersonalizedMap();
+  if (currentStep === 5) renderReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pkgPrice(pkg) {
+  if (pkg.id === 'p1') {
+    const c = pkg.choices.find(x => x.id === selectedChoiceId) || pkg.choices[0];
+    return c.mo;
+  }
+  return pkg.devices.reduce((s, d) => s + d.mo, 0);
+}
+
+function renderPackages() {
+  const grid = document.getElementById('pkgGrid');
+  grid.innerHTML = PACKAGES.map(pkg => {
+    const isSel = pkg.id === selectedPkgId;
+    const devCount = pkg.id === 'p1' ? 1 : pkg.devices.length;
+    let subchoicesHtml = '';
+    if (pkg.id === 'p1') {
+      subchoicesHtml = '<div class="subchoices">' + pkg.choices.map(c =>
+        '<label class="subchoice ' + (selectedChoiceId === c.id ? 'on' : '') + '" onclick="event.stopPropagation(); selectChoice(\'' + c.id + '\')">'
+        + '<input type="radio" name="p1choice" ' + (selectedChoiceId === c.id ? 'checked' : '') + '>'
+        + '<span><span class="sc-name">' + c.name + '</span><br><span class="sc-sub">' + c.sub + ' · $' + c.mo.toLocaleString() + '/mo</span></span>'
+        + '</label>'
+      ).join('') + '</div>';
+    }
+    const devListHtml = pkg.id === 'p1' ? '' :
+      '<button type="button" class="toggle-devs" onclick="event.stopPropagation(); toggleDevs(\'' + pkg.id + '\')">' +
+      "What's included ▾" + '</button>' +
+      '<div class="devlist" id="devlist-' + pkg.id + '">' +
+      pkg.devices.map(d => '<div class="devrow"><span class="dname">' + d.name + '<br><span style="font-weight:400;color:var(--muted)">' + d.type + '</span></span><span class="ddist">' + d.dist + '<br>$' + d.mo.toLocaleString() + '/mo</span></div>').join('') +
+      '</div>';
+    return '<div class="pkg-card ' + (isSel ? 'selected' : '') + '" id="card-' + pkg.id + '" data-pkg-id="' + pkg.id + '" role="radio" aria-checked="' + isSel + '" tabindex="0" onclick="selectPkg(\'' + pkg.id + '\')">'
+      + '<div class="radiomark"></div>'
+      + '<div class="pnum">' + pkg.label + '</div>'
+      + '<h3>' + pkg.name + '</h3>'
+      + '<div class="price">$' + pkgPrice(pkg).toLocaleString() + '<span>/mo</span></div>'
+      + '<div class="countchip">' + devCount + ' asset' + (devCount === 1 ? '' : 's') + ' included</div>'
+      + '<div class="tagline">' + pkg.tagline + '</div>'
+      + subchoicesHtml
+      + devListHtml
+      + '</div>';
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', function() {}); // placeholder kept intentionally minimal
+
+function bindPkgGridKeyboard() {
+  const grid = document.getElementById('pkgGrid');
+  grid.addEventListener('keydown', function(e) {
+    const card = e.target.closest('.pkg-card');
+    if (!card) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectPkg(card.dataset.pkgId);
+    }
+  });
+}
+
+function selectPkg(id) { selectedPkgId = id; renderPackages(); document.getElementById('btnNext').disabled = false; }
+function selectChoice(id) { selectedChoiceId = id; renderPackages(); }
+function toggleDevs(id) { document.getElementById('card-' + id).classList.toggle('expanded'); }
+
+function getMonths() { return parseInt(document.getElementById('durationSelect').value, 10); }
+
+function renderReview() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  if (!pkg) return;
+  const months = getMonths();
+  const start = document.getElementById('startDate').value || '—';
+  const business = document.querySelector('#panel-1 input[type=text]').value || '—';
+  const contact = document.querySelectorAll('#panel-1 input[type=text]')[1] ? document.querySelectorAll('#panel-1 input[type=text]')[1].value || '—' : '—';
+
+  document.getElementById('rev-business').innerHTML = '<span>Business</span><span>' + business + '</span>';
+  document.getElementById('rev-contact').innerHTML = '<span>Contact</span><span>' + contact + '</span>';
+  document.getElementById('rev-start').innerHTML = '<span>Start date</span><span>' + start + '</span>';
+  document.getElementById('rev-length').innerHTML = '<span>Length</span><span>' + months + ' month' + (months === 1 ? '' : 's') + '</span>';
+
+  const devices = getSelectedDevices();
+  let choiceLine = '';
+  if (pkg.id === 'p1') {
+    choiceLine = '<span>Billboard selected</span><span>' + devices[0].name + '</span>';
+  }
+  document.getElementById('rev-devices').innerHTML = devices.map(d =>
+    '<div class="review-row"><span>' + d.name + '</span><span>$' + d.mo.toLocaleString() + '/mo</span></div>'
+  ).join('');
+
+  document.getElementById('sum-pkgname').textContent = pkg.label + ' · ' + pkg.name;
+  document.getElementById('sum-price').innerHTML = '$' + pkgPrice(pkg).toLocaleString() + '<span>/mo</span>';
+  document.getElementById('sum-total').textContent = '$' + (pkgPrice(pkg) * months).toLocaleString() + ' total over ' + months + ' month' + (months === 1 ? '' : 's');
+  document.getElementById('sum-choice').innerHTML = choiceLine;
+  document.getElementById('sum-count').textContent = devices.length;
+}
+
+function getSelectedDevices() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  if (!pkg) return [];
+  if (pkg.id === 'p1') {
+    const c = pkg.choices.find(x => x.id === selectedChoiceId);
+    return [{ id: c.id, name: c.name, type: 'Digital billboard', lat: c.lat, lng: c.lng, dist: c.sub, mo: c.mo }];
+  }
+  return pkg.devices;
+}
+
+// ============================================================
+// STEP 4 — interactive map v2.
+// Still a static/proportional projection (no basemap tiles, so
+// nothing can fail to load) but every marker is now a real,
+// stateful, keyboard-operable control: hover/focus/selected
+// states, tooltips, clustering for coincident devices, zoom/pan,
+// and two-way sync with the device list below.
+// ============================================================
+const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
+// zone colors: 'hq' and 'residential' are geofenced target zones (drawn as boundary polygons).
+// 'walmart' covers all three store locations, which are now a single generic reference pin,
+// not a targeting zone. 'airport' keeps its own small reference marker.
+// 'walmart' and 'samsclub' get their own brand-associated colors (no logo artwork — just
+// color + a small wordmark-style text label) so the two brands read as distinct at a glance.
+const ZONE_COLORS = { hq:'#1f3d2a', residential:'#9c4221', walmart:'#0071CE', samsclub:'#041e42', airport:'#7c5cbf' };
+const RESIDENTIAL_DESC = "The residential corridors with the highest concentration of Walmart executive households.";
+const WALMART_POIS = [
+  { id:'hq', name:"Walmart Home Office", lat:36.3729, lng:-94.2192, kind:"hq", zone:"hq", zoneLabel:"Home Office",
+    geofence:true, radiusMi:0.36, aspect:1, angle:0 },
+  { id:'residential-1', name:"Residential Corridor — NE A St", lat:36.3641, lng:-94.2241, kind:"residential", zone:"residential", zoneLabel:"Residential corridor",
+    geofence:true, radiusMi:0.32, aspect:2.2, angle:35, desc: RESIDENTIAL_DESC },
+  { id:'residential-2', name:"Residential Corridor — Downtown Bentonville", lat:36.3729, lng:-94.2088, kind:"residential", zone:"residential", zoneLabel:"Residential corridor",
+    geofence:true, radiusMi:0.24, aspect:1.4, angle:-15, desc: RESIDENTIAL_DESC },
+  { id:'supercenter', name:"Walmart Supercenter — Bentonville", lat:36.3728, lng:-94.2083, kind:"store", zone:"walmart", zoneLabel:"Walmart" },
+  { id:'samsclub', name:"Sam's Club — Bentonville", lat:36.3502, lng:-94.2148, kind:"store", zone:"samsclub", zoneLabel:"Sam's Club" },
+  { id:'nbhdmarket', name:"Walmart Neighborhood Market — Bentonville", lat:36.3524, lng:-94.2198, kind:"store", zone:"walmart", zoneLabel:"Walmart" },
+  { id:'airport', name:"XNA Airport — Gate Inventory", lat:36.278333, lng:-94.306111, kind:"airport", zone:"airport", zoneLabel:"Airport" },
+];
+// Approximate, illustrative boundaries — not surveyed parcel/campus data. Sized to be
+// legible at this scale and flagged as approximate in the on-map tooltip copy.
+function hashSeed(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 1000;
+  return (h / 1000) * Math.PI * 2;
+}
+function blobPolygonMiles(centerM, radiusMi, aspect, rotationDeg, seed) {
+  const n = 16;
+  const rot = (rotationDeg || 0) * Math.PI / 180;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const t = (i / n) * Math.PI * 2;
+    const wobble = 1 + 0.12 * Math.sin(t * 3 + seed) + 0.06 * Math.cos(t * 5 + seed * 1.7);
+    const rx = radiusMi * wobble;
+    const ry = (radiusMi * wobble) / (aspect || 1);
+    const x0 = rx * Math.cos(t), y0 = ry * Math.sin(t);
+    pts.push({
+      x: centerM.x + x0 * Math.cos(rot) - y0 * Math.sin(rot),
+      y: centerM.y + x0 * Math.sin(rot) + y0 * Math.cos(rot),
+    });
+  }
+  return pts;
+}
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function nearestWalmart(d) {
+  let best = null, bestD = Infinity;
+  WALMART_POIS.forEach(p => { const dd = haversineMiles(d.lat, d.lng, p.lat, p.lng); if (dd < bestD) { bestD = dd; best = p; } });
+  return { poi: best, dist: bestD };
+}
+
+const MILES_PER_DEG_LAT = 69.0;
+function milesPerDegLng(lat) { return 69.0 * Math.cos(lat * Math.PI / 180); }
+function toMiles(lat, lng) {
+  return { x: (lng - WALMART_HQ.lng) * milesPerDegLng(WALMART_HQ.lat), y: (lat - WALMART_HQ.lat) * MILES_PER_DEG_LAT };
+}
+function escapeXml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+const TYPE_STYLE = {
+  'Digital billboard': { color:'#1f3d2a', icon:'<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"><rect x="2" y="4" width="20" height="12" rx="1"/><line x1="8" y1="16" x2="8" y2="21"/><line x1="16" y1="16" x2="16" y2="21"/></svg>' },
+  'Gas station screen': { color:'#b45309', icon:'<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2"/></svg>' },
+  'Retail screen': { color:'#4f46e5', icon:'<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>' },
+  'In-store screen': { color:'#db2777', icon:'<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="1.5"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' },
+  'Gym screen': { color:'#0d9488', icon:'<svg viewBox="0 0 28 28" width="10" height="10" fill="white" stroke="none"><rect x="1" y="9" width="4" height="10" rx="1.5"/><rect x="23" y="9" width="4" height="10" rx="1.5"/><rect x="7.5" y="12.5" width="13" height="3" rx="1"/></svg>' },
+  'Airport (United Airlines)': { color:'#0071CE', icon:'<svg viewBox="0 0 24 24" width="10" height="10" fill="white" stroke="none"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.5V22l4-1 4 1v-1.5L13 19v-5.5z"/></svg>' },
+};
+const POI_CODE = { airport:'AIR' };
+const CLUSTER_PX_THRESHOLD = 16;
+
+function relevantPois(devices) {
+  const set = new Map();
+  WALMART_POIS.forEach(p => { if (p.kind === 'hq') set.set(p.id, p); });
+  devices.forEach(d => { const { poi } = nearestWalmart(d); set.set(poi.id, poi); });
+  return Array.from(set.values());
+}
+
+function computeMapLayout(devices) {
+  const pois = relevantPois(devices);
+  const poiM = pois.map(p => ({ poi: p, m: toMiles(p.lat, p.lng) }));
+  const devM = devices.map(d => ({ device: d, m: toMiles(d.lat, d.lng) }));
+  const geofenceM = poiM.filter(x => x.poi.geofence).map(x => ({
+    poi: x.poi,
+    verts: blobPolygonMiles(x.m, x.poi.radiusMi, x.poi.aspect, x.poi.angle, hashSeed(x.poi.id)),
+  }));
+  const allM = poiM.map(x => x.m).concat(devM.map(x => x.m)).concat(geofenceM.reduce((acc, g) => acc.concat(g.verts), []));
+  const W = 1040, H = 460, pad = 46;
+  let xMin = Math.min.apply(null, allM.map(p => p.x)), xMax = Math.max.apply(null, allM.map(p => p.x));
+  let yMin = Math.min.apply(null, allM.map(p => p.y)), yMax = Math.max.apply(null, allM.map(p => p.y));
+  if (xMax - xMin < 0.5) { const c = (xMax + xMin) / 2; xMin = c - 0.25; xMax = c + 0.25; }
+  if (yMax - yMin < 0.5) { const c = (yMax + yMin) / 2; yMin = c - 0.25; yMax = c + 0.25; }
+  const spanX = xMax - xMin, spanY = yMax - yMin;
+  const scale = Math.min((W - 2 * pad) / spanX, (H - 2 * pad) / spanY);
+  const offX = pad + (W - 2 * pad - spanX * scale) / 2;
+  const offY = pad + (H - 2 * pad - spanY * scale) / 2;
+  const px = (mx, my) => ({ x: offX + (mx - xMin) * scale, y: H - offY - (my - yMin) * scale });
+
+  const poiItems = poiM.map(x => ({ poi: x.poi, px: px(x.m.x, x.m.y) }));
+  const devItems = devM.map(x => ({ device: x.device, px: px(x.m.x, x.m.y) }));
+  const geofenceItems = geofenceM.map(g => ({ poi: g.poi, pxVerts: g.verts.map(v => px(v.x, v.y)) }));
+
+  return { W, H, pad, scale, xMin, xMax, yMin, yMax, px, poiItems, devItems, geofenceItems };
+}
+
+function clusterDeviceItems(devItems) {
+  const clusters = [];
+  devItems.forEach(item => {
+    let target = null;
+    for (const c of clusters) {
+      const dx = c.cx - item.px.x, dy = c.cy - item.px.y;
+      if (Math.sqrt(dx * dx + dy * dy) < CLUSTER_PX_THRESHOLD) { target = c; break; }
+    }
+    if (target) {
+      target.items.push(item);
+      target.cx = target.items.reduce((s, i) => s + i.px.x, 0) / target.items.length;
+      target.cy = target.items.reduce((s, i) => s + i.px.y, 0) / target.items.length;
+    } else {
+      clusters.push({ id: 'cl-' + clusters.length + '-' + item.device.id, items: [item], cx: item.px.x, cy: item.px.y });
+    }
+  });
+  return clusters;
+}
+
+function toPct(pt, layout) {
+  return { x: (pt.x / layout.W) * 100, y: (pt.y / layout.H) * 100 };
+}
+
+function buildBackgroundSVG(layout) {
+  const { W, H, scale, poiItems, devItems, geofenceItems, px, xMin, xMax, yMin, yMax } = layout;
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">';
+  svg += '<rect x="0.5" y="0.5" width="' + (W - 1) + '" height="' + (H - 1) + '" fill="#fbfaf7" rx="14"/>';
+
+  const hqM = toMiles(WALMART_HQ.lat, WALMART_HQ.lng);
+  const hqPxPt = px(hqM.x, hqM.y);
+  const maxRing = Math.ceil(Math.max(Math.abs(xMax - hqM.x), Math.abs(xMin - hqM.x), Math.abs(yMax - hqM.y), Math.abs(yMin - hqM.y))) + 1;
+  for (let r = 1; r <= maxRing; r++) {
+    svg += '<circle cx="' + hqPxPt.x + '" cy="' + hqPxPt.y + '" r="' + (r * scale) + '" fill="none" stroke="#e6e1d8" stroke-width="1" stroke-dasharray="3,5"/>';
+  }
+
+  // geofenced target zones — drawn as their own bounded shapes, not implied by shading.
+  // The two residential-corridor areas are ~1 mile apart in reality, so they're drawn as two
+  // distinct polygons (same color/label) rather than one shape stretched between them.
+  geofenceItems.forEach(g => {
+    const color = ZONE_COLORS[g.poi.zone];
+    const pts = g.pxVerts.map(v => v.x.toFixed(1) + ',' + v.y.toFixed(1)).join(' ');
+    svg += '<polygon points="' + pts + '" fill="' + color + '" fill-opacity="0.14" stroke="' + color + '" stroke-width="2" stroke-dasharray="5,4" stroke-opacity="0.8" stroke-linejoin="round"/>';
+  });
+
+  const poiById = {};
+  poiItems.forEach(i => { poiById[i.poi.id] = i; });
+  devItems.forEach(item => {
+    const { poi } = nearestWalmart(item.device);
+    const target = poiById[poi.id];
+    if (!target) return;
+    svg += '<line id="conn-' + item.device.id + '" class="conn-line" x1="' + item.px.x + '" y1="' + item.px.y + '" x2="' + target.px.x + '" y2="' + target.px.y + '" stroke="' + ZONE_COLORS[poi.zone] + '" stroke-width="1.1" stroke-opacity="0.28"/>';
+  });
+
+  const candidates = [0.1, 0.25, 0.5, 1, 2, 3, 5, 10, 15, 20];
+  let barMiles = candidates[0], bestDiff = Infinity;
+  candidates.forEach(v => { const diff = Math.abs(v * scale - 130); if (diff < bestDiff) { bestDiff = diff; barMiles = v; } });
+  const barPx = barMiles * scale;
+  const pad = layout.pad;
+  const sbX = W - pad - barPx, sbY = H - 22;
+  svg += '<line x1="' + sbX + '" y1="' + sbY + '" x2="' + (sbX + barPx) + '" y2="' + sbY + '" stroke="#1a1714" stroke-width="2.5"/>';
+  svg += '<line x1="' + sbX + '" y1="' + (sbY - 5) + '" x2="' + sbX + '" y2="' + (sbY + 5) + '" stroke="#1a1714" stroke-width="2.5"/>';
+  svg += '<line x1="' + (sbX + barPx) + '" y1="' + (sbY - 5) + '" x2="' + (sbX + barPx) + '" y2="' + (sbY + 5) + '" stroke="#1a1714" stroke-width="2.5"/>';
+  svg += '<text x="' + (sbX + barPx / 2) + '" y="' + (sbY - 9) + '" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1714" font-family="Instrument Sans, sans-serif">' + barMiles + ' mi</text>';
+
+  const nx = pad + 6, ny = pad + 26;
+  svg += '<line x1="' + nx + '" y1="' + ny + '" x2="' + nx + '" y2="' + (ny - 20) + '" stroke="#6b6560" stroke-width="2"/>';
+  svg += '<path d="M ' + (nx - 4) + ' ' + (ny - 14) + ' L ' + nx + ' ' + (ny - 22) + ' L ' + (nx + 4) + ' ' + (ny - 14) + ' Z" fill="#6b6560"/>';
+  svg += '<text x="' + nx + '" y="' + (ny + 12) + '" text-anchor="middle" font-size="10" font-weight="700" fill="#6b6560">N</text>';
+
+  svg += '</svg>';
+  return svg;
+}
+
+function renderDeviceMarkerHtml(item, layout, overridePx) {
+  const d = item.device;
+  const p = overridePx || item.px;
+  const pct = toPct(p, layout);
+  const style = TYPE_STYLE[d.type] || TYPE_STYLE['Digital billboard'];
+  const sel = selectedDeviceId === d.id ? ' selected' : '';
+  return '<button type="button" class="dev-marker' + sel + '" data-key="dev-' + d.id + '" data-id="' + d.id + '" style="left:' + pct.x + '%; top:' + pct.y + '%; --mc:' + style.color + '" aria-label="' + escapeXml(d.name + ', ' + d.type + ', $' + d.mo.toLocaleString() + ' per month') + '"><span class="dev-marker-dot">' + style.icon + '</span></button>';
+}
+
+const WALMART_PIN_ICON = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
+
+function renderMapMarkers(layout) {
+  const layer = document.getElementById('mapMarkerLayer');
+  let html = '';
+
+  // geofenced target zones (Home Office, Residential corridor) — label chip anchored just
+  // above the polygon, so it reads as "this shape's name" rather than a floating pin.
+  layout.geofenceItems.forEach(g => {
+    let top = g.pxVerts[0];
+    g.pxVerts.forEach(v => { if (v.y < top.y) top = v; });
+    const pct = toPct(top, layout);
+    const color = ZONE_COLORS[g.poi.zone];
+    html += '<button type="button" class="geofence-chip" data-key="poi-' + g.poi.id + '" style="left:' + pct.x + '%; top:' + pct.y + '%; --mc:' + color + '" aria-label="' + escapeXml(g.poi.zoneLabel + ' — ' + g.poi.name + (g.poi.desc ? '. ' + g.poi.desc : '')) + '">' + escapeXml(g.poi.zoneLabel) + '</button>';
+  });
+
+  // Walmart store locations — one generic reference pin (not a target zone). Airport keeps
+  // its own small coded badge since it isn't a Walmart-owned reference point.
+  layout.poiItems.forEach(item => {
+    const p = item.poi;
+    if (p.geofence) return;
+    if (p.kind === 'store') {
+      const pct = toPct(item.px, layout);
+      const color = ZONE_COLORS[p.zone];
+      html += '<button type="button" class="walmart-pin" data-key="poi-' + p.id + '" style="left:' + pct.x + '%; top:' + pct.y + '%; --mc:' + color + '" aria-label="' + escapeXml(p.name) + ', ' + escapeXml(p.zoneLabel) + ' location'
+        + '"><span class="pin-label" style="--mc:' + color + '">' + escapeXml(p.zoneLabel) + '</span><span class="walmart-pin-shape">' + WALMART_PIN_ICON + '</span></button>';
+    } else {
+      const pct = toPct(item.px, layout);
+      const code = POI_CODE[p.id] || '?';
+      html += '<button type="button" class="poi-marker" data-key="poi-' + p.id + '" style="left:' + pct.x + '%; top:' + pct.y + '%; --mc:' + ZONE_COLORS[p.zone] + '" aria-label="' + escapeXml(p.zoneLabel + ' — ' + p.name) + '"><span class="poi-marker-dot">' + code + '</span></button>';
+    }
+  });
+
+  const clusters = clusterDeviceItems(layout.devItems);
+  clusters.forEach(cluster => {
+    if (cluster.items.length === 1) {
+      html += renderDeviceMarkerHtml(cluster.items[0], layout);
+      return;
+    }
+    if (expandedClusters.has(cluster.id)) {
+      const n = cluster.items.length;
+      const fanR = 24 + n * 2;
+      const cpct = toPct({ x: cluster.cx, y: cluster.cy }, layout);
+      cluster.items.forEach((item, i) => {
+        const ang = (Math.PI * 2 * i / n) - Math.PI / 2;
+        const fx = cluster.cx + fanR * Math.cos(ang);
+        const fy = cluster.cy + fanR * Math.sin(ang);
+        const legLen = fanR;
+        html += '<div class="spider-leg" style="left:' + cpct.x + '%; top:' + cpct.y + '%; width:' + legLen + 'px; transform:rotate(' + (ang * 180 / Math.PI) + 'deg);"></div>';
+        html += renderDeviceMarkerHtml(item, layout, { x: fx, y: fy });
+      });
+      html += '<button type="button" class="cluster-marker expanded" data-cluster="' + cluster.id + '" style="left:' + cpct.x + '%; top:' + cpct.y + '%;" aria-expanded="true" aria-label="Collapse ' + n + ' assets at this location"><span>&times;</span></button>';
+    } else {
+      const cpct = toPct({ x: cluster.cx, y: cluster.cy }, layout);
+      html += '<button type="button" class="cluster-marker" data-cluster="' + cluster.id + '" style="left:' + cpct.x + '%; top:' + cpct.y + '%;" aria-expanded="false" aria-label="' + cluster.items.length + ' assets at this location, activate to expand"><span>' + cluster.items.length + '</span></button>';
+    }
+  });
+
+  layer.innerHTML = html;
+}
+
+function renderMapLegend(devices) {
+  const pois = relevantPois(devices);
+  const seenZoneColor = new Set();
+  const targetItems = pois.filter(p => p.geofence).map(p => {
+    if (seenZoneColor.has(p.zone)) return '';
+    seenZoneColor.add(p.zone);
+    return '<div class="lg-item"><span class="lg-swatch-area" style="background:' + ZONE_COLORS[p.zone] + '"></span>' + p.zoneLabel + '</div>';
+  }).join('');
+  const hasWalmart = pois.some(p => p.zone === 'walmart');
+  const hasSamsClub = pois.some(p => p.zone === 'samsclub');
+  const hasAirport = pois.some(p => p.kind === 'airport');
+
+  const typeMap = new Map();
+  devices.forEach(d => { if (!typeMap.has(d.type)) typeMap.set(d.type, (TYPE_STYLE[d.type] || TYPE_STYLE['Digital billboard']).color); });
+  const typeItems = Array.from(typeMap.entries()).map(function(entry) {
+    return '<div class="lg-item"><span class="lg-dot" style="background:' + entry[1] + '"></span>' + entry[0] + '</div>';
+  }).join('');
+
+  let html = '<div class="lg-group"><span class="lg-grouplabel">Target zones</span>' + targetItems + '</div>';
+  if (hasWalmart || hasSamsClub) {
+    let storeRows = '';
+    if (hasWalmart) storeRows += '<div class="lg-item"><span class="lg-pin" style="background:' + ZONE_COLORS.walmart + '"></span>Walmart store</div>';
+    if (hasSamsClub) storeRows += '<div class="lg-item"><span class="lg-pin" style="background:' + ZONE_COLORS.samsclub + '"></span>Sam\'s Club</div>';
+    html += '<div class="lg-group"><span class="lg-grouplabel">Store locations (reference only, not a target zone)</span>' + storeRows + '</div>';
+  }
+  if (hasAirport) {
+    html += '<div class="lg-group"><span class="lg-grouplabel">Other reference points</span><div class="lg-item"><span class="lg-dot" style="background:' + ZONE_COLORS.airport + '"></span>Airport</div></div>';
+  }
+  html += '<div class="lg-group"><span class="lg-grouplabel">Asset types</span>' + typeItems + '</div>';
+  html += '<div class="lg-group"><span class="lg-grouplabel">Lines</span><div class="lg-item"><span class="lg-line"></span>Connects each asset to its nearest target zone or reference point</div></div>';
+  html += '<div class="lg-group"><span class="lg-grouplabel">Note</span><div class="lg-item" style="color:var(--muted); font-size:10px; line-height:1.4;">Target-zone boundaries are illustrative approximations, not surveyed campus/parcel data.</div></div>';
+  return html;
+}
+
+const KIND_BADGE = { hq: 'Target zone', residential: 'Target zone', airport: 'Reference point' };
+function kindBadge(poi) {
+  if (poi.kind === 'store') return poi.zoneLabel + ' location';
+  return KIND_BADGE[poi.kind] || '';
+}
+const POI_ORDER = ['hq', 'residential-1', 'residential-2', 'supercenter', 'samsclub', 'nbhdmarket', 'airport'];
+
+function renderZoneCards(devices) {
+  const groups = new Map();
+  devices.forEach(d => {
+    const { poi, dist } = nearestWalmart(d);
+    if (!groups.has(poi.id)) groups.set(poi.id, { poi: poi, items: [] });
+    groups.get(poi.id).items.push({ d: d, dist: dist });
+  });
+  const zones = Array.from(groups.values()).sort((a, b) => POI_ORDER.indexOf(a.poi.id) - POI_ORDER.indexOf(b.poi.id));
+  return zones.map(z => {
+    z.items.sort((a, b) => a.dist - b.dist);
+    const rows = z.items.map(it =>
+      '<button type="button" class="zc-row" id="zc-row-' + it.d.id + '" data-id="' + it.d.id + '">' +
+      '<div><div class="zc-devname">' + it.d.name + '</div><div class="zc-devtype">' + it.d.type + (it.d.id ? ' · #' + it.d.id : '') + '</div></div>' +
+      '<div class="zc-dist">' + it.dist.toFixed(2) + ' mi</div>' +
+      '<div class="zc-price">$' + it.d.mo.toLocaleString() + '/mo</div></button>'
+    ).join('');
+    return '<div class="zone-card"><div class="zc-head"><span class="zc-swatch" style="background:' + ZONE_COLORS[z.poi.zone] + '"></span>' +
+      '<div class="zc-headtext"><span class="zc-kind">' + kindBadge(z.poi) + '</span><span class="zc-name">' + z.poi.name + '</span></div>' +
+      '<span class="zc-count">' + z.items.length + ' asset' + (z.items.length === 1 ? '' : 's') + '</span></div>' + rows + '</div>';
+  }).join('');
+}
+
+function renderMapStats() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  const devices = getSelectedDevices();
+  const distances = devices.map(d => nearestWalmart(d).dist);
+  const avg = distances.reduce((s, d) => s + d, 0) / distances.length;
+  const stats = [
+    { num: devices.length, lbl: 'asset' + (devices.length === 1 ? '' : 's') + ' in ' + pkg.label },
+    { num: avg.toFixed(2) + ' mi', lbl: 'avg. distance to nearest Walmart target point' },
+    { num: '$' + pkgPrice(pkg).toLocaleString(), lbl: 'per month (real cpm × impressions)' },
+  ];
+  document.getElementById('mapStatRow').innerHTML = stats.map(s => '<div class="mapstat"><div class="num">' + s.num + '</div><div class="lbl">' + s.lbl + '</div></div>').join('');
+  document.getElementById('map-heading').textContent = 'Your ' + pkg.name + ', mapped';
+}
+
+// ---------- interaction state ----------
+let expandedClusters = new Set();
+let selectedDeviceId = null;
+let currentMapLayout = null;
+let lastRenderedPkgId = null;
+let mapZoom = 1, mapPanX = 0, mapPanY = 0;
+let mapInteractionsBound = false;
+
+function rerenderMap() {
+  if (!currentMapLayout) return;
+  renderMapMarkers(currentMapLayout);
+}
+
+function showTooltip(html, anchorEl) {
+  const tip = document.getElementById('mapTooltip');
+  const canvas = document.getElementById('mapCanvas');
+  tip.innerHTML = html;
+  tip.style.display = 'block';
+  const canvasRect = canvas.getBoundingClientRect();
+  const anchorRect = anchorEl.getBoundingClientRect();
+  const left = anchorRect.left - canvasRect.left + anchorRect.width / 2;
+  const top = anchorRect.top - canvasRect.top;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  if (top < 60) {
+    tip.classList.add('below');
+  } else {
+    tip.classList.remove('below');
+  }
+}
+function hideTooltip() {
+  const tip = document.getElementById('mapTooltip');
+  tip.style.display = 'none';
+}
+
+function highlightConn(id) {
+  clearConnHighlight();
+  const line = document.getElementById('conn-' + id);
+  if (line) { line.setAttribute('stroke-width', '2.4'); line.setAttribute('stroke-opacity', '0.85'); line.dataset.highlighted = '1'; }
+}
+function clearConnHighlight() {
+  document.querySelectorAll('.conn-line[data-highlighted]').forEach(l => {
+    l.removeAttribute('data-highlighted');
+    l.setAttribute('stroke-width', '1.1');
+    l.setAttribute('stroke-opacity', '0.28');
+  });
+}
+
+function safeScrollIntoView(el) {
+  if (el && typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function highlightCardRow(id, scroll) {
+  document.querySelectorAll('.zc-row.hover-linked').forEach(r => r.classList.remove('hover-linked'));
+  const row = document.getElementById('zc-row-' + id);
+  if (row) {
+    row.classList.add('hover-linked');
+    if (scroll) safeScrollIntoView(row);
+  }
+}
+
+function highlightFromMarker(el) {
+  if (el.classList.contains('dev-marker')) {
+    const id = el.dataset.id;
+    const d = getSelectedDevices().find(x => x.id === id);
+    if (!d) return;
+    const { poi, dist } = nearestWalmart(d);
+    showTooltip(
+      '<div class="tip-title">' + escapeXml(d.name) + '</div>' +
+      '<div class="tip-sub">' + escapeXml(d.type) + (d.id ? ' · #' + d.id : '') + '</div>' +
+      '<div class="tip-row"><span>' + dist.toFixed(2) + ' mi to ' + escapeXml(poi.name.replace('Walmart ', '')) + '</span><span>$' + d.mo.toLocaleString() + '/mo</span></div>',
+      el
+    );
+    highlightConn(id);
+    highlightCardRow(id, false);
+  } else if (el.classList.contains('geofence-chip')) {
+    const key = el.dataset.key.replace('poi-', '');
+    const p = WALMART_POIS.find(x => x.id === key);
+    if (!p) return;
+    showTooltip('<div class="tip-title">' + escapeXml(p.name) + '</div>' + (p.desc ? '<div class="tip-sub">' + escapeXml(p.desc) + '</div>' : '') + '<div class="tip-sub" style="opacity:.6;">Boundary shown is illustrative, not surveyed</div>', el);
+  } else if (el.classList.contains('walmart-pin')) {
+    const key = el.dataset.key.replace('poi-', '');
+    const p = WALMART_POIS.find(x => x.id === key);
+    if (!p) return;
+    showTooltip('<div class="tip-title">' + escapeXml(p.name) + '</div><div class="tip-sub">' + escapeXml(p.zoneLabel) + ' location · reference only, not a target zone</div>', el);
+  } else if (el.classList.contains('poi-marker')) {
+    const key = el.dataset.key.replace('poi-', '');
+    const p = WALMART_POIS.find(x => x.id === key);
+    if (!p) return;
+    showTooltip('<div class="tip-title">' + escapeXml(p.name) + '</div><div class="tip-sub">' + escapeXml(p.zoneLabel) + '</div>', el);
+  } else if (el.classList.contains('cluster-marker')) {
+    const expanded = el.getAttribute('aria-expanded') === 'true';
+    showTooltip('<div class="tip-title">' + (expanded ? 'Grouped assets' : 'Multiple assets here') + '</div><div class="tip-sub">Activate to ' + (expanded ? 'collapse' : 'expand') + '</div>', el);
+  }
+}
+
+function selectDevice(id) {
+  selectedDeviceId = id;
+  if (currentMapLayout) {
+    const clusters = clusterDeviceItems(currentMapLayout.devItems);
+    const owning = clusters.find(c => c.items.some(i => i.device.id === id));
+    if (owning && owning.items.length > 1) expandedClusters.add(owning.id);
+  }
+  rerenderMap();
+  document.querySelectorAll('.zc-row.selected').forEach(r => r.classList.remove('selected'));
+  const row = document.getElementById('zc-row-' + id);
+  if (row) { row.classList.add('selected'); safeScrollIntoView(row); }
+}
+
+function onMarkerClick(e) {
+  const clusterBtn = e.target.closest('.cluster-marker');
+  if (clusterBtn) {
+    const id = clusterBtn.dataset.cluster;
+    if (expandedClusters.has(id)) expandedClusters.delete(id); else expandedClusters.add(id);
+    rerenderMap();
+    return;
+  }
+  const devBtn = e.target.closest('.dev-marker');
+  if (devBtn) { selectDevice(devBtn.dataset.id); return; }
+}
+function onMarkerHoverIn(e) {
+  const el = e.target.closest('.dev-marker, .poi-marker, .cluster-marker, .geofence-chip, .walmart-pin');
+  if (!el) return;
+  highlightFromMarker(el);
+}
+function onMarkerHoverOut(e) {
+  const el = e.target.closest('.dev-marker, .poi-marker, .cluster-marker, .geofence-chip, .walmart-pin');
+  if (!el) return;
+  hideTooltip();
+  clearConnHighlight();
+  document.querySelectorAll('.zc-row.hover-linked').forEach(r => r.classList.remove('hover-linked'));
+}
+
+function onCardHoverIn(e) {
+  const row = e.target.closest('.zc-row');
+  if (!row) return;
+  const id = row.dataset.id;
+  const marker = document.querySelector('.dev-marker[data-id="' + id + '"]');
+  if (marker) marker.classList.add('hover-linked');
+  highlightConn(id);
+}
+function onCardHoverOut(e) {
+  const row = e.target.closest('.zc-row');
+  if (!row) return;
+  document.querySelectorAll('.dev-marker.hover-linked').forEach(m => m.classList.remove('hover-linked'));
+  clearConnHighlight();
+}
+function onCardClick(e) {
+  const row = e.target.closest('.zc-row');
+  if (!row) return;
+  selectDevice(row.dataset.id);
+}
+
+function clampPan(zoom, panX, panY, containerW, containerH) {
+  const maxX = Math.max(0, (containerW * zoom - containerW) / 2);
+  const maxY = Math.max(0, (containerH * zoom - containerH) / 2);
+  return { x: Math.max(-maxX, Math.min(maxX, panX)), y: Math.max(-maxY, Math.min(maxY, panY)) };
+}
+function applyMapTransform() {
+  const layer = document.getElementById('mapZoomLayer');
+  layer.style.transform = 'translate(' + mapPanX + 'px,' + mapPanY + 'px) scale(' + mapZoom + ')';
+  document.getElementById('zoomLevel').textContent = Math.round(mapZoom * 100) + '%';
+  document.getElementById('btnZoomOut').disabled = mapZoom <= 1;
+  document.getElementById('btnZoomIn').disabled = mapZoom >= 3;
+  document.getElementById('btnZoomReset').disabled = (mapZoom === 1 && mapPanX === 0 && mapPanY === 0);
+}
+function zoomBy(delta) {
+  mapZoom = Math.max(1, Math.min(3, Math.round((mapZoom + delta) * 100) / 100));
+  if (mapZoom === 1) { mapPanX = 0; mapPanY = 0; }
+  const rect = document.getElementById('mapCanvas').getBoundingClientRect();
+  const clamped = clampPan(mapZoom, mapPanX, mapPanY, rect.width, rect.height);
+  mapPanX = clamped.x; mapPanY = clamped.y;
+  applyMapTransform();
+}
+function resetMapView() { mapZoom = 1; mapPanX = 0; mapPanY = 0; applyMapTransform(); }
+
+function initMapInteractions() {
+  if (mapInteractionsBound) return;
+  mapInteractionsBound = true;
+
+  const markerLayer = document.getElementById('mapMarkerLayer');
+  markerLayer.addEventListener('click', onMarkerClick);
+  markerLayer.addEventListener('mouseover', onMarkerHoverIn);
+  markerLayer.addEventListener('mouseout', onMarkerHoverOut);
+  markerLayer.addEventListener('focusin', onMarkerHoverIn);
+  markerLayer.addEventListener('focusout', onMarkerHoverOut);
+
+  const cardsLayer = document.getElementById('mapCards');
+  cardsLayer.addEventListener('mouseover', onCardHoverIn);
+  cardsLayer.addEventListener('mouseout', onCardHoverOut);
+  cardsLayer.addEventListener('click', onCardClick);
+  cardsLayer.addEventListener('focusin', onCardHoverIn);
+  cardsLayer.addEventListener('focusout', onCardHoverOut);
+
+  document.getElementById('btnZoomIn').addEventListener('click', () => zoomBy(0.5));
+  document.getElementById('btnZoomOut').addEventListener('click', () => zoomBy(-0.5));
+  document.getElementById('btnZoomReset').addEventListener('click', resetMapView);
+
+  const legendToggle = document.getElementById('legendToggle');
+  legendToggle.addEventListener('click', () => {
+    const legend = document.getElementById('mapLegend');
+    const open = legend.classList.toggle('open');
+    legendToggle.setAttribute('aria-expanded', String(open));
+  });
+
+  const canvas = document.getElementById('mapCanvas');
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    zoomBy(e.deltaY < 0 ? 0.25 : -0.25);
+  }, { passive: false });
+
+  let dragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
+  canvas.addEventListener('mousedown', (e) => {
+    if (mapZoom <= 1) return;
+    if (e.target.closest('.dev-marker,.poi-marker,.cluster-marker,.geofence-chip,.walmart-pin')) return;
+    dragging = true; dragStartX = e.clientX; dragStartY = e.clientY; panStartX = mapPanX; panStartY = mapPanY;
+    canvas.classList.add('dragging');
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const rect = canvas.getBoundingClientRect();
+    let nx = panStartX + (e.clientX - dragStartX);
+    let ny = panStartY + (e.clientY - dragStartY);
+    const clamped = clampPan(mapZoom, nx, ny, rect.width, rect.height);
+    mapPanX = clamped.x; mapPanY = clamped.y;
+    applyMapTransform();
+  });
+  window.addEventListener('mouseup', () => { dragging = false; canvas.classList.remove('dragging'); });
+}
+
+function showPersonalizedMap() {
+  if (!selectedPkgId) return;
+  initMapInteractions();
+  if (lastRenderedPkgId !== selectedPkgId) {
+    selectedDeviceId = null;
+    expandedClusters = new Set();
+    mapZoom = 1; mapPanX = 0; mapPanY = 0;
+    lastRenderedPkgId = selectedPkgId;
+  }
+  renderMapStats();
+  const devices = getSelectedDevices();
+  currentMapLayout = computeMapLayout(devices);
+  document.getElementById('mapBackground').innerHTML = buildBackgroundSVG(currentMapLayout);
+  renderMapMarkers(currentMapLayout);
+  document.getElementById('mapLegend').innerHTML = renderMapLegend(devices);
+  document.getElementById('mapCards').innerHTML = renderZoneCards(devices);
+  applyMapTransform();
+}
+
+renderPackages();
+bindPkgGridKeyboard();
+render();
+</script>
+</body>
+</html>
