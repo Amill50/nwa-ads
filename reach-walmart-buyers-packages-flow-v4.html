@@ -553,12 +553,8 @@ const WMT_ZONES = [
     color: '#c8440a', desc: 'Walmart Executive Residential Corridor — where Walmart executives live and dine' },
 ];
 
-// Store reference points — verified against Andrew's store-location CSV
-// (store_id, city, address, lat, lng), Aug 2026. All Supercenter and
-// Neighborhood Market rows from that CSV are included below. The Sam's Club
-// section of the CSV was cut off mid-row (only Bentonville #4969 came
-// through complete) — flagged back to Andrew, only the one confirmed
-// Sam's Club is plotted until the rest of that list arrives.
+// Store reference points — verified against Andrew's confirmed store-location
+// data (Aug 2026): 8 Supercenters, 14 Neighborhood Markets, 3 Sam's Clubs.
 const STORE_POIS = [
   // Walmart Supercenter (8)
   { name: "Walmart Supercenter #100 — Bentonville", lat: 36.3670, lng: -94.2084, kind: 'Supercenter' },
@@ -584,8 +580,10 @@ const STORE_POIS = [
   { name: "Neighborhood Market #5837 — Rogers", lat: 36.2956, lng: -94.1851, kind: 'Neighborhood Market' },
   { name: "Neighborhood Market #6960 — Siloam Springs", lat: 36.1748, lng: -94.5415, kind: 'Neighborhood Market' },
   { name: "Neighborhood Market #4375 — Springdale", lat: 36.1915, lng: -94.1738, kind: 'Neighborhood Market' },
-  // Sam's Club — only #4969 came through complete in the CSV paste
+  // Sam's Club (3)
   { name: "Sam's Club #4969 — Bentonville", lat: 36.3389, lng: -94.1745, kind: "Sam's Club" },
+  { name: "Sam's Club #8209 — Fayetteville", lat: 36.1044, lng: -94.2145, kind: "Sam's Club" },
+  { name: "Sam's Club #4808 — Springdale", lat: 36.1656, lng: -94.1748, kind: "Sam's Club" },
 ];
 const STORE_KIND_COLORS = { 'Supercenter': '#0071CE', "Sam's Club": '#041e42', 'Neighborhood Market': '#4a90d9' };
 
