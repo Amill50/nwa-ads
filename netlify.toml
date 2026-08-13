@@ -48,10 +48,10 @@
   to = "/admin/"
   status = 301
 
-# Package-based booking flow prototype (interactive map v3, split explorer) — staging review only
+# Package-based booking flow prototype (interactive map v4, production Leaflet map) — staging review only
 [[redirects]]
   from = "/reachwalmartbuyers"
-  to = "/reach-walmart-buyers-packages-flow-v3.html"
+  to = "/reach-walmart-buyers-packages-flow-v4.html"
   status = 200
 
 # ── Cache headers — all local assets bust on deploy via ?v= params ──

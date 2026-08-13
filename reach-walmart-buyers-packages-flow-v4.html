@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reach Walmart Buyers — package-based booking flow (v4, production map)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Same map stack as production book/index.html: Leaflet + Leaflet.markercluster from unpkg, CARTO Positron tiles -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<style>
+  :root{
+    --bg:#f6f4ef; --ink:#1a1714; --ink2:#4a4540; --muted:#6b6560; --border:#e2ddd6;
+    --white:#fffef9; --accent:#c8440a; --accent-text:#a83a09; --accent-light:#fdf1eb; --accent2:#1f3d2a; --accent2-light:#eaf2ec;
+    --pill-bg:#f0ece5; --r:14px; --r-sm:8px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:'Instrument Sans',-apple-system,sans-serif; background:var(--bg); color:var(--ink);}
+  .page{max-width:1180px; margin:0 auto; padding:28px 20px 70px;}
+  .browserbar{display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid var(--border); border-bottom:none; border-radius:16px 16px 0 0; background:#FAFAF8;}
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--border);}
+  .urlbar{flex:1; margin-left:10px; background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:12px; color:var(--muted);}
+  .app-topbar{display:flex; align-items:center; gap:12px; padding:16px 22px; border:1px solid var(--border); border-top:none; background:var(--white); flex-wrap:wrap;}
+  .brand{font-weight:700; font-size:16px;}
+  .brand span{color:var(--accent);}
+  .goalpill{display:flex; align-items:center; gap:6px; background:var(--accent-light); color:var(--accent-text); font-size:12px; font-weight:700; padding:6px 12px; border-radius:999px;}
+  .livepill{margin-left:auto; font-size:11px; font-weight:700; color:var(--accent2); background:var(--accent2-light); padding:5px 11px; border-radius:8px;}
+  .frame{border:1px solid var(--border); border-top:none; background:var(--white); border-radius:0 0 16px 16px; overflow:hidden;}
+
+  button{-webkit-appearance:none;}
+  button:focus-visible, [tabindex]:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  /* step tracker */
+  .steptrack{display:flex; align-items:center; padding:22px 28px 6px; gap:0; flex-wrap:wrap;}
+  .step{display:flex; align-items:center; gap:10px; cursor:pointer; background:none; border:none; padding:2px; font-family:inherit; text-align:left; border-radius:6px;}
+  .step .circ{width:28px; height:28px; border-radius:50%; background:var(--pill-bg); color:var(--muted); font-size:12.5px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:2px solid transparent;}
+  .step.active .circ{background:var(--ink); color:#fff;}
+  .step.done .circ{background:var(--accent2); color:#fff;}
+  .step .stxt{font-size:12.5px; font-weight:600; color:var(--muted); white-space:nowrap;}
+  .step.active .stxt, .step.done .stxt{color:var(--ink);}
+  .steplink{flex:1; height:2px; background:var(--border); margin:0 12px; min-width:20px;}
+  .steplink.done{background:var(--accent2);}
+
+  .panel{display:none; padding:8px 28px 26px;}
+  .panel.active{display:block;}
+  .panel h2{font-size:19px; font-weight:700; margin:10px 0 4px;}
+  .panel p.sub{font-size:13px; color:var(--muted); margin:0 0 22px; max-width:640px; line-height:1.55;}
+
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:640px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  .field label{font-size:12px; font-weight:700; color:var(--ink2);}
+  .field input, .field select{border:1px solid var(--border); border-radius:var(--r-sm); padding:10px 12px; font-size:13.5px; font-family:inherit; color:var(--ink); background:#fff;}
+  .field input:focus, .field select:focus{outline:none; border-color:var(--accent);}
+
+  .removed-note{display:flex; align-items:flex-start; gap:9px; background:var(--accent2-light); border-radius:var(--r-sm); padding:11px 14px; margin-top:20px; max-width:640px; font-size:12px; color:var(--accent2); line-height:1.5;}
+  .removed-note b{font-weight:700;}
+
+  .pkg-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pkg-card{border:2px solid var(--border); border-radius:16px; padding:18px 20px; background:#fff; cursor:pointer; transition:border-color .15s, box-shadow .15s; position:relative;}
+  .pkg-card:hover{border-color:#cfc8bc;}
+  .pkg-card.selected{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-light);}
+  .pkg-card .pnum{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px;}
+  .pkg-card h3{font-size:16px; font-weight:700; margin:0 0 6px; color:var(--ink);}
+  .pkg-card .price{font-size:22px; font-weight:700; color:var(--ink); margin-bottom:2px;}
+  .pkg-card .price span{font-size:12px; font-weight:600; color:var(--muted);}
+  .pkg-card .tagline{font-size:12.5px; color:var(--ink2); line-height:1.5; margin:8px 0 12px;}
+  .pkg-card .countchip{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--accent2); background:var(--accent2-light); padding:4px 9px; border-radius:7px; margin-bottom:10px;}
+  .pkg-card .devlist{border-top:1px solid var(--border); margin-top:10px; padding-top:10px; display:none;}
+  .pkg-card.expanded .devlist{display:block;}
+  .devrow{display:flex; justify-content:space-between; gap:10px; font-size:11px; padding:4px 0; color:var(--ink2);}
+  .devrow .dname{font-weight:600; color:var(--ink);}
+  .devrow .ddist{color:var(--muted); text-align:right; flex-shrink:0;}
+  .toggle-devs{font-size:11px; font-weight:700; color:var(--accent-text); background:none; border:none; padding:0; margin-top:8px; cursor:pointer; font-family:inherit;}
+  .radiomark{position:absolute; top:16px; right:16px; width:20px; height:20px; border-radius:50%; border:2px solid var(--border); background:#fff;}
+  .pkg-card.selected .radiomark{border-color:var(--accent); background:var(--accent);}
+  .pkg-card.selected .radiomark::after{content:''; display:block; width:8px; height:8px; border-radius:50%; background:#fff; margin:4px auto;}
+
+  .subchoices{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .subchoice{border:1.5px solid var(--border); border-radius:10px; padding:8px 10px; font-size:11px; flex:1; min-width:120px; background:#fdfcfa;}
+  .subchoice.on{border-color:var(--accent2); background:var(--accent2-light);}
+  .subchoice .sc-name{font-weight:700; color:var(--ink); margin-bottom:2px;}
+  .subchoice .sc-sub{color:var(--muted);}
+  .subchoice label{display:flex; align-items:flex-start; gap:6px; cursor:pointer;}
+  .subchoice input{margin-top:2px;}
+
+  .review-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:22px;}
+  .review-block{border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-bottom:14px; background:#fff;}
+  .review-block .rb-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:10px;}
+  .review-row{display:flex; justify-content:space-between; font-size:13px; padding:5px 0; border-top:1px solid #f1eee8;}
+  .review-row:first-of-type{border-top:none;}
+  .review-row span:first-child{color:var(--muted);}
+  .review-row span:last-child{font-weight:600; color:var(--ink); text-align:right;}
+  .summary-card{border:1px solid var(--border); border-radius:14px; padding:18px 20px; background:var(--ink); color:#fff; position:sticky; top:20px;}
+  .summary-card .sc-pkgname{font-size:14px; font-weight:700; margin-bottom:2px;}
+  .summary-card .sc-price{font-size:26px; font-weight:700; margin:6px 0 2px;}
+  .summary-card .sc-price span{font-size:12px; font-weight:500; opacity:.7;}
+  .summary-card .sc-total{font-size:12.5px; opacity:.85; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.15);}
+  .summary-card .sc-line{display:flex; justify-content:space-between; font-size:12px; padding:4px 0; opacity:.9;}
+  .cta{display:block; width:100%; text-align:center; background:var(--accent); color:#fff; font-weight:700; font-size:13.5px; padding:12px; border-radius:10px; border:none; margin-top:16px; cursor:pointer; font-family:inherit;}
+  .cta:disabled{background:#5a5650; opacity:.6; cursor:not-allowed;}
+
+  .navrow{display:flex; justify-content:space-between; padding:18px 28px 26px; border-top:1px solid var(--border); margin-top:6px;}
+  .btn{font-family:inherit; font-size:13px; font-weight:700; padding:10px 20px; border-radius:10px; cursor:pointer; border:1px solid var(--border); background:#fff; color:var(--ink);}
+  .btn.primary{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .btn.primary:disabled{opacity:.4; cursor:not-allowed;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  .footer-note{padding:14px 22px; border:1px solid var(--border); border-top:none; border-radius:0 0 16px 16px; background:var(--white); font-size:12px; color:var(--muted); font-style:italic; margin-top:-2px;}
+
+  /* ---------- Step 4 — production map (v4) ----------
+     Same stack as book/index.html: Leaflet + Leaflet.markercluster,
+     CARTO Positron tiles, zone shading + marker/cluster styling ported
+     verbatim from book-flow.js (renderWmtHeatmap) and book-map.js. ---------- */
+  .mapstatrow{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; max-width:760px;}
+  .mapstat{background:var(--pill-bg); border-radius:var(--r-sm); padding:11px 14px;}
+  .mapstat .num{font-size:18px; font-weight:700; color:var(--ink);}
+  .mapstat .lbl{font-size:11px; color:var(--muted); margin-top:2px;}
+
+  #mapCanvas{width:100%; height:520px; border:1px solid var(--border); border-radius:var(--r); background:#f4f3ef;}
+  .leaflet-popup-content-wrapper{border-radius:10px; font-family:'Instrument Sans',sans-serif;}
+  .leaflet-popup-content{margin:11px 13px; font-size:12.5px;}
+  .map-popup .pp-title{font-weight:700; font-size:13px; margin-bottom:2px; color:var(--ink);}
+  .map-popup .pp-sub{color:var(--muted); font-size:11px; margin-bottom:6px;}
+  .map-popup .pp-row{display:flex; justify-content:space-between; gap:12px; font-weight:600; color:var(--ink);}
+  .wmt-zone-tip{background:var(--ink); color:#fff; border:none; font-family:'Instrument Sans',sans-serif; font-size:11.5px; font-weight:600; padding:5px 9px; border-radius:7px;}
+  .wmt-zone-tip::before{border-top-color:var(--ink) !important;}
+
+  .map-legend-box{background:#fff; padding:11px 13px; border-radius:10px; border:1px solid var(--border); font-family:'Instrument Sans',sans-serif; box-shadow:0 2px 10px rgba(0,0,0,.1); font-size:11px; min-width:150px; max-height:260px; overflow-y:auto;}
+  .lg-group{margin-bottom:8px;}
+  .lg-group:last-child{margin-bottom:0;}
+  .lg-grouplabel{display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:5px;}
+  .lg-item{display:flex; align-items:center; gap:6px; padding:2px 0; color:var(--ink2);}
+  .lg-dot{width:11px; height:11px; border-radius:50%; flex-shrink:0; border:2px solid #fff; box-shadow:0 0 0 1px var(--border);}
+  .lg-swatch-area{width:15px; height:10px; border-radius:3px; flex-shrink:0; border:2px solid #fff; box-shadow:0 0 0 1px var(--border);}
+
+  /* ---------- Split explorer layout (v3) — list left, live map right ---------- */
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+  .chip{border:1px solid var(--border); background:#fff; border-radius:999px; padding:7px 14px; font-size:12px; font-weight:700; color:var(--ink2); cursor:pointer; font-family:inherit;}
+  .chip:hover{border-color:#cfc8bc;}
+  .chip.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  .split-explorer{display:grid; grid-template-columns:340px 1fr; gap:16px; align-items:start;}
+  .explorer-list{max-height:640px; overflow-y:auto; padding-right:4px; display:flex; flex-direction:column; gap:12px;}
+  .map-col{min-width:0;}
+  .rate-tag{font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:5px; margin-left:6px; white-space:nowrap;}
+  .rate-tag.confirmed{background:var(--accent2-light); color:var(--accent2);}
+  .rate-tag.est{background:var(--pill-bg); color:var(--muted);}
+
+  @media (max-width:960px){
+    .split-explorer{grid-template-columns:1fr;}
+    .explorer-list{max-height:none; order:2;}
+    .map-col{order:1;}
+  }
+
+  .zone-cards{display:flex; flex-direction:column; gap:12px; margin-top:16px;}
+  .zone-card{border:1px solid var(--border); border-radius:14px; overflow:hidden; background:#fff;}
+  .zc-head{display:flex; align-items:center; gap:9px; padding:11px 16px; background:var(--pill-bg);}
+  .zc-swatch{width:12px; height:12px; border-radius:50%; flex-shrink:0;}
+  .zc-headtext{flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;}
+  .zc-kind{font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.045em; color:var(--muted);}
+  .zc-name{font-size:12.5px; font-weight:700; color:var(--ink);}
+  .zc-count{font-size:11px; font-weight:700; color:var(--muted); flex-shrink:0;}
+  .zc-row{display:grid; grid-template-columns:1.8fr 0.8fr 0.8fr; gap:10px; align-items:center; padding:9px 16px; border-top:1px solid #f1eee8; font-size:12.5px; width:100%; text-align:left; background:none; border-left:none; border-right:none; border-bottom:none; font-family:inherit; cursor:pointer; transition:background-color .12s;}
+  .zc-row:first-of-type{border-top:none;}
+  .zc-row:hover, .zc-row.hover-linked{background:var(--pill-bg);}
+  .zc-row.selected{background:var(--accent-light);}
+  .zc-devname{font-weight:600; color:var(--ink);}
+  .zc-devtype{color:var(--muted); font-size:11px; margin-top:1px;}
+  .zc-dist{color:var(--ink2); font-weight:700; text-align:right;}
+  .zc-price{color:var(--ink); font-weight:700; text-align:right;}
+
+  /* narrower explorer-list column (340px) needs stacked rows, not the 3-col grid */
+  .explorer-list .zc-row{grid-template-columns:1fr; row-gap:3px; padding:10px 14px;}
+  .explorer-list .zc-dist, .explorer-list .zc-price{text-align:left;}
+  .explorer-list .zc-dist::before{content:'Distance: '; color:var(--muted); font-weight:400;}
+  .explorer-list .zc-price::before{content:'Price: '; color:var(--muted); font-weight:400;}
+
+  @media (max-width:720px){
+    .form-grid, .pkg-grid, .review-grid{grid-template-columns:1fr;}
+    .zc-row{grid-template-columns:1fr; row-gap:3px;}
+    .zc-dist, .zc-price{text-align:left;}
+    .zc-dist::before{content:'Distance: '; color:var(--muted); font-weight:400;}
+    .zc-price::before{content:'Price: '; color:var(--muted); font-weight:400;}
+    .summary-card{position:static;}
+  }
+  @media (max-width:480px){
+    .mapstat .num{font-size:15px;}
+    .mapstat .lbl{font-size:9.5px;}
+    .panel{padding:8px 16px 20px;}
+    .navrow{padding:16px 16px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="browserbar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="urlbar">nwa-ads.com/ReachWalmartBuyers</div></div>
+  <div class="app-topbar">
+    <div class="brand">NWA <span>Ads</span></div>
+    <div class="goalpill">🎯 Reach Walmart &amp; Sam's Club buyers</div>
+    <div class="livepill">Real inventory · package pricing</div>
+  </div>
+
+  <div class="frame">
+    <div class="steptrack" id="steptrack"></div>
+
+    <!-- STEP 1 — Business info -->
+    <div class="panel active" id="panel-1">
+      <h2>Tell us about your business</h2>
+      <p class="sub">This is the only information we need before showing you packages — no separate budget question. Every package below has a fixed monthly price.</p>
+      <div class="form-grid">
+        <div class="field"><label>Business name</label><input type="text" placeholder="e.g. Ozark Coffee Roasters"></div>
+        <div class="field"><label>Contact name</label><input type="text" placeholder="Full name"></div>
+        <div class="field"><label>Email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="field"><label>Phone</label><input type="tel" placeholder="(479) 555-0100"></div>
+        <div class="field full"><label>What are you advertising?</label><input type="text" placeholder="Brief description of the product or service"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2 — Dates -->
+    <div class="panel" id="panel-2">
+      <h2>When should your campaign run?</h2>
+      <p class="sub">Pick a start date and a length. That's it — pricing is fixed per package in the next step, so there's nothing to budget out here.</p>
+      <div class="form-grid">
+        <div class="field"><label>Start date</label><input type="date" id="startDate"></div>
+        <div class="field">
+          <label>Campaign length</label>
+          <select id="durationSelect">
+            <option value="1">1 month</option>
+            <option value="3" selected>3 months</option>
+            <option value="6">6 months</option>
+            <option value="12">12 months</option>
+          </select>
+        </div>
+      </div>
+      <div class="removed-note">
+        <span>✓</span>
+        <div><b>Budget input removed.</b> Buyers no longer set a target spend — the four packages on the next screen carry their own fixed monthly price, so this step is just dates.</div>
+      </div>
+    </div>
+
+    <!-- STEP 3 — Packages -->
+    <div class="panel" id="panel-3">
+      <h2>Choose your package</h2>
+      <p class="sub">Every package is built from real NWA Ads inventory around the Walmart Home Office. Pick the one that matches how wide you want your reach.</p>
+      <div class="pkg-grid" id="pkgGrid" role="radiogroup" aria-label="Choose your package"></div>
+    </div>
+
+    <!-- STEP 4 — Your map (v4: production map — same Leaflet stack, zone shading,
+         and marker/cluster styling as the live book/ booking flow) -->
+    <div class="panel" id="panel-4">
+      <h2 id="map-heading">Your package on the map</h2>
+      <p class="sub" id="map-sub">The shaded circles are the same Walmart-buyer target zones used on the live site — Home Office, Executive Residential Corridor, and Pinnacle Country Club. Every asset below is one of your package's real ad placements, plotted where it actually sits relative to those zones.</p>
+      <div class="mapstatrow" id="mapStatRow"></div>
+      <div class="chip-row" id="assetFilterChips"></div>
+
+      <div class="split-explorer">
+        <div class="explorer-list zone-cards" id="mapCards"></div>
+        <div class="map-col">
+          <div id="mapCanvas"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 — Review -->
+    <div class="panel" id="panel-5">
+      <h2>Review &amp; book</h2>
+      <p class="sub">Confirm the details below. Nothing here is charged yet — this hands off to the same proposal/approval flow the rest of NWA Ads uses today.</p>
+      <div class="review-grid">
+        <div>
+          <div class="review-block">
+            <div class="rb-title">Business</div>
+            <div class="review-row" id="rev-business"><span>Business</span><span>—</span></div>
+            <div class="review-row" id="rev-contact"><span>Contact</span><span>—</span></div>
+          </div>
+          <div class="review-block">
+            <div class="rb-title">Campaign dates</div>
+            <div class="review-row" id="rev-start"><span>Start date</span><span>—</span></div>
+            <div class="review-row" id="rev-length"><span>Length</span><span>—</span></div>
+          </div>
+          <div class="review-block">
+            <div class="rb-title">What's included</div>
+            <div id="rev-devices"></div>
+          </div>
+        </div>
+        <div>
+          <div class="summary-card">
+            <div class="sc-pkgname" id="sum-pkgname">—</div>
+            <div class="sc-price" id="sum-price">$0<span>/mo</span></div>
+            <div class="sc-total" id="sum-total">$0 total</div>
+            <div class="sc-line" id="sum-choice"></div>
+            <div class="sc-line"><span>Assets included</span><span id="sum-count">—</span></div>
+            <button class="cta">Confirm &amp; send to booking</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navrow">
+      <button class="btn" id="btnBack" onclick="prevStep()">Back</button>
+      <button class="btn primary" id="btnNext" onclick="nextStep()">Continue</button>
+    </div>
+  </div>
+  <div class="footer-note">Every device on this page is a real NWA Ads inventory record (matching production device_id, lat/lng, and type). Billboards on Walton Blvd, 14th St, and I-49 use rates confirmed directly by the media owner (Lamar) in Aug 2026 — marked "Confirmed rate" throughout. The Regional Airport Blvd and Hwy 71 billboards, plus all XNA Airport screens (a different media owner), aren't on that confirmed sheet yet, so they're marked "Est. rate" and use NWA Ads' standing cpm × weekly-impressions estimate. Every price shown is cost + a flat 20% margin. Package 3's price is driven almost entirely by the 10-screen XNA Airport network add-on — worth confirming that's the intended screen count before this ships, since it currently prices Package 3 above Package 4 despite Package 4 covering more ground.</div>
+
+</div>
+
+<!-- Same map libraries as production book/index.html -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+const STEPS = ['Business info', 'Dates', 'Choose package', 'Your map', 'Review & book'];
+
+// ============================================================
+// Real inventory, pulled from shared/js/inventory.js (device_id,
+// lat/lng, type all match production records exactly).
+//
+// Cost source per device:
+//   confirmed:true  — Lamar rate-confirmation sheet (Andrew, Aug 2026),
+//                      "cost" = their quoted 4-week flat rate.
+//   confirmed:false — shared/js/inventory.js's own cpm × weekly_imp × 4.33
+//                      estimate (Regional Airport Blvd + Hwy 71 boards
+//                      aren't on the Lamar sheet yet; XNA Airport is a
+//                      different media owner — Kinective Media by United
+//                      Airlines — never on a Lamar sheet at all).
+// Sell price = cost × 1.20 (flat 20% margin, per Andrew).
+// ============================================================
+const MARGIN = 1.20;
+function sellOf(cost) { return Math.round(cost * MARGIN); }
+
+const AIRPORT_DEVICES = [
+  { id:'FXNA0002-1', name:'XNA Airport — Gate A6', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'XNA_GIDS_C1', name:'XNA Airport — Gate C1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'FXNA0001', name:'XNA Airport — Gate A5', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'FXNA0002', name:'XNA Airport — Gate A6 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'FXNA0001-1', name:'XNA Airport — Gate A5 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'XNA_GIDS_B2', name:'XNA Airport — Gate B2', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'XNA_GIDS_A1', name:'XNA Airport — Gate A1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'XNA_GIDS_A12', name:'XNA Airport — Gate A12', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'XNA_GIDS_A3', name:'XNA Airport — Gate A3', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+  { id:'XNA_GIDS_B1', name:'XNA Airport — Gate B1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false },
+];
+
+const HOME_OFFICE_BILLBOARD = [
+  { id:'4207', name:'Walton Blvd & SH-102 (S face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true },
+  { id:'4206', name:'Walton Blvd & SH-102 (N face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true },
+];
+const HOME_OFFICE_STREETS = [
+  { id:'4057', name:'14th St & S. Walton (N face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true },
+  { id:'4058', name:'14th St & S. Walton (S face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true },
+];
+const I49_HIGHWAY_BOARD = [
+  { id:'4208', name:'I-49 & SH-102 (N face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true },
+  { id:'4209', name:'I-49 & SH-102 (S face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true },
+];
+const CORRIDOR_EXTRAS = [
+  { id:'5623', name:'Regional Airport Blvd (W face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:13995, confirmed:false },
+  { id:'4046', name:'Regional Airport Blvd (E face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:5153, confirmed:false },
+  { id:'7073', name:'Hwy 71 & N. Walton Blvd (S face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false },
+  { id:'4203', name:'Hwy 71 & N. Walton Blvd (N face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false },
+];
+
+const PACKAGES = [
+  {
+    id: 'p1', label: 'Package 1', name: 'Nearest Billboard to Home Office',
+    tagline: 'The single closest billboard structure to the Home Office — one location, both faces, maximum share of voice right at the front door.',
+    devices: HOME_OFFICE_BILLBOARD,
+  },
+  {
+    id: 'p2', label: 'Package 2', name: 'Highway + Home Office Streets',
+    tagline: 'The nearest highway billboard to the Home Office (I-49 at SH-102) plus the street-level billboards immediately around campus (Walton Blvd, 14th St).',
+    devices: [...HOME_OFFICE_BILLBOARD, ...HOME_OFFICE_STREETS, ...I49_HIGHWAY_BOARD],
+  },
+  {
+    id: 'p3', label: 'Package 3', name: 'Highway + Streets + Airport',
+    tagline: 'Everything in Package 2, plus the full XNA Airport post-security screen network — the only air-traveler touchpoint in the lineup.',
+    devices: [...HOME_OFFICE_BILLBOARD, ...HOME_OFFICE_STREETS, ...I49_HIGHWAY_BOARD, ...AIRPORT_DEVICES],
+  },
+  {
+    id: 'p4', label: 'Package 4', name: 'All Target Corridors',
+    tagline: 'Five billboard locations spread across every corridor that touches the Home Office, the highway, and the surrounding retail/residential zones.',
+    devices: [...HOME_OFFICE_BILLBOARD, ...HOME_OFFICE_STREETS, ...I49_HIGHWAY_BOARD, ...CORRIDOR_EXTRAS],
+  },
+];
+
+let currentStep = 1;
+let selectedPkgId = null;
+let activeTypeFilter = 'all';
+
+function renderSteptrack() {
+  const el = document.getElementById('steptrack');
+  el.innerHTML = STEPS.map((label, i) => {
+    const n = i + 1;
+    const cls = n === currentStep ? 'active' : (n < currentStep ? 'done' : '');
+    const circHtml = n < currentStep ? '&#10003;' : n;
+    const link = i < STEPS.length - 1 ? '<div class="steplink' + (n < currentStep ? ' done' : '') + '"></div>' : '';
+    return '<button type="button" class="step ' + cls + '" onclick="goStep(' + n + ')" aria-current="' + (n === currentStep ? 'step' : 'false') + '"><div class="circ">' + circHtml + '</div><div class="stxt">' + label + '</div></button>' + link;
+  }).join('');
+}
+
+function goStep(n) {
+  if (n > currentStep && !canAdvance(n)) return;
+  currentStep = n;
+  render();
+}
+function nextStep() {
+  const target = Math.min(5, currentStep + 1);
+  if (!canAdvance(target)) return;
+  currentStep = target;
+  render();
+}
+function prevStep() { currentStep = Math.max(1, currentStep - 1); render(); }
+
+function canAdvance(targetStep) {
+  if (targetStep >= 4 && !selectedPkgId) return false;
+  return true;
+}
+
+function render() {
+  renderSteptrack();
+  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i + 1 === currentStep));
+  document.getElementById('btnBack').disabled = currentStep === 1;
+  document.getElementById('btnNext').style.display = currentStep === 5 ? 'none' : 'inline-block';
+  document.getElementById('btnNext').disabled = currentStep === 3 && !selectedPkgId;
+  if (currentStep === 4) showPersonalizedMap();
+  if (currentStep === 5) renderReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pkgPrice(pkg) {
+  return pkg.devices.reduce((s, d) => s + sellOf(d.cost), 0);
+}
+
+function renderPackages() {
+  const grid = document.getElementById('pkgGrid');
+  grid.innerHTML = PACKAGES.map(pkg => {
+    const isSel = pkg.id === selectedPkgId;
+    const devCount = pkg.devices.length;
+    const devListHtml =
+      '<button type="button" class="toggle-devs" onclick="event.stopPropagation(); toggleDevs(\'' + pkg.id + '\')">' +
+      "What's included ▾" + '</button>' +
+      '<div class="devlist" id="devlist-' + pkg.id + '">' +
+      pkg.devices.map(d => {
+        const { zone, dist } = nearestZone(d);
+        const tag = d.confirmed ? '<span class="rate-tag confirmed">Confirmed rate</span>' : '<span class="rate-tag est">Est. rate</span>';
+        return '<div class="devrow"><span class="dname">' + d.name + '<br><span style="font-weight:400;color:var(--muted)">' + d.type + '</span></span><span class="ddist">' + dist.toFixed(2) + ' mi to ' + zone.name.replace('Walmart ', '') + '<br>$' + sellOf(d.cost).toLocaleString() + '/mo' + tag + '</span></div>';
+      }).join('') +
+      '</div>';
+    return '<div class="pkg-card ' + (isSel ? 'selected' : '') + '" id="card-' + pkg.id + '" data-pkg-id="' + pkg.id + '" role="radio" aria-checked="' + isSel + '" tabindex="0" onclick="selectPkg(\'' + pkg.id + '\')">'
+      + '<div class="radiomark"></div>'
+      + '<div class="pnum">' + pkg.label + '</div>'
+      + '<h3>' + pkg.name + '</h3>'
+      + '<div class="price">$' + pkgPrice(pkg).toLocaleString() + '<span>/mo</span></div>'
+      + '<div class="countchip">' + devCount + ' asset' + (devCount === 1 ? '' : 's') + ' included</div>'
+      + '<div class="tagline">' + pkg.tagline + '</div>'
+      + devListHtml
+      + '</div>';
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', function() {}); // placeholder kept intentionally minimal
+
+function bindPkgGridKeyboard() {
+  const grid = document.getElementById('pkgGrid');
+  grid.addEventListener('keydown', function(e) {
+    const card = e.target.closest('.pkg-card');
+    if (!card) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectPkg(card.dataset.pkgId);
+    }
+  });
+}
+
+function selectPkg(id) { selectedPkgId = id; renderPackages(); document.getElementById('btnNext').disabled = false; }
+function toggleDevs(id) { document.getElementById('card-' + id).classList.toggle('expanded'); }
+
+function getMonths() { return parseInt(document.getElementById('durationSelect').value, 10); }
+
+function renderReview() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  if (!pkg) return;
+  const months = getMonths();
+  const start = document.getElementById('startDate').value || '—';
+  const business = document.querySelector('#panel-1 input[type=text]').value || '—';
+  const contact = document.querySelectorAll('#panel-1 input[type=text]')[1] ? document.querySelectorAll('#panel-1 input[type=text]')[1].value || '—' : '—';
+
+  document.getElementById('rev-business').innerHTML = '<span>Business</span><span>' + business + '</span>';
+  document.getElementById('rev-contact').innerHTML = '<span>Contact</span><span>' + contact + '</span>';
+  document.getElementById('rev-start').innerHTML = '<span>Start date</span><span>' + start + '</span>';
+  document.getElementById('rev-length').innerHTML = '<span>Length</span><span>' + months + ' month' + (months === 1 ? '' : 's') + '</span>';
+
+  const devices = allSelectedDevicesUnfiltered();
+  document.getElementById('rev-devices').innerHTML = devices.map(d =>
+    '<div class="review-row"><span>' + d.name + '</span><span>$' + sellOf(d.cost).toLocaleString() + '/mo</span></div>'
+  ).join('');
+
+  document.getElementById('sum-pkgname').textContent = pkg.label + ' · ' + pkg.name;
+  document.getElementById('sum-price').innerHTML = '$' + pkgPrice(pkg).toLocaleString() + '<span>/mo</span>';
+  document.getElementById('sum-total').textContent = '$' + (pkgPrice(pkg) * months).toLocaleString() + ' total over ' + months + ' month' + (months === 1 ? '' : 's');
+  document.getElementById('sum-choice').innerHTML = '';
+  document.getElementById('sum-count').textContent = devices.length;
+}
+
+function getSelectedDevices() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  if (!pkg) return [];
+  if (activeTypeFilter === 'all') return pkg.devices;
+  return pkg.devices.filter(d => d.type === activeTypeFilter);
+}
+function allSelectedDevicesUnfiltered() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  return pkg ? pkg.devices : [];
+}
+
+// ============================================================
+// STEP 4 — production map (v4).
+// Same map stack as the live book/ booking flow: Leaflet 1.9.4 +
+// Leaflet.markercluster 1.5.3 (unpkg CDN), CARTO Positron tiles.
+// Zone shading is renderWmtHeatmap() from book/js/book-flow.js,
+// ported verbatim (two concentric L.circle rings per zone, same
+// colors/opacity/dash pattern). WMT_ZONES is copied verbatim from
+// shared/js/inventory.js — these are the real production target
+// zones, not illustrative shapes invented for this prototype.
+// Marker/cluster styling matches book/js/book-map.js: colored
+// divIcon badges by venue type, Leaflet.markercluster grouping with
+// the same dark-circle + white-count cluster icon.
+//
+// Known tradeoff, flagged deliberately: this reintroduces a CDN
+// dependency (unpkg + CARTO tiles) that an earlier prototype in this
+// same project dropped after a Leaflet embed failed to load for the
+// user despite passing every automated check (see map-ux-audit.md).
+// This version uses the exact same CDN URLs/versions as the current
+// live site, on the theory that "identical to what's already in
+// production" is lower-risk than a bespoke Leaflet setup — but it's
+// still worth a real-browser check on staging before this ships.
+// ============================================================
+const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
+
+// Verbatim copy of shared/js/inventory.js's WMT_ZONES — the real
+// production Walmart-buyer target zones, not prototype-only shapes.
+const WMT_ZONES = [
+  { name: 'Walmart Home Office', lat: 36.3729, lng: -94.2192, radius: 2.0,
+    color: '#1f3d2a', desc: 'Home Office campus & SE Walton Blvd corridor' },
+  { name: 'Walmart Executive Residential Corridor', lat: 36.2934, lng: -94.2400, radius: 3.2,
+    color: '#c8440a', desc: 'Walmart Executive Residential Corridor — where Walmart executives live and dine' },
+  { name: 'Pinnacle Country Club', lat: 36.3355, lng: -94.1198, radius: 2.5,
+    color: '#8b4513', desc: 'Pinnacle Hills & Country Club — high-income residential & retail' },
+];
+
+// Store reference points — shown as small plain markers, not shaded zones.
+const STORE_POIS = [
+  { name: "Walmart Supercenter — Bentonville", lat: 36.3728, lng: -94.2083, color: '#0071CE' },
+  { name: "Sam's Club — Bentonville", lat: 36.3502, lng: -94.2148, color: '#041e42' },
+  { name: "Walmart Neighborhood Market — Bentonville", lat: 36.3524, lng: -94.2198, color: '#0071CE' },
+];
+
+// Venue color/icon subset — same values as book/js/book-map.js's VENUE_COLORS/VENUE_SVG,
+// trimmed to the two venue types this flow actually sells (billboard, airport).
+const VENUE_COLORS = { 'Digital billboard': '#c8440a', 'Airport screen': '#0d7377' };
+const VENUE_SVG = {
+  'Digital billboard': '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="24" height="13" rx="1"/><line x1="8" y1="16.5" x2="8" y2="24"/><line x1="20" y1="16.5" x2="20" y2="24"/><line x1="8" y1="20" x2="20" y2="20"/></svg>',
+  'Airport screen': '<svg viewBox="0 0 28 28" fill="white" stroke="none"><path d="M13 24 L16 8 C16.3 6.5 15.5 5 14 5 C12.5 5 11.7 6.5 12 8 Z"/><path d="M5 19 L14 14 L23 19 L21 20 L14 17 L7 20 Z"/><path d="M10 23 L14 20 L18 23 L17 24 L14 22 L11 24 Z"/></svg>',
+};
+
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function nearestZone(d) {
+  let best = null, bestD = Infinity;
+  WMT_ZONES.forEach(z => { const dd = haversineMiles(d.lat, d.lng, z.lat, z.lng); if (dd < bestD) { bestD = dd; best = z; } });
+  return { zone: best, dist: bestD };
+}
+function escapeXml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function makeAssetIcon(d) {
+  const color = VENUE_COLORS[d.type] || '#4a4540';
+  const svg = (VENUE_SVG[d.type] || VENUE_SVG['Digital billboard'])
+    .replace('<svg ', '<svg width="18" height="18" ');
+  const sel = selectedDeviceId === d.id;
+  const size = sel ? 40 : 32;
+  const html = '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + color
+    + ';border:2.5px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3)' + (sel ? ',0 0 0 4px rgba(200,68,10,.3)' : '')
+    + ';display:flex;align-items:center;justify-content:center">' + svg + '</div>';
+  return L.divIcon({ className:'', html, iconSize:[size,size], iconAnchor:[size/2,size/2], popupAnchor:[0,-(size/2+4)] });
+}
+
+// ---------- interaction state ----------
+let leafletMap = null;
+let markerCluster = null;
+let zoneLayersDrawn = false;
+let assetMarkers = {};      // device.id -> L.marker
+let selectedDeviceId = null;
+let lastRenderedPkgId = null;
+
+function initLeafletMap() {
+  if (leafletMap) { setTimeout(() => leafletMap.invalidateSize(), 50); return; }
+  leafletMap = L.map('mapCanvas', { zoomControl: true, scrollWheelZoom: true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 19,
+  }).addTo(leafletMap);
+
+  markerCluster = L.markerClusterGroup({
+    maxClusterRadius: 50,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    spiderfyOnMaxZoom: true,
+    disableClusteringAtZoom: 15,
+    iconCreateFunction: function(cluster) {
+      const count = cluster.getChildCount();
+      const size = count >= 20 ? 44 : count >= 10 ? 38 : 32;
+      return L.divIcon({
+        html: '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:#1a1714;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.25);font-family:Instrument Sans,sans-serif">' + count + '</div>',
+        className: '', iconSize: [size, size], iconAnchor: [size/2, size/2],
+      });
+    },
+  });
+  leafletMap.addLayer(markerCluster);
+
+  // Zone shading — ported verbatim from book-flow.js's renderWmtHeatmap()
+  WMT_ZONES.forEach(zone => {
+    const circle = L.circle([zone.lat, zone.lng], {
+      radius: zone.radius * 1609.34, color: '#374151', fillColor: '#374151',
+      fillOpacity: 0.08, weight: 1.5, opacity: 0.28, dashArray: '5 4',
+    }).addTo(leafletMap);
+    const inner = L.circle([zone.lat, zone.lng], {
+      radius: zone.radius * 1609.34 * 0.35, color: 'transparent',
+      fillColor: '#374151', fillOpacity: 0.11, weight: 0,
+    }).addTo(leafletMap);
+    circle.bindTooltip(zone.name, { direction: 'top', className: 'wmt-zone-tip', offset: [0, -8] });
+    inner.bindTooltip(zone.name, { direction: 'top', className: 'wmt-zone-tip', offset: [0, -4] });
+    circle.on('click', () => { circle.isTooltipOpen() ? circle.closeTooltip() : circle.openTooltip(); });
+  });
+
+  // Store reference points — small plain dots, not shaded (not a target zone)
+  STORE_POIS.forEach(s => {
+    L.circleMarker([s.lat, s.lng], { radius: 6, color: '#fff', weight: 2, fillColor: s.color, fillOpacity: 1 })
+      .addTo(leafletMap)
+      .bindTooltip(s.name, { direction: 'top', offset: [0, -6] });
+  });
+
+  const legend = L.control({ position: 'bottomleft' });
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'map-legend-box');
+    div.innerHTML = renderMapLegend();
+    return div;
+  };
+  legend.addTo(leafletMap);
+}
+
+function renderMapLegend() {
+  const zoneItems = WMT_ZONES.map(z => '<div class="lg-item"><span class="lg-swatch-area" style="background:' + z.color + '33; border-color:' + z.color + '"></span>' + z.name + '</div>').join('');
+  const typeItems = Object.keys(VENUE_COLORS).map(t => '<div class="lg-item"><span class="lg-dot" style="background:' + VENUE_COLORS[t] + '"></span>' + t + '</div>').join('');
+  return '<div class="lg-group"><span class="lg-grouplabel">Target zones</span>' + zoneItems + '</div>'
+    + '<div class="lg-group"><span class="lg-grouplabel">Asset types</span>' + typeItems + '</div>'
+    + '<div class="lg-group"><span class="lg-grouplabel">Reference</span><div class="lg-item"><span class="lg-dot" style="background:#0071CE"></span>Store location</div></div>';
+}
+
+function popupHtml(d) {
+  const { zone, dist } = nearestZone(d);
+  const tag = d.confirmed ? 'Confirmed rate' : 'Est. rate';
+  return '<div class="map-popup"><div class="pp-title">' + escapeXml(d.name) + '</div>'
+    + '<div class="pp-sub">' + escapeXml(d.type) + ' · ' + dist.toFixed(2) + ' mi to ' + escapeXml(zone.name) + ' · ' + tag + '</div>'
+    + '<div class="pp-row"><span>Price</span><span>$' + sellOf(d.cost).toLocaleString() + '/mo</span></div></div>';
+}
+
+function renderAssetMarkers(devices) {
+  markerCluster.clearLayers();
+  assetMarkers = {};
+  devices.forEach(d => {
+    const m = L.marker([d.lat, d.lng], { icon: makeAssetIcon(d) });
+    m.on('click', () => selectDevice(d.id));
+    m.on('mouseover', () => { highlightCardRow(d.id, false); });
+    m.on('mouseout', () => { document.querySelectorAll('.zc-row.hover-linked').forEach(r => r.classList.remove('hover-linked')); });
+    m.bindPopup(popupHtml(d));
+    assetMarkers[d.id] = m;
+    markerCluster.addLayer(m);
+  });
+}
+
+function safeScrollIntoView(el) {
+  if (el && typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function highlightCardRow(id, scroll) {
+  document.querySelectorAll('.zc-row.hover-linked').forEach(r => r.classList.remove('hover-linked'));
+  const row = document.getElementById('zc-row-' + id);
+  if (row) { row.classList.add('hover-linked'); if (scroll) safeScrollIntoView(row); }
+}
+
+function selectDevice(id) {
+  selectedDeviceId = id;
+  Object.keys(assetMarkers).forEach(k => assetMarkers[k].setIcon(makeAssetIcon(devices_byId[k])));
+  document.querySelectorAll('.zc-row.selected').forEach(r => r.classList.remove('selected'));
+  const row = document.getElementById('zc-row-' + id);
+  if (row) { row.classList.add('selected'); safeScrollIntoView(row); }
+  const m = assetMarkers[id];
+  if (m) m.openPopup();
+}
+
+let devices_byId = {};
+
+function onCardHoverIn(e) {
+  const row = e.target.closest('.zc-row');
+  if (!row) return;
+  const m = assetMarkers[row.dataset.id];
+  if (m) { m.getElement() && m.getElement().classList.add('hover-linked'); }
+}
+function onCardHoverOut(e) {}
+function onCardClick(e) {
+  const row = e.target.closest('.zc-row');
+  if (!row) return;
+  selectDevice(row.dataset.id);
+}
+
+const POI_ORDER_ZONES = WMT_ZONES.map(z => z.name);
+function renderZoneCards(devices) {
+  const groups = new Map();
+  devices.forEach(d => {
+    const { zone, dist } = nearestZone(d);
+    if (!groups.has(zone.name)) groups.set(zone.name, { zone, items: [] });
+    groups.get(zone.name).items.push({ d, dist });
+  });
+  const zones = Array.from(groups.values()).sort((a, b) => POI_ORDER_ZONES.indexOf(a.zone.name) - POI_ORDER_ZONES.indexOf(b.zone.name));
+  return zones.map(z => {
+    z.items.sort((a, b) => a.dist - b.dist);
+    const rows = z.items.map(it => {
+      const tag = it.d.confirmed ? '<span class="rate-tag confirmed">Confirmed</span>' : '<span class="rate-tag est">Est.</span>';
+      return '<button type="button" class="zc-row" id="zc-row-' + it.d.id + '" data-id="' + it.d.id + '">' +
+        '<div><div class="zc-devname">' + it.d.name + '</div><div class="zc-devtype">' + it.d.type + (it.d.id ? ' · #' + it.d.id : '') + '</div></div>' +
+        '<div class="zc-dist">' + it.dist.toFixed(2) + ' mi</div>' +
+        '<div class="zc-price">$' + sellOf(it.d.cost).toLocaleString() + '/mo' + tag + '</div></button>';
+    }).join('');
+    return '<div class="zone-card"><div class="zc-head"><span class="zc-swatch" style="background:' + z.zone.color + '"></span>' +
+      '<div class="zc-headtext"><span class="zc-kind">Target zone</span><span class="zc-name">' + z.zone.name + '</span></div>' +
+      '<span class="zc-count">' + z.items.length + ' asset' + (z.items.length === 1 ? '' : 's') + '</span></div>' + rows + '</div>';
+  }).join('');
+}
+
+function renderMapStats() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  const devices = getSelectedDevices();
+  const distances = devices.map(d => nearestZone(d).dist);
+  const avg = distances.reduce((s, d) => s + d, 0) / distances.length;
+  const stats = [
+    { num: devices.length, lbl: 'asset' + (devices.length === 1 ? '' : 's') + ' shown' + (activeTypeFilter !== 'all' ? ' (filtered)' : '') },
+    { num: avg.toFixed(2) + ' mi', lbl: 'avg. distance to nearest target zone' },
+    { num: '$' + pkgPrice(pkg).toLocaleString(), lbl: 'per month for ' + pkg.label + ' (cost + 20% margin)' },
+  ];
+  document.getElementById('mapStatRow').innerHTML = stats.map(s => '<div class="mapstat"><div class="num">' + s.num + '</div><div class="lbl">' + s.lbl + '</div></div>').join('');
+  document.getElementById('map-heading').textContent = 'Your ' + pkg.name + ', mapped';
+}
+
+function renderAssetFilterChips() {
+  const pkg = PACKAGES.find(p => p.id === selectedPkgId);
+  if (!pkg) return;
+  const types = Array.from(new Set(pkg.devices.map(d => d.type)));
+  const el = document.getElementById('assetFilterChips');
+  if (types.length <= 1) { el.innerHTML = ''; return; }
+  const chips = [{ key: 'all', label: 'All assets' }].concat(types.map(t => ({ key: t, label: t + 's' })));
+  el.innerHTML = chips.map(c =>
+    '<button type="button" class="chip ' + (activeTypeFilter === c.key ? 'on' : '') + '" onclick="setTypeFilter(\'' + c.key + '\')">' + c.label + '</button>'
+  ).join('');
+}
+function setTypeFilter(key) {
+  activeTypeFilter = key;
+  renderAssetFilterChips();
+  renderMapStats();
+  const devices = getSelectedDevices();
+  renderAssetMarkers(devices);
+  document.getElementById('mapCards').innerHTML = renderZoneCards(devices);
+}
+
+function initMapInteractions() {
+  const cardsLayer = document.getElementById('mapCards');
+  cardsLayer.addEventListener('mouseover', onCardHoverIn);
+  cardsLayer.addEventListener('mouseout', onCardHoverOut);
+  cardsLayer.addEventListener('click', onCardClick);
+  cardsLayer.addEventListener('focusin', onCardHoverIn);
+}
+let mapInteractionsBound = false;
+
+function showPersonalizedMap() {
+  if (!selectedPkgId) return;
+  initLeafletMap();
+  if (!mapInteractionsBound) { initMapInteractions(); mapInteractionsBound = true; }
+  if (lastRenderedPkgId !== selectedPkgId) {
+    selectedDeviceId = null;
+    activeTypeFilter = 'all';
+    lastRenderedPkgId = selectedPkgId;
+  }
+  renderAssetFilterChips();
+  renderMapStats();
+  const devices = getSelectedDevices();
+  devices_byId = {};
+  devices.forEach(d => { devices_byId[d.id] = d; });
+  renderAssetMarkers(devices);
+  document.getElementById('mapCards').innerHTML = renderZoneCards(devices);
+
+  const bounds = L.latLngBounds(WMT_ZONES.map(z => [z.lat, z.lng]).concat(devices.map(d => [d.lat, d.lng])));
+  leafletMap.fitBounds(bounds.pad(0.15));
+}
+
+
+renderPackages();
+bindPkgGridKeyboard();
+render();
+</script>
+</body>
+</html>
