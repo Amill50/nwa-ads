@@ -540,23 +540,36 @@ function allSelectedDevicesUnfiltered() {
 // ============================================================
 const WALMART_HQ = { lat: 36.3729, lng: -94.2192 };
 
-// Verbatim copy of shared/js/inventory.js's WMT_ZONES — the real
-// production Walmart-buyer target zones, not prototype-only shapes.
+// Shaded target zones — per Andrew: Home Office + Executive Residential
+// Corridor only. Production's WMT_ZONES (shared/js/inventory.js) also
+// includes a third "Pinnacle Country Club" zone, but that's dropped here in
+// favor of plotting actual Walmart/Sam's Club store locations instead (see
+// STORE_POIS below) — those are the real WMT_ZONES lat/lng/radius/color for
+// the two zones that stay, copied verbatim.
 const WMT_ZONES = [
   { name: 'Walmart Home Office', lat: 36.3729, lng: -94.2192, radius: 2.0,
     color: '#1f3d2a', desc: 'Home Office campus & SE Walton Blvd corridor' },
   { name: 'Walmart Executive Residential Corridor', lat: 36.2934, lng: -94.2400, radius: 3.2,
     color: '#c8440a', desc: 'Walmart Executive Residential Corridor — where Walmart executives live and dine' },
-  { name: 'Pinnacle Country Club', lat: 36.3355, lng: -94.1198, radius: 2.5,
-    color: '#8b4513', desc: 'Pinnacle Hills & Country Club — high-income residential & retail' },
 ];
 
 // Store reference points — shown as small plain markers, not shaded zones.
+// NOTE: this is NOT a complete/verified list of Walmart store locations.
+// It's the Walmart-family subset of shared/js/poi-data.js (the site's
+// existing landmark POI dataset) — one Supercenter per city, missing many
+// real NWA locations (e.g. Rogers has more than one Supercenter/Sam's Club
+// in reality). Flagged to Andrew; replace with a verified list if he sends one.
 const STORE_POIS = [
-  { name: "Walmart Supercenter — Bentonville", lat: 36.3728, lng: -94.2083, color: '#0071CE' },
-  { name: "Sam's Club — Bentonville", lat: 36.3502, lng: -94.2148, color: '#041e42' },
-  { name: "Walmart Neighborhood Market — Bentonville", lat: 36.3524, lng: -94.2198, color: '#0071CE' },
+  { name: "Walmart Supercenter — Bentonville", lat: 36.3728, lng: -94.2083, kind: 'Supercenter' },
+  { name: "Walmart Supercenter — Rogers", lat: 36.332, lng: -94.1442, kind: 'Supercenter' },
+  { name: "Walmart Supercenter — Fayetteville", lat: 36.0758, lng: -94.1702, kind: 'Supercenter' },
+  { name: "Walmart Supercenter — Springdale", lat: 36.1762, lng: -94.1456, kind: 'Supercenter' },
+  { name: "Sam's Club — Bentonville", lat: 36.3502, lng: -94.2148, kind: "Sam's Club" },
+  { name: "Sam's Club — Fayetteville", lat: 36.0671, lng: -94.1638, kind: "Sam's Club" },
+  { name: "Walmart Neighborhood Market — Bentonville", lat: 36.3524, lng: -94.2198, kind: 'Neighborhood Market' },
+  { name: "Walmart Neighborhood Market — Springdale", lat: 36.1924, lng: -94.1287, kind: 'Neighborhood Market' },
 ];
+const STORE_KIND_COLORS = { 'Supercenter': '#0071CE', "Sam's Club": '#041e42', 'Neighborhood Market': '#4a90d9' };
 
 // Venue color/icon subset — same values as book/js/book-map.js's VENUE_COLORS/VENUE_SVG,
 // trimmed to the two venue types this flow actually sells (billboard, airport).
@@ -642,7 +655,7 @@ function initLeafletMap() {
 
   // Store reference points — small plain dots, not shaded (not a target zone)
   STORE_POIS.forEach(s => {
-    L.circleMarker([s.lat, s.lng], { radius: 6, color: '#fff', weight: 2, fillColor: s.color, fillOpacity: 1 })
+    L.circleMarker([s.lat, s.lng], { radius: 6, color: '#fff', weight: 2, fillColor: STORE_KIND_COLORS[s.kind] || '#0071CE', fillOpacity: 1 })
       .addTo(leafletMap)
       .bindTooltip(s.name, { direction: 'top', offset: [0, -6] });
   });
@@ -659,9 +672,11 @@ function initLeafletMap() {
 function renderMapLegend() {
   const zoneItems = WMT_ZONES.map(z => '<div class="lg-item"><span class="lg-swatch-area" style="background:' + z.color + '33; border-color:' + z.color + '"></span>' + z.name + '</div>').join('');
   const typeItems = Object.keys(VENUE_COLORS).map(t => '<div class="lg-item"><span class="lg-dot" style="background:' + VENUE_COLORS[t] + '"></span>' + t + '</div>').join('');
+  const storeKinds = Array.from(new Set(STORE_POIS.map(s => s.kind)));
+  const storeItems = storeKinds.map(k => '<div class="lg-item"><span class="lg-dot" style="background:' + STORE_KIND_COLORS[k] + '"></span>' + k + '</div>').join('');
   return '<div class="lg-group"><span class="lg-grouplabel">Target zones</span>' + zoneItems + '</div>'
     + '<div class="lg-group"><span class="lg-grouplabel">Asset types</span>' + typeItems + '</div>'
-    + '<div class="lg-group"><span class="lg-grouplabel">Reference</span><div class="lg-item"><span class="lg-dot" style="background:#0071CE"></span>Store location</div></div>';
+    + '<div class="lg-group"><span class="lg-grouplabel">Store locations (reference)</span>' + storeItems + '</div>';
 }
 
 function popupHtml(d) {
