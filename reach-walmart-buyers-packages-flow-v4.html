@@ -553,21 +553,39 @@ const WMT_ZONES = [
     color: '#c8440a', desc: 'Walmart Executive Residential Corridor — where Walmart executives live and dine' },
 ];
 
-// Store reference points — shown as small plain markers, not shaded zones.
-// NOTE: this is NOT a complete/verified list of Walmart store locations.
-// It's the Walmart-family subset of shared/js/poi-data.js (the site's
-// existing landmark POI dataset) — one Supercenter per city, missing many
-// real NWA locations (e.g. Rogers has more than one Supercenter/Sam's Club
-// in reality). Flagged to Andrew; replace with a verified list if he sends one.
+// Store reference points — verified against Andrew's store-location CSV
+// (store_id, city, address, lat, lng), Aug 2026. All Supercenter and
+// Neighborhood Market rows from that CSV are included below. The Sam's Club
+// section of the CSV was cut off mid-row (only Bentonville #4969 came
+// through complete) — flagged back to Andrew, only the one confirmed
+// Sam's Club is plotted until the rest of that list arrives.
 const STORE_POIS = [
-  { name: "Walmart Supercenter — Bentonville", lat: 36.3728, lng: -94.2083, kind: 'Supercenter' },
-  { name: "Walmart Supercenter — Rogers", lat: 36.332, lng: -94.1442, kind: 'Supercenter' },
-  { name: "Walmart Supercenter — Fayetteville", lat: 36.0758, lng: -94.1702, kind: 'Supercenter' },
-  { name: "Walmart Supercenter — Springdale", lat: 36.1762, lng: -94.1456, kind: 'Supercenter' },
-  { name: "Sam's Club — Bentonville", lat: 36.3502, lng: -94.2148, kind: "Sam's Club" },
-  { name: "Sam's Club — Fayetteville", lat: 36.0671, lng: -94.1638, kind: "Sam's Club" },
-  { name: "Walmart Neighborhood Market — Bentonville", lat: 36.3524, lng: -94.2198, kind: 'Neighborhood Market' },
-  { name: "Walmart Neighborhood Market — Springdale", lat: 36.1924, lng: -94.1287, kind: 'Neighborhood Market' },
+  // Walmart Supercenter (8)
+  { name: "Walmart Supercenter #100 — Bentonville", lat: 36.3670, lng: -94.2084, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #144 — Fayetteville", lat: 36.0624, lng: -94.2058, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #359 — Fayetteville", lat: 36.1226, lng: -94.1513, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #1 — Rogers", lat: 36.3329, lng: -94.1431, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #54 — Springdale", lat: 36.1705, lng: -94.1406, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #4108 — Springdale", lat: 36.1966, lng: -94.2444, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #5260 — Rogers", lat: 36.2865, lng: -94.1831, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #4 — Siloam Springs", lat: 36.1790, lng: -94.5192, kind: 'Supercenter' },
+  // Walmart Neighborhood Market (14)
+  { name: "Neighborhood Market #2741 — Bentonville", lat: 36.3584, lng: -94.1720, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4376 — Bentonville", lat: 36.3872, lng: -94.2084, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4686 — Bentonville", lat: 36.3339, lng: -94.2230, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #6953 — Centerton", lat: 36.3657, lng: -94.2757, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #7242 — Farmington", lat: 36.0411, lng: -94.2525, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #2745 — Fayetteville", lat: 36.0938, lng: -94.1194, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4516 — Fayetteville", lat: 36.0614, lng: -94.1687, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #5737 — Fayetteville", lat: 36.0825, lng: -94.2206, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #6971 — Pea Ridge", lat: 36.4548, lng: -94.1139, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #3479 — Rogers", lat: 36.3142, lng: -94.1263, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #3654 — Rogers", lat: 36.3335, lng: -94.1252, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #5837 — Rogers", lat: 36.2956, lng: -94.1851, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #6960 — Siloam Springs", lat: 36.1748, lng: -94.5415, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4375 — Springdale", lat: 36.1915, lng: -94.1738, kind: 'Neighborhood Market' },
+  // Sam's Club — only #4969 came through complete in the CSV paste
+  { name: "Sam's Club #4969 — Bentonville", lat: 36.3389, lng: -94.1745, kind: "Sam's Club" },
 ];
 const STORE_KIND_COLORS = { 'Supercenter': '#0071CE', "Sam's Club": '#041e42', 'Neighborhood Market': '#4a90d9' };
 
