@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reach Walmart Buyers — curated campaign packages (v5, package-first)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Same map stack as production book/index.html: Leaflet + Leaflet.markercluster from unpkg, CARTO Positron tiles -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<style>
+  :root{
+    --bg:#f6f4ef; --ink:#1a1714; --ink2:#4a4540; --muted:#6b6560; --border:#e2ddd6;
+    --white:#fffef9; --accent:#c8440a; --accent-text:#a83a09; --accent-light:#fdf1eb; --accent2:#1f3d2a; --accent2-light:#eaf2ec;
+    --pill-bg:#f0ece5; --r:14px; --r-sm:8px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:'Instrument Sans',-apple-system,sans-serif; background:var(--bg); color:var(--ink);}
+  .page{max-width:1180px; margin:0 auto; padding:28px 20px 70px;}
+  .browserbar{display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid var(--border); border-bottom:none; border-radius:16px 16px 0 0; background:#FAFAF8;}
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--border);}
+  .urlbar{flex:1; margin-left:10px; background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:12px; color:var(--muted);}
+  .app-topbar{display:flex; align-items:center; gap:12px; padding:16px 22px; border:1px solid var(--border); border-top:none; background:var(--white); flex-wrap:wrap;}
+  .brand{font-weight:700; font-size:16px;}
+  .brand span{color:var(--accent);}
+  .goalpill{display:flex; align-items:center; gap:6px; background:var(--accent-light); color:var(--accent-text); font-size:12px; font-weight:700; padding:6px 12px; border-radius:999px;}
+  .livepill{margin-left:auto; font-size:11px; font-weight:700; color:var(--accent2); background:var(--accent2-light); padding:5px 11px; border-radius:8px;}
+  .frame{border:1px solid var(--border); border-top:none; background:var(--white); border-radius:0 0 16px 16px; overflow:hidden;}
+
+  button{-webkit-appearance:none;}
+  button:focus-visible, [tabindex]:focus-visible, a:focus-visible, input:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  /* step tracker */
+  .steptrack{display:flex; align-items:center; padding:26px 28px 6px; gap:0; flex-wrap:wrap;}
+  .step{display:flex; align-items:center; gap:10px; cursor:pointer; background:none; border:none; padding:2px; font-family:inherit; text-align:left; border-radius:6px;}
+  .step .circ{width:28px; height:28px; border-radius:50%; background:var(--pill-bg); color:var(--muted); font-size:12.5px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:2px solid transparent;}
+  .step.active .circ{background:var(--ink); color:#fff;}
+  .step.done .circ{background:var(--accent2); color:#fff;}
+  .step .stxt{font-size:12.5px; font-weight:600; color:var(--muted); white-space:nowrap;}
+  .step.active .stxt, .step.done .stxt{color:var(--ink);}
+  .steplink{flex:1; height:2px; background:var(--border); margin:0 12px; min-width:20px;}
+  .steplink.done{background:var(--accent2);}
+
+  .panel{display:none; padding:12px 28px 30px;}
+  .panel.active{display:block;}
+  .panel h2{font-size:23px; font-weight:700; margin:14px 0 6px; letter-spacing:-.01em;}
+  .panel p.sub{font-size:14px; color:var(--muted); margin:0 0 30px; max-width:640px; line-height:1.6;}
+
+  /* ---------- Step 1 — package-first landing ---------- */
+  .pkg-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .pkg-card{border:2px solid var(--border); border-radius:18px; padding:26px 26px 22px; background:#fff; cursor:pointer; transition:border-color .15s, box-shadow .15s, transform .1s; position:relative; text-align:left; font-family:inherit; display:flex; flex-direction:column; width:100%;}
+  .pkg-card:hover{border-color:#cfc8bc;}
+  .pkg-card.selected{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-light);}
+  .pkg-badge{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:5px 12px; border-radius:999px; margin-bottom:16px; align-self:flex-start;}
+  .pkg-badge.hero{background:var(--accent); color:#fff;}
+  .pkg-badge.soft{background:var(--accent2-light); color:var(--accent2);}
+  .pkg-card h3{font-size:19px; font-weight:700; margin:0 0 10px; color:var(--ink); letter-spacing:-.01em;}
+  .pkg-why{font-size:13.5px; color:var(--ink2); line-height:1.6; margin:0 0 16px;}
+  .pkg-bestfor{background:var(--pill-bg); border-radius:var(--r-sm); padding:10px 13px; margin-bottom:18px;}
+  .pkg-bestfor .lbl{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:3px;}
+  .pkg-bestfor .val{font-size:12.5px; font-weight:600; color:var(--ink);}
+  .pkg-stats-row{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:auto; padding-top:16px; border-top:1px solid #f1eee8;}
+  .pkg-stat .num{font-size:16px; font-weight:700; color:var(--ink); line-height:1.2;}
+  .pkg-stat .lbl{font-size:10.5px; color:var(--muted); margin-top:3px; line-height:1.35;}
+  .pkg-select-row{display:flex; align-items:center; gap:8px; margin-top:18px; font-size:12.5px; font-weight:700; color:var(--accent-text);}
+  .pkg-card.selected .pkg-select-row{color:var(--accent2);}
+  .radiomark{width:18px; height:18px; border-radius:50%; border:2px solid var(--border); background:#fff; flex-shrink:0;}
+  .pkg-card.selected .radiomark{border-color:var(--accent2); background:var(--accent2);}
+  .pkg-card.selected .radiomark::after{content:''; display:block; width:7px; height:7px; border-radius:50%; background:#fff; margin:3px auto;}
+
+  .trust-note{margin-top:26px; padding:14px 18px; background:var(--pill-bg); border-radius:var(--r-sm); font-size:12px; color:var(--ink2); line-height:1.6; max-width:760px;}
+
+  /* ---------- Step 2 — map as explanation, not a planning tool ---------- */
+  .mapstatrow{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:18px; max-width:640px;}
+  .mapstat{background:var(--pill-bg); border-radius:var(--r-sm); padding:13px 16px;}
+  .mapstat .num{font-size:19px; font-weight:700; color:var(--ink);}
+  .mapstat .lbl{font-size:11px; color:var(--muted); margin-top:2px;}
+
+  #mapCanvas{width:100%; height:540px; border:1px solid var(--border); border-radius:var(--r); background:#f4f3ef;}
+  .leaflet-popup-content-wrapper{border-radius:10px; font-family:'Instrument Sans',sans-serif;}
+  .leaflet-popup-content{margin:11px 13px; font-size:12.5px;}
+  .map-popup .pp-title{font-weight:700; font-size:13px; margin-bottom:2px; color:var(--ink);}
+  .map-popup .pp-sub{color:var(--muted); font-size:11px; margin-bottom:6px;}
+  .map-popup .pp-row{display:flex; justify-content:space-between; gap:12px; font-weight:600; color:var(--ink);}
+  .wmt-zone-tip{background:var(--ink); color:#fff; border:none; font-family:'Instrument Sans',sans-serif; font-size:11.5px; font-weight:600; padding:5px 9px; border-radius:7px;}
+  .wmt-zone-tip::before{border-top-color:var(--ink) !important;}
+
+  .map-legend-box{background:#fff; padding:11px 13px; border-radius:10px; border:1px solid var(--border); font-family:'Instrument Sans',sans-serif; box-shadow:0 2px 10px rgba(0,0,0,.1); font-size:11px; min-width:150px; max-height:260px; overflow-y:auto;}
+  .lg-group{margin-bottom:8px;}
+  .lg-group:last-child{margin-bottom:0;}
+  .lg-grouplabel{display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:5px;}
+  .lg-item{display:flex; align-items:center; gap:6px; padding:2px 0; color:var(--ink2);}
+  .lg-dot{width:11px; height:11px; border-radius:50%; flex-shrink:0; border:2px solid #fff; box-shadow:0 0 0 1px var(--border);}
+  .lg-swatch-area{width:15px; height:10px; border-radius:3px; flex-shrink:0; border:2px solid #fff; box-shadow:0 0 0 1px var(--border);}
+
+  .map-footnote{margin-top:16px; font-size:12.5px; color:var(--muted); line-height:1.6; max-width:640px;}
+  .map-footnote button{background:none; border:none; padding:0; font:inherit; font-weight:700; color:var(--accent-text); cursor:pointer; text-decoration:underline;}
+
+  /* ---------- Step 3 — review, customize, launch ---------- */
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:640px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  .field label{font-size:12px; font-weight:700; color:var(--ink2);}
+  .field input, .field select{border:1px solid var(--border); border-radius:var(--r-sm); padding:10px 12px; font-size:13.5px; font-family:inherit; color:var(--ink); background:#fff;}
+  .field input:focus, .field select:focus{outline:none; border-color:var(--accent);}
+
+  .hint-box{display:flex; align-items:flex-start; gap:9px; background:var(--accent2-light); border-radius:var(--r-sm); padding:11px 14px; margin-top:16px; max-width:640px; font-size:12px; color:var(--accent2); line-height:1.5;}
+  .hint-box b{font-weight:700;}
+
+  .section-label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:28px 0 12px;}
+  .section-label:first-child{margin-top:0;}
+
+  .review-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:22px; align-items:start;}
+  .review-block{border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-bottom:14px; background:#fff;}
+  .review-block .rb-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:10px;}
+  .review-row{display:flex; justify-content:space-between; font-size:13px; padding:5px 0; border-top:1px solid #f1eee8;}
+  .review-row:first-of-type{border-top:none;}
+  .review-row span:first-child{color:var(--muted);}
+  .review-row span:last-child{font-weight:600; color:var(--ink); text-align:right;}
+  .summary-card{border:1px solid var(--border); border-radius:14px; padding:20px 22px; background:var(--ink); color:#fff; position:sticky; top:20px;}
+  .summary-card .sc-badge{display:inline-block; font-size:10.5px; font-weight:700; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,0.14); margin-bottom:10px;}
+  .summary-card .sc-pkgname{font-size:15px; font-weight:700; margin-bottom:2px;}
+  .summary-card .sc-price{font-size:28px; font-weight:700; margin:8px 0 2px;}
+  .summary-card .sc-price span{font-size:12px; font-weight:500; opacity:.7;}
+  .summary-card .sc-total{font-size:12.5px; opacity:.85; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.15);}
+  .summary-card .sc-line{display:flex; justify-content:space-between; font-size:12px; padding:4px 0; opacity:.9;}
+  .sc-customize-link{display:block; width:100%; text-align:left; background:none; border:none; padding:0; margin-top:14px; font:inherit; font-size:12px; font-weight:700; color:#fff; text-decoration:underline; opacity:.85; cursor:pointer;}
+  .cta{display:block; width:100%; text-align:center; background:var(--accent); color:#fff; font-weight:700; font-size:14px; padding:13px; border-radius:10px; border:none; margin-top:16px; cursor:pointer; font-family:inherit;}
+  .cta:disabled{background:#5a5650; opacity:.6; cursor:not-allowed;}
+  .launch-success{display:none; background:var(--accent2-light); border-radius:12px; padding:16px 18px; margin-top:16px; font-size:13px; color:var(--accent2); line-height:1.6;}
+  .launch-success.show{display:block;}
+  .launch-success b{display:block; font-size:14.5px; margin-bottom:4px;}
+
+  /* ---------- Optional customize accordion ---------- */
+  .customize-block{border:1px dashed var(--border); border-radius:14px; margin-top:6px; overflow:hidden;}
+  .customize-toggle{display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; background:#fdfcfa; border:none; padding:16px 20px; cursor:pointer; font-family:inherit; text-align:left;}
+  .customize-toggle .ct-title{font-size:13.5px; font-weight:700; color:var(--ink);}
+  .customize-toggle .ct-sub{font-size:12px; color:var(--muted); margin-top:2px; font-weight:400;}
+  .customize-toggle .chev{font-size:13px; color:var(--muted); transition:transform .15s; flex-shrink:0;}
+  .customize-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  .customize-body{display:none; padding:6px 20px 22px;}
+  .customize-body.open{display:block;}
+  .customize-intro{font-size:12px; color:var(--muted); line-height:1.6; margin:6px 0 16px; max-width:640px;}
+  .cz-group{margin-bottom:14px;}
+  .cz-grouphead{display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px;}
+  .cz-swatch{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .cz-row{display:flex; align-items:flex-start; gap:10px; padding:8px 10px; border-radius:8px; font-size:12.5px;}
+  .cz-row:hover{background:var(--pill-bg);}
+  .cz-row input{margin-top:3px; flex-shrink:0;}
+  .cz-row label{flex:1; cursor:pointer;}
+  .cz-devname{font-weight:600; color:var(--ink);}
+  .cz-devmeta{color:var(--muted); font-size:11px; margin-top:1px;}
+  .rate-tag{font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:5px; margin-left:6px; white-space:nowrap;}
+  .rate-tag.confirmed{background:var(--accent2-light); color:var(--accent2);}
+  .rate-tag.est{background:var(--pill-bg); color:var(--muted);}
+  .cz-price{font-weight:700; color:var(--ink); white-space:nowrap;}
+  .cz-reset{font-size:12px; font-weight:700; color:var(--accent-text); background:none; border:none; padding:0; margin-top:8px; cursor:pointer; font-family:inherit;}
+
+  .navrow{display:flex; justify-content:space-between; padding:18px 28px 26px; border-top:1px solid var(--border); margin-top:6px;}
+  .btn{font-family:inherit; font-size:13px; font-weight:700; padding:10px 20px; border-radius:10px; cursor:pointer; border:1px solid var(--border); background:#fff; color:var(--ink);}
+  .btn.primary{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .btn.primary:disabled{opacity:.4; cursor:not-allowed;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  .footer-note{padding:14px 22px; border:1px solid var(--border); border-top:none; border-radius:0 0 16px 16px; background:var(--white); font-size:12px; color:var(--muted); margin-top:-2px;}
+
+  @media (max-width:720px){
+    .form-grid, .pkg-grid, .review-grid{grid-template-columns:1fr;}
+    .summary-card{position:static;}
+  }
+  @media (max-width:480px){
+    .mapstat .num{font-size:15px;}
+    .mapstat .lbl{font-size:9.5px;}
+    .panel{padding:8px 16px 20px;}
+    .navrow{padding:16px 16px 22px;}
+    .pkg-stats-row{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="browserbar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="urlbar">nwa-ads.com/ReachWalmartBuyers</div></div>
+  <div class="app-topbar">
+    <div class="brand">NWA <span>Ads</span></div>
+    <div class="goalpill">🎯 Reach Walmart &amp; Sam's Club buyers</div>
+    <div class="livepill">Real inventory · package pricing</div>
+  </div>
+
+  <div class="frame">
+    <div class="steptrack" id="steptrack"></div>
+
+    <!-- STEP 1 — Browse curated packages (the landing experience — no form gate) -->
+    <div class="panel active" id="panel-1">
+      <h2>Browse recommended campaign packages</h2>
+      <p class="sub">Four packages, each built from real screens around the Walmart Home Office and already priced. Pick the one that matches how wide you want your reach — you can fine-tune it later if you want to.</p>
+      <div class="pkg-grid" id="pkgGrid" role="radiogroup" aria-label="Choose your package"></div>
+      <div class="trust-note">Every screen in every package is real, currently available NWA Ads inventory — not a mockup. Pricing already includes NWA Ads' standard margin, so the number on the card is what you'd pay.</div>
+    </div>
+
+    <!-- STEP 2 — Map as visual explanation of the selected package, not a planning tool -->
+    <div class="panel" id="panel-2">
+      <h2 id="map-heading">Where your package will appear</h2>
+      <p class="sub" id="map-sub">This map answers one question: where will your campaign show up? Only the screens in your package are shown — everything else is left off on purpose.</p>
+      <div class="mapstatrow" id="mapStatRow"></div>
+      <div id="mapCanvas"></div>
+      <div class="map-footnote">The shaded areas mark where Walmart's Home Office and its executive residential corridor sit, with Walmart-family store locations plotted for reference — your screens are placed relative to those, not scattered at random. Want to see exactly which screens are included, or swap any out? <button type="button" onclick="jumpToCustomize()">Customize this package</button> on the next step.</div>
+    </div>
+
+    <!-- STEP 3 — Review details, launch now, or optionally customize first -->
+    <div class="panel" id="panel-3">
+      <h2>Review &amp; launch</h2>
+      <p class="sub">Confirm a few details below. Nothing is charged yet — this hands off to the same proposal/approval flow the rest of NWA Ads uses today.</p>
+
+      <div class="review-grid">
+        <div>
+          <div class="section-label">Your details</div>
+          <div class="form-grid">
+            <div class="field"><label>Business name</label><input type="text" id="fBusiness" placeholder="e.g. Ozark Coffee Roasters"></div>
+            <div class="field"><label>Contact name</label><input type="text" id="fContact" placeholder="Full name"></div>
+            <div class="field"><label>Email</label><input type="email" id="fEmail" placeholder="you@company.com"></div>
+            <div class="field"><label>Phone</label><input type="tel" id="fPhone" placeholder="(479) 555-0100"></div>
+            <div class="field full"><label>What are you advertising?</label><input type="text" id="fWhat" placeholder="Brief description of the product or service"></div>
+          </div>
+
+          <div class="section-label">Campaign dates</div>
+          <div class="form-grid">
+            <div class="field"><label>Start date</label><input type="date" id="startDate"></div>
+            <div class="field">
+              <label>Campaign length</label>
+              <select id="durationSelect">
+                <option value="1">1 month</option>
+                <option value="3">3 months</option>
+                <option value="6">6 months</option>
+                <option value="12">12 months</option>
+              </select>
+            </div>
+          </div>
+          <div class="hint-box" id="durationHint"><span>✓</span><div></div></div>
+
+          <div class="section-label">What's included</div>
+          <div class="review-block">
+            <div id="rev-devices"></div>
+          </div>
+
+          <div class="customize-block">
+            <button type="button" class="customize-toggle" id="customizeToggle" aria-expanded="false" onclick="toggleCustomize()">
+              <span><span class="ct-title">Customize this package</span><br><span class="ct-sub">Optional — add or remove individual screens. Most brands keep the recommended set.</span></span>
+              <span class="chev">▾</span>
+            </button>
+            <div class="customize-body" id="customizeBody">
+              <p class="customize-intro">Every screen below is a real NWA Ads inventory record. Billboards on Walton Blvd, 14th St, and I-49 use rates confirmed directly by the media owner (Lamar) in Aug 2026 — marked "Confirmed." The Regional Airport Blvd and Hwy 71 billboards, plus XNA Airport screens, aren't on that sheet yet, so they use NWA Ads' standard rate estimate — marked "Est." Uncheck anything you'd like to leave out.</p>
+              <div id="customizeList"></div>
+              <button type="button" class="cz-reset" onclick="resetCustomization()">Reset to recommended package</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="summary-card">
+            <div class="sc-badge" id="sum-badge">—</div>
+            <div class="sc-pkgname" id="sum-pkgname">—</div>
+            <div class="sc-price" id="sum-price">$0<span>/mo</span></div>
+            <div class="sc-total" id="sum-total">$0 total</div>
+            <div class="sc-line" id="sum-reach"><span>Estimated weekly reach</span><span>—</span></div>
+            <div class="sc-line" id="sum-count"><span>Screens included</span><span>—</span></div>
+            <button type="button" class="sc-customize-link" onclick="jumpToCustomize()">Customize this package →</button>
+            <button type="button" class="cta" id="launchBtn" onclick="launchCampaign()" disabled>Launch campaign</button>
+            <div class="launch-success" id="launchSuccess"><b>You're set. 🎉</b>We've received your campaign details — a member of the NWA Ads team will follow up within one business day to confirm dates and send your approval link.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navrow">
+      <button class="btn" id="btnBack" onclick="prevStep()">Back</button>
+      <button class="btn primary" id="btnNext" onclick="nextStep()">Continue</button>
+    </div>
+  </div>
+  <div class="footer-note">Every package above is built from real NWA Ads inventory near the Walmart Home Office. Full rate-source detail (confirmed vs. estimated) is available in "Customize this package" on the review step.</div>
+
+</div>
+
+<!-- Same map libraries as production book/index.html -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+/* ============================================================
+   v5 — package-first redesign.
+
+   What changed from v4, and why (per the Aug 2026 discovery-flow
+   design brief: guide instead of asking users to become media
+   planners, lead with recommendations, treat customization as
+   optional, reduce the map to a visual explanation):
+
+   1. Flow order changed from
+        business info -> dates -> packages -> map -> review
+      to
+        packages -> map -> review (business info + dates folded
+      in here, at the point a user is actually ready to commit) ->
+      optional customize -> launch.
+      Packages are now the FIRST thing a visitor sees — nothing
+      gates browsing them.
+
+   2. Package cards were stripped down to exactly what the brief
+      asks for: name, one-sentence "why", best use case,
+      starting price, estimated reach, recommended duration.
+      The old per-device "what's included" table is gone from
+      this step entirely — that's media-planner detail now
+      reachable only via "Customize this package."
+
+   3. Recommendation badges (⭐ Most Popular / Best for Buyer
+      Meetings / Best for Product Launches / Best for Getting
+      Started) guide the choice instead of presenting all four
+      packages as equivalent.
+
+   4. The map step dropped the split list+map explorer, the
+      per-device distance/rate table, and the asset-type filter
+      chips — those were planning-tool affordances. What's left
+      answers one question ("where will my campaign appear?"):
+      a big map showing only this package's screens, three plain
+      stats, and a pointer to Customize for anyone who wants the
+      line-item detail.
+
+   5. Customization is now an explicit, collapsed-by-default
+      "Customize this package" accordion on the review step —
+      real per-device checkboxes that recalculate price and
+      (if you go back) the map, with a one-click reset. Nothing
+      about it is required to launch.
+
+   Device data, real weekly-impression counts, confirmed/estimated
+   rate sourcing, and the production Leaflet map stack are carried
+   over unchanged from v4 — this is a UX restructure, not a data
+   change.
+   ============================================================ */
+
+const STEPS = ['Choose package', 'See the map', 'Review & launch'];
+
+// ============================================================
+// Real inventory, pulled from shared/js/inventory.js (device_id,
+// lat/lng, type, and weekly_imp all match production records).
+//
+// Cost source per device:
+//   confirmed:true  — Lamar rate-confirmation sheet (Andrew, Aug 2026),
+//                      "cost" = their quoted 4-week flat rate.
+//   confirmed:false — shared/js/inventory.js's own cpm × weekly_imp × 4.33
+//                      estimate (Regional Airport Blvd + Hwy 71 boards
+//                      aren't on the Lamar sheet yet; XNA Airport is a
+//                      different media owner — Kinective Media by United
+//                      Airlines — never on a Lamar sheet at all).
+// Sell price = cost × 1.20 (flat 20% margin, per Andrew).
+// weekly_imp = real weekly impression count from shared/js/inventory.js,
+// used to compute each package's estimated reach.
+// ============================================================
+const MARGIN = 1.20;
+function sellOf(cost) { return Math.round(cost * MARGIN); }
+function formatReach(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000) return Math.round(n / 1000) + 'K';
+  return String(n);
+}
+
+const AIRPORT_DEVICES = [
+  { id:'FXNA0002-1', name:'XNA Airport — Gate A6', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'XNA_GIDS_C1', name:'XNA Airport — Gate C1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'FXNA0001', name:'XNA Airport — Gate A5', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'FXNA0002', name:'XNA Airport — Gate A6 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'FXNA0001-1', name:'XNA Airport — Gate A5 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'XNA_GIDS_B2', name:'XNA Airport — Gate B2', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'XNA_GIDS_A1', name:'XNA Airport — Gate A1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'XNA_GIDS_A12', name:'XNA Airport — Gate A12', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'XNA_GIDS_A3', name:'XNA Airport — Gate A3', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'XNA_GIDS_B1', name:'XNA Airport — Gate B1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+];
+
+const HOME_OFFICE_BILLBOARD = [
+  { id:'4207', name:'Walton Blvd & SH-102 (S face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true, weekly_imp:166823 },
+  { id:'4206', name:'Walton Blvd & SH-102 (N face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true, weekly_imp:68834 },
+];
+const HOME_OFFICE_STREETS = [
+  { id:'4057', name:'14th St & S. Walton (N face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true, weekly_imp:206166 },
+  { id:'4058', name:'14th St & S. Walton (S face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true, weekly_imp:184507 },
+];
+const I49_HIGHWAY_BOARD = [
+  { id:'4208', name:'I-49 & SH-102 (N face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true, weekly_imp:110538 },
+  { id:'4209', name:'I-49 & SH-102 (S face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true, weekly_imp:215231 },
+];
+const CORRIDOR_EXTRAS = [
+  { id:'5623', name:'Regional Airport Blvd (W face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:13995, confirmed:false, weekly_imp:331458 },
+  { id:'4046', name:'Regional Airport Blvd (E face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:5153, confirmed:false, weekly_imp:120643 },
+  { id:'7073', name:'Hwy 71 & N. Walton Blvd (S face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false, weekly_imp:410174 },
+  { id:'4203', name:'Hwy 71 & N. Walton Blvd (N face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false, weekly_imp:410174 },
+];
+
+const PACKAGES = [
+  {
+    id: 'p1', label: 'Package 1', name: 'Home Office Presence',
+    why: "Maintain steady visibility right around Walmart's Home Office — the campaign equivalent of always being in the room.",
+    bestFor: 'Ongoing brand presence near HQ',
+    badge: '⭐ Best for Getting Started', badgeStyle: 'soft',
+    recommendedMonths: 6,
+    devices: HOME_OFFICE_BILLBOARD,
+  },
+  {
+    id: 'p2', label: 'Package 2', name: 'Merchant Commute',
+    why: 'Reach Walmart associates and merchants during their daily commute between Home Office and the surrounding communities.',
+    bestFor: 'Building familiarity with the merchant community',
+    badge: '⭐ Most Popular', badgeStyle: 'hero',
+    recommendedMonths: 3,
+    devices: [...HOME_OFFICE_BILLBOARD, ...HOME_OFFICE_STREETS, ...I49_HIGHWAY_BOARD],
+  },
+  {
+    id: 'p3', label: 'Package 3', name: 'Airport Arrival',
+    why: 'Build awareness among buyers and suppliers the moment they land in Northwest Arkansas.',
+    bestFor: 'Buyer visits, vendor summits, supplier meetings',
+    badge: '⭐ Best for Buyer Meetings', badgeStyle: 'soft',
+    recommendedMonths: 1,
+    devices: [...HOME_OFFICE_BILLBOARD, ...HOME_OFFICE_STREETS, ...I49_HIGHWAY_BOARD, ...AIRPORT_DEVICES],
+  },
+  {
+    id: 'p4', label: 'Package 4', name: 'Total Market Coverage',
+    why: "Put your brand across every major corridor Walmart's ecosystem moves through — the widest reach available.",
+    bestFor: 'Product launches and major campaign pushes',
+    badge: '⭐ Best for Product Launches', badgeStyle: 'soft',
+    recommendedMonths: 3,
+    devices: [...HOME_OFFICE_BILLBOARD, ...HOME_OFFICE_STREETS, ...I49_HIGHWAY_BOARD, ...CORRIDOR_EXTRAS],
+  },
+];
+
+let currentStep = 1;
+let selectedPkgId = null;
+let excludedIds = new Set();     // devices unchecked via "Customize this package"
+let customizeOpen = false;
+let lastCustomizedPkgId = null;
+
+function renderSteptrack() {
+  const el = document.getElementById('steptrack');
+  el.innerHTML = STEPS.map((label, i) => {
+    const n = i + 1;
+    const cls = n === currentStep ? 'active' : (n < currentStep ? 'done' : '');
+    const circHtml = n < currentStep ? '&#10003;' : n;
+    const link = i < STEPS.length - 1 ? '<div class="steplink' + (n < currentStep ? ' done' : '') + '"></div>' : '';
+    return '<button type="button" class="step ' + cls + '" onclick="goStep(' + n + ')" aria-current="' + (n === currentStep ? 'step' : 'false') + '"><div class="circ">' + circHtml + '</div><div class="stxt">' + label + '</div></button>' + link;
+  }).join('');
+}
+
+function goStep(n) {
+  if (n > currentStep && !canAdvance(n)) return;
+  currentStep = n;
+  render();
+}
+function nextStep() {
+  const target = Math.min(3, currentStep + 1);
+  if (!canAdvance(target)) return;
+  currentStep = target;
+  render();
+}
+function prevStep() { currentStep = Math.max(1, currentStep - 1); render(); }
+
+function canAdvance(targetStep) {
+  if (targetStep >= 2 && !selectedPkgId) return false;
+  return true;
+}
+
+function render() {
+  renderSteptrack();
+  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i + 1 === currentStep));
+  document.getElementById('btnBack').disabled = currentStep === 1;
+  document.getElementById('btnNext').style.display = currentStep === 3 ? 'none' : 'inline-block';
+  document.getElementById('btnNext').disabled = currentStep === 1 && !selectedPkgId;
+  if (currentStep === 2) showPersonalizedMap();
+  if (currentStep === 3) renderReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pkg() { return PACKAGES.find(p => p.id === selectedPkgId); }
+function fullPkgPrice(p) { return p.devices.reduce((s, d) => s + sellOf(d.cost), 0); }
+function fullPkgReach(p) { return p.devices.reduce((s, d) => s + d.weekly_imp, 0); }
+
+// Devices actually included right now, respecting any customization.
+function activeDevices() {
+  const p = pkg();
+  if (!p) return [];
+  if (lastCustomizedPkgId !== p.id) return p.devices;
+  return p.devices.filter(d => !excludedIds.has(d.id));
+}
+function activePrice() { return activeDevices().reduce((s, d) => s + sellOf(d.cost), 0); }
+function activeReach() { return activeDevices().reduce((s, d) => s + d.weekly_imp, 0); }
+function isCustomized() { return lastCustomizedPkgId === selectedPkgId && excludedIds.size > 0; }
+
+function renderPackages() {
+  const grid = document.getElementById('pkgGrid');
+  grid.innerHTML = PACKAGES.map(p => {
+    const isSel = p.id === selectedPkgId;
+    const price = fullPkgPrice(p);
+    const reach = fullPkgReach(p);
+    return '<button type="button" class="pkg-card ' + (isSel ? 'selected' : '') + '" data-pkg-id="' + p.id + '" role="radio" aria-checked="' + isSel + '" aria-pressed="' + isSel + '" onclick="selectPkg(\'' + p.id + '\')">'
+      + '<span class="pkg-badge ' + p.badgeStyle + '">' + p.badge + '</span>'
+      + '<h3>' + p.name + '</h3>'
+      + '<p class="pkg-why">' + p.why + '</p>'
+      + '<div class="pkg-bestfor"><div class="lbl">Best for</div><div class="val">' + p.bestFor + '</div></div>'
+      + '<div class="pkg-stats-row">'
+        + '<div class="pkg-stat"><div class="num">$' + price.toLocaleString() + '</div><div class="lbl">starting per month</div></div>'
+        + '<div class="pkg-stat"><div class="num">' + formatReach(reach) + '</div><div class="lbl">est. weekly reach</div></div>'
+        + '<div class="pkg-stat"><div class="num">' + p.recommendedMonths + ' mo</div><div class="lbl">recommended run</div></div>'
+      + '</div>'
+      + '<div class="pkg-select-row"><span class="radiomark"></span><span>' + (isSel ? 'Selected' : 'Select this package') + '</span></div>'
+      + '</button>';
+  }).join('');
+}
+
+function selectPkg(id) {
+  if (id !== selectedPkgId) {
+    // switching packages clears any prior customization
+    excludedIds = new Set();
+    lastCustomizedPkgId = null;
+  }
+  selectedPkgId = id;
+  renderPackages();
+  document.getElementById('btnNext').disabled = false;
+}
+
+function bindPkgGridKeyboard() {
+  const grid = document.getElementById('pkgGrid');
+  grid.addEventListener('keydown', function(e) {
+    const card = e.target.closest('.pkg-card');
+    if (!card) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectPkg(card.dataset.pkgId);
+    }
+  });
+}
+
+function getMonths() { return parseInt(document.getElementById('durationSelect').value, 10); }
+
+function renderReview() {
+  const p = pkg();
+  if (!p) return;
+
+  if (document.getElementById('durationSelect').dataset.pkgSet !== p.id) {
+    document.getElementById('durationSelect').value = String(p.recommendedMonths);
+    document.getElementById('durationSelect').dataset.pkgSet = p.id;
+  }
+  document.getElementById('durationHint').querySelector('div').innerHTML =
+    '<b>Recommended: ' + p.recommendedMonths + ' month' + (p.recommendedMonths === 1 ? '' : 's') + '</b> for ' + p.name + '. Feel free to change it — nothing else on this page depends on it.';
+
+  const months = getMonths();
+  const devices = activeDevices();
+  const price = activePrice();
+
+  document.getElementById('rev-devices').innerHTML =
+    '<div class="review-row"><span>' + p.label + ' · ' + p.name + (isCustomized() ? ' (customized)' : '') + '</span><span>' + devices.length + ' screen' + (devices.length === 1 ? '' : 's') + '</span></div>'
+    + '<div class="review-row"><span>Monthly price</span><span>$' + price.toLocaleString() + '/mo</span></div>'
+    + '<div class="review-row"><span>Estimated weekly reach</span><span>' + formatReach(activeReach()) + ' impressions</span></div>';
+
+  document.getElementById('sum-badge').textContent = p.badge;
+  document.getElementById('sum-pkgname').textContent = p.label + ' · ' + p.name + (isCustomized() ? ' (customized)' : '');
+  document.getElementById('sum-price').innerHTML = '$' + price.toLocaleString() + '<span>/mo</span>';
+  document.getElementById('sum-total').textContent = '$' + (price * months).toLocaleString() + ' total over ' + months + ' month' + (months === 1 ? '' : 's');
+  document.getElementById('sum-reach').innerHTML = '<span>Estimated weekly reach</span><span>' + formatReach(activeReach()) + '</span>';
+  document.getElementById('sum-count').innerHTML = '<span>Screens included</span><span>' + devices.length + '</span>';
+
+  renderCustomizeList();
+  updateLaunchButton();
+}
+
+// ---------- Optional "Customize this package" accordion ----------
+function toggleCustomize() {
+  customizeOpen = !customizeOpen;
+  document.getElementById('customizeToggle').setAttribute('aria-expanded', String(customizeOpen));
+  document.getElementById('customizeBody').classList.toggle('open', customizeOpen);
+}
+function jumpToCustomize() {
+  currentStep = 3;
+  render();
+  if (!customizeOpen) toggleCustomize();
+  setTimeout(() => {
+    const el = document.getElementById('customizeToggle');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 60);
+}
+
+const POI_ORDER_ZONES_FOR_GROUPING = ['Walmart Home Office', 'Walmart Executive Residential Corridor'];
+function renderCustomizeList() {
+  const p = pkg();
+  if (!p) return;
+  const groups = new Map();
+  p.devices.forEach(d => {
+    const { zone } = nearestZone(d);
+    if (!groups.has(zone.name)) groups.set(zone.name, { zone, items: [] });
+    groups.get(zone.name).items.push(d);
+  });
+  const zones = Array.from(groups.values()).sort((a, b) => POI_ORDER_ZONES_FOR_GROUPING.indexOf(a.zone.name) - POI_ORDER_ZONES_FOR_GROUPING.indexOf(b.zone.name));
+  document.getElementById('customizeList').innerHTML = zones.map(z => {
+    const rows = z.items.map(d => {
+      const checked = !excludedIds.has(d.id) || lastCustomizedPkgId !== p.id ? (excludedIds.has(d.id) ? '' : 'checked') : '';
+      const tag = d.confirmed ? '<span class="rate-tag confirmed">Confirmed</span>' : '<span class="rate-tag est">Est.</span>';
+      return '<div class="cz-row">'
+        + '<input type="checkbox" id="cz-' + d.id + '" ' + (excludedIds.has(d.id) ? '' : 'checked') + ' onchange="toggleDevice(\'' + d.id + '\', this.checked)">'
+        + '<label for="cz-' + d.id + '"><div class="cz-devname">' + d.name + tag + '</div><div class="cz-devmeta">' + d.type + '</div></label>'
+        + '<div class="cz-price">$' + sellOf(d.cost).toLocaleString() + '/mo</div>'
+        + '</div>';
+    }).join('');
+    return '<div class="cz-group"><div class="cz-grouphead"><span class="cz-swatch" style="background:' + z.zone.color + '"></span>' + z.zone.name + '</div>' + rows + '</div>';
+  }).join('');
+}
+
+function toggleDevice(id, isChecked) {
+  lastCustomizedPkgId = selectedPkgId;
+  if (isChecked) excludedIds.delete(id); else excludedIds.add(id);
+  renderReview();
+}
+function resetCustomization() {
+  excludedIds = new Set();
+  lastCustomizedPkgId = null;
+  renderReview();
+}
+
+function updateLaunchButton() {
+  const business = document.getElementById('fBusiness').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  document.getElementById('launchBtn').disabled = !(business && email);
+}
+document.addEventListener('input', function(e) {
+  if (e.target && (e.target.id === 'fBusiness' || e.target.id === 'fEmail')) updateLaunchButton();
+});
+
+function launchCampaign() {
+  const btn = document.getElementById('launchBtn');
+  btn.style.display = 'none';
+  document.getElementById('launchSuccess').classList.add('show');
+}
+
+// ============================================================
+// STEP 2 — map as visual explanation (production Leaflet stack,
+// unchanged from v4: same CDN, same zone shading, same marker/
+// cluster styling as book/js/book-flow.js and book/js/book-map.js).
+// The difference from v4 is entirely in what surrounds it: no
+// filter chips, no split list+map explorer, no per-device distance
+// table on this step — those moved into "Customize this package."
+// ============================================================
+// Shaded target zones — per Andrew: Home Office + Executive Residential
+// Corridor only. Production's WMT_ZONES (shared/js/inventory.js) also
+// includes a third "Pinnacle Country Club" zone, but that's dropped here in
+// favor of plotting actual Walmart/Sam's Club store locations instead (see
+// STORE_POIS below) — those are the real WMT_ZONES lat/lng/radius/color for
+// the two zones that stay, copied verbatim.
+const WMT_ZONES = [
+  { name: 'Walmart Home Office', lat: 36.3729, lng: -94.2192, radius: 2.0,
+    color: '#1f3d2a', desc: 'Home Office campus & SE Walton Blvd corridor' },
+  { name: 'Walmart Executive Residential Corridor', lat: 36.2934, lng: -94.2400, radius: 3.2,
+    color: '#c8440a', desc: 'Walmart Executive Residential Corridor — where Walmart executives live and dine' },
+];
+
+// Store reference points — verified against Andrew's confirmed store-location
+// data (Aug 2026): 8 Supercenters, 14 Neighborhood Markets, 3 Sam's Clubs.
+const STORE_POIS = [
+  // Walmart Supercenter (8)
+  { name: "Walmart Supercenter #100 — Bentonville", lat: 36.3670, lng: -94.2084, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #144 — Fayetteville", lat: 36.0624, lng: -94.2058, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #359 — Fayetteville", lat: 36.1226, lng: -94.1513, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #1 — Rogers", lat: 36.3329, lng: -94.1431, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #54 — Springdale", lat: 36.1705, lng: -94.1406, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #4108 — Springdale", lat: 36.1966, lng: -94.2444, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #5260 — Rogers", lat: 36.2865, lng: -94.1831, kind: 'Supercenter' },
+  { name: "Walmart Supercenter #4 — Siloam Springs", lat: 36.1790, lng: -94.5192, kind: 'Supercenter' },
+  // Walmart Neighborhood Market (14)
+  { name: "Neighborhood Market #2741 — Bentonville", lat: 36.3584, lng: -94.1720, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4376 — Bentonville", lat: 36.3872, lng: -94.2084, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4686 — Bentonville", lat: 36.3339, lng: -94.2230, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #6953 — Centerton", lat: 36.3657, lng: -94.2757, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #7242 — Farmington", lat: 36.0411, lng: -94.2525, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #2745 — Fayetteville", lat: 36.0938, lng: -94.1194, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4516 — Fayetteville", lat: 36.0614, lng: -94.1687, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #5737 — Fayetteville", lat: 36.0825, lng: -94.2206, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #6971 — Pea Ridge", lat: 36.4548, lng: -94.1139, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #3479 — Rogers", lat: 36.3142, lng: -94.1263, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #3654 — Rogers", lat: 36.3335, lng: -94.1252, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #5837 — Rogers", lat: 36.2956, lng: -94.1851, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #6960 — Siloam Springs", lat: 36.1748, lng: -94.5415, kind: 'Neighborhood Market' },
+  { name: "Neighborhood Market #4375 — Springdale", lat: 36.1915, lng: -94.1738, kind: 'Neighborhood Market' },
+  // Sam's Club (3)
+  { name: "Sam's Club #4969 — Bentonville", lat: 36.3389, lng: -94.1745, kind: "Sam's Club" },
+  { name: "Sam's Club #8209 — Fayetteville", lat: 36.1044, lng: -94.2145, kind: "Sam's Club" },
+  { name: "Sam's Club #4808 — Springdale", lat: 36.1656, lng: -94.1748, kind: "Sam's Club" },
+];
+const STORE_KIND_COLORS = { 'Supercenter': '#0071CE', "Sam's Club": '#041e42', 'Neighborhood Market': '#4a90d9' };
+
+const VENUE_COLORS = { 'Digital billboard': '#c8440a', 'Airport screen': '#0d7377' };
+const VENUE_SVG = {
+  'Digital billboard': '<svg viewBox="0 0 28 28" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="24" height="13" rx="1"/><line x1="8" y1="16.5" x2="8" y2="24"/><line x1="20" y1="16.5" x2="20" y2="24"/><line x1="8" y1="20" x2="20" y2="20"/></svg>',
+  'Airport screen': '<svg viewBox="0 0 28 28" fill="white" stroke="none"><path d="M13 24 L16 8 C16.3 6.5 15.5 5 14 5 C12.5 5 11.7 6.5 12 8 Z"/><path d="M5 19 L14 14 L23 19 L21 20 L14 17 L7 20 Z"/><path d="M10 23 L14 20 L18 23 L17 24 L14 22 L11 24 Z"/></svg>',
+};
+
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function nearestZone(d) {
+  let best = null, bestD = Infinity;
+  WMT_ZONES.forEach(z => { const dd = haversineMiles(d.lat, d.lng, z.lat, z.lng); if (dd < bestD) { bestD = dd; best = z; } });
+  return { zone: best, dist: bestD };
+}
+function escapeXml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function makeAssetIcon(d) {
+  const color = VENUE_COLORS[d.type] || '#4a4540';
+  const svg = (VENUE_SVG[d.type] || VENUE_SVG['Digital billboard'])
+    .replace('<svg ', '<svg width="18" height="18" ');
+  const size = 32;
+  const html = '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + color
+    + ';border:2.5px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3)'
+    + ';display:flex;align-items:center;justify-content:center">' + svg + '</div>';
+  return L.divIcon({ className:'', html, iconSize:[size,size], iconAnchor:[size/2,size/2], popupAnchor:[0,-(size/2+4)] });
+}
+
+let leafletMap = null;
+let markerCluster = null;
+
+function initLeafletMap() {
+  if (leafletMap) { setTimeout(() => leafletMap.invalidateSize(), 50); return; }
+  leafletMap = L.map('mapCanvas', { zoomControl: true, scrollWheelZoom: true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 19,
+  }).addTo(leafletMap);
+
+  markerCluster = L.markerClusterGroup({
+    maxClusterRadius: 50,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    spiderfyOnMaxZoom: true,
+    disableClusteringAtZoom: 15,
+    iconCreateFunction: function(cluster) {
+      const count = cluster.getChildCount();
+      const size = count >= 20 ? 44 : count >= 10 ? 38 : 32;
+      return L.divIcon({
+        html: '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:#1a1714;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.25);font-family:Instrument Sans,sans-serif">' + count + '</div>',
+        className: '', iconSize: [size, size], iconAnchor: [size/2, size/2],
+      });
+    },
+  });
+  leafletMap.addLayer(markerCluster);
+
+  WMT_ZONES.forEach(zone => {
+    const circle = L.circle([zone.lat, zone.lng], {
+      radius: zone.radius * 1609.34, color: '#374151', fillColor: '#374151',
+      fillOpacity: 0.08, weight: 1.5, opacity: 0.28, dashArray: '5 4',
+    }).addTo(leafletMap);
+    const inner = L.circle([zone.lat, zone.lng], {
+      radius: zone.radius * 1609.34 * 0.35, color: 'transparent',
+      fillColor: '#374151', fillOpacity: 0.11, weight: 0,
+    }).addTo(leafletMap);
+    circle.bindTooltip(zone.name, { direction: 'top', className: 'wmt-zone-tip', offset: [0, -8] });
+    inner.bindTooltip(zone.name, { direction: 'top', className: 'wmt-zone-tip', offset: [0, -4] });
+    circle.on('click', () => { circle.isTooltipOpen() ? circle.closeTooltip() : circle.openTooltip(); });
+  });
+
+  STORE_POIS.forEach(s => {
+    L.circleMarker([s.lat, s.lng], { radius: 6, color: '#fff', weight: 2, fillColor: STORE_KIND_COLORS[s.kind] || '#0071CE', fillOpacity: 1 })
+      .addTo(leafletMap)
+      .bindTooltip(s.name, { direction: 'top', offset: [0, -6] });
+  });
+
+  const legend = L.control({ position: 'bottomleft' });
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'map-legend-box');
+    div.innerHTML = renderMapLegend();
+    return div;
+  };
+  legend.addTo(leafletMap);
+}
+
+function renderMapLegend() {
+  const zoneItems = WMT_ZONES.map(z => '<div class="lg-item"><span class="lg-swatch-area" style="background:' + z.color + '33; border-color:' + z.color + '"></span>' + z.name + '</div>').join('');
+  const typeItems = Object.keys(VENUE_COLORS).map(t => '<div class="lg-item"><span class="lg-dot" style="background:' + VENUE_COLORS[t] + '"></span>' + t + '</div>').join('');
+  const storeKinds = Array.from(new Set(STORE_POIS.map(s => s.kind)));
+  const storeItems = storeKinds.map(k => '<div class="lg-item"><span class="lg-dot" style="background:' + STORE_KIND_COLORS[k] + '"></span>' + k + '</div>').join('');
+  return '<div class="lg-group"><span class="lg-grouplabel">Where Walmart\'s people are</span>' + zoneItems + '</div>'
+    + '<div class="lg-group"><span class="lg-grouplabel">Your screens</span>' + typeItems + '</div>'
+    + '<div class="lg-group"><span class="lg-grouplabel">Store locations (reference)</span>' + storeItems + '</div>';
+}
+
+function popupHtml(d) {
+  return '<div class="map-popup"><div class="pp-title">' + escapeXml(d.name) + '</div>'
+    + '<div class="pp-sub">' + escapeXml(d.type) + '</div>'
+    + '<div class="pp-row"><span>Price</span><span>$' + sellOf(d.cost).toLocaleString() + '/mo</span></div></div>';
+}
+
+function renderAssetMarkers(devices) {
+  markerCluster.clearLayers();
+  devices.forEach(d => {
+    const m = L.marker([d.lat, d.lng], { icon: makeAssetIcon(d) });
+    m.bindPopup(popupHtml(d));
+    markerCluster.addLayer(m);
+  });
+}
+
+function renderMapStats() {
+  const p = pkg();
+  const devices = activeDevices();
+  const stats = [
+    { num: devices.length, lbl: 'screen' + (devices.length === 1 ? '' : 's') + ' included' },
+    { num: formatReach(activeReach()), lbl: 'estimated weekly impressions' },
+    { num: '$' + activePrice().toLocaleString() + '/mo', lbl: p.label + ' — margin already included' },
+  ];
+  document.getElementById('mapStatRow').innerHTML = stats.map(s => '<div class="mapstat"><div class="num">' + s.num + '</div><div class="lbl">' + s.lbl + '</div></div>').join('');
+  document.getElementById('map-heading').textContent = 'Where ' + p.name + ' will appear';
+}
+
+function showPersonalizedMap() {
+  if (!selectedPkgId) return;
+  initLeafletMap();
+  renderMapStats();
+  const devices = activeDevices();
+  renderAssetMarkers(devices);
+
+  const bounds = L.latLngBounds(WMT_ZONES.map(z => [z.lat, z.lng]).concat(devices.map(d => [d.lat, d.lng])));
+  leafletMap.fitBounds(bounds.pad(0.15));
+}
+
+renderPackages();
+bindPkgGridKeyboard();
+render();
+</script>
+</body>
+</html>
