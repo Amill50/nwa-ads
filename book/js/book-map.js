@@ -412,12 +412,40 @@ function openPopup(s, m) {
   const badgeTxt = badgeTxtMap[s.type] || s.type;
   const inCart = !!ST.cart[s.id];
   const popupPrice = Math.round(unitRate(s));
+
+  // Thumbnail — same resolver the detail drawer uses (Supabase override →
+  // venue-type image → generic fallback). Kept compact so the popup stays
+  // within its 300px cap. Falls back to the venue icon/label on miss or load error.
+  const photoSrc = resolveScreenImg(s);
+  const fbIcon  = s.icon || '📍';
+  const fbLabel = s.venue_type || s.label || s.type || '';
+  const photoHtml = `
+      <div style="position:relative;width:100%;height:110px;background:#f0ece6;overflow:hidden">
+        ${photoSrc ? `<img src="${photoSrc}" alt="${s.name}" style="width:100%;height:110px;object-fit:cover;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div style="display:${photoSrc ? 'none' : 'flex'};position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:4px;color:#9a9590">
+          <span style="font-size:26px">${fbIcon}</span>
+          <span style="font-size:11px;font-weight:600">${fbLabel}</span>
+        </div>
+      </div>`;
+
+  // Single nearest landmark — same haversine ranking as the drawer's 6-POI
+  // list, sliced to the top 1 for the compact popup. The drawer still owns the full list.
+  let nearestPoiHtml = '';
+  if (typeof NWA_POIS !== 'undefined' && NWA_POIS.length) {
+    const np = NWA_POIS
+      .map(p => ({ ...p, dist: haversineMiles(s.lat, s.lng, p.lat, p.lng) }))
+      .sort((a, b) => a.dist - b.dist)[0];
+    if (np) nearestPoiHtml = `<div style="font-size:11px;color:#6b6560;margin:-2px 0 10px;display:flex;align-items:center;gap:4px"><span>${np.icon || '📍'}</span> ${distLabel(np.dist)} from ${np.name}</div>`;
+  }
+
   const popup = L.popup({ maxWidth: Math.min(window.innerWidth - 32, 300), closeButton:true, autoPan:true, autoPanPadding:[20,60] })
     .setContent(`
+      ${photoHtml}
       <div class="popup-inner">
         <span class="popup-badge ${cls}">${badgeTxt}</span>
         <div class="popup-name">${s.name}</div>
         <div class="popup-area">${s.area} · ${s.venue_type || s.label || ''}</div>
+        ${nearestPoiHtml}
       </div>
       <div class="popup-stats">
         <div class="popup-stat"><span class="ps-val">${s.impr}</span><span class="ps-lbl">Impressions</span></div>
