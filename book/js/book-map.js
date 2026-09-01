@@ -3,7 +3,7 @@ function initMap() {
   var _isMobile = window.matchMedia('(max-width:768px),(pointer:coarse)').matches;
   map = L.map('map', { center:[36.28, -94.21], zoom:11, zoomControl:true, scrollWheelZoom: !_isMobile });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2qvk_1_fa7d058683c306debff819cd', {
     attribution:'&copy; <a href="https://carto.com/">CARTO</a>',
     maxZoom:19
   }).addTo(map);
