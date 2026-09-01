@@ -286,6 +286,8 @@
 <!-- Same map libraries as production book/index.html -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<!-- Real curated NWA landmarks (name/cat/icon/lat/lng) — reused for nearest-POI lines in pin popups -->
+<script src="/shared/js/poi-data.js"></script>
 <script>
 /* ============================================================
    v5 — package-first redesign.
@@ -362,36 +364,40 @@ function formatReach(n) {
   return String(n);
 }
 
+// img: airport screens have no per-device photo in shared/js/inventory.js, so they
+// use the same Airport venue-type fallback resolveScreenImg() would return in production.
 const AIRPORT_DEVICES = [
-  { id:'FXNA0002-1', name:'XNA Airport — Gate A6', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'XNA_GIDS_C1', name:'XNA Airport — Gate C1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'FXNA0001', name:'XNA Airport — Gate A5', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'FXNA0002', name:'XNA Airport — Gate A6 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'FXNA0001-1', name:'XNA Airport — Gate A5 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'XNA_GIDS_B2', name:'XNA Airport — Gate B2', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'XNA_GIDS_A1', name:'XNA Airport — Gate A1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'XNA_GIDS_A12', name:'XNA Airport — Gate A12', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'XNA_GIDS_A3', name:'XNA Airport — Gate A3', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
-  { id:'XNA_GIDS_B1', name:'XNA Airport — Gate B1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000 },
+  { id:'FXNA0002-1', name:'XNA Airport — Gate A6', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'XNA_GIDS_C1', name:'XNA Airport — Gate C1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'FXNA0001', name:'XNA Airport — Gate A5', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'FXNA0002', name:'XNA Airport — Gate A6 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'FXNA0001-1', name:'XNA Airport — Gate A5 (2)', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'XNA_GIDS_B2', name:'XNA Airport — Gate B2', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'XNA_GIDS_A1', name:'XNA Airport — Gate A1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'XNA_GIDS_A12', name:'XNA Airport — Gate A12', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'XNA_GIDS_A3', name:'XNA Airport — Gate A3', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
+  { id:'XNA_GIDS_B1', name:'XNA Airport — Gate B1', type:'Airport screen', lat:36.278333, lng:-94.306111, cost:8703, confirmed:false, weekly_imp:85000, img:'/shared/venue_photos/Airport_NewReference.jpg' },
 ];
 
+// img: real per-device photos from shared/js/inventory.js (device_id → img), same
+// source cost/confirmed/weekly_imp were pulled from. All under /shared/venue_photos/lamar_panels/.
 const HOME_OFFICE_BILLBOARD = [
-  { id:'4207', name:'Walton Blvd & SH-102 (S face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true, weekly_imp:166823 },
-  { id:'4206', name:'Walton Blvd & SH-102 (N face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true, weekly_imp:68834 },
+  { id:'4207', name:'Walton Blvd & SH-102 (S face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true, weekly_imp:166823, img:'/shared/venue_photos/lamar_panels/device_4207.jpg' },
+  { id:'4206', name:'Walton Blvd & SH-102 (N face)', type:'Digital billboard', lat:36.361984, lng:-94.21726, cost:4320, confirmed:true, weekly_imp:68834, img:'/shared/venue_photos/lamar_panels/device_4206.jpg' },
 ];
 const HOME_OFFICE_STREETS = [
-  { id:'4057', name:'14th St & S. Walton (N face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true, weekly_imp:206166 },
-  { id:'4058', name:'14th St & S. Walton (S face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true, weekly_imp:184507 },
+  { id:'4057', name:'14th St & S. Walton (N face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true, weekly_imp:206166, img:'/shared/venue_photos/lamar_panels/device_4057.jpg' },
+  { id:'4058', name:'14th St & S. Walton (S face)', type:'Digital billboard', lat:36.35672, lng:-94.21257, cost:4320, confirmed:true, weekly_imp:184507, img:'/shared/venue_photos/lamar_panels/device_4058.jpg' },
 ];
 const I49_HIGHWAY_BOARD = [
-  { id:'4208', name:'I-49 & SH-102 (N face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true, weekly_imp:110538 },
-  { id:'4209', name:'I-49 & SH-102 (S face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true, weekly_imp:215231 },
+  { id:'4208', name:'I-49 & SH-102 (N face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true, weekly_imp:110538, img:'/shared/venue_photos/lamar_panels/device_4208.jpg' },
+  { id:'4209', name:'I-49 & SH-102 (S face)', type:'Digital billboard', lat:36.352894, lng:-94.17843, cost:2580, confirmed:true, weekly_imp:215231, img:'/shared/venue_photos/lamar_panels/device_4209.jpg' },
 ];
 const CORRIDOR_EXTRAS = [
-  { id:'5623', name:'Regional Airport Blvd (W face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:13995, confirmed:false, weekly_imp:331458 },
-  { id:'4046', name:'Regional Airport Blvd (E face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:5153, confirmed:false, weekly_imp:120643 },
-  { id:'7073', name:'Hwy 71 & N. Walton Blvd (S face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false, weekly_imp:410174 },
-  { id:'4203', name:'Hwy 71 & N. Walton Blvd (N face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false, weekly_imp:410174 },
+  { id:'5623', name:'Regional Airport Blvd (W face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:13995, confirmed:false, weekly_imp:331458, img:'/shared/venue_photos/lamar_panels/device_5623.jpg' },
+  { id:'4046', name:'Regional Airport Blvd (E face)', type:'Digital billboard', lat:36.335484, lng:-94.22374, cost:5153, confirmed:false, weekly_imp:120643, img:'/shared/venue_photos/lamar_panels/device_4046.jpg' },
+  { id:'7073', name:'Hwy 71 & N. Walton Blvd (S face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false, weekly_imp:410174, img:'/shared/venue_photos/lamar_panels/device_7073.jpg' },
+  { id:'4203', name:'Hwy 71 & N. Walton Blvd (N face)', type:'Digital billboard', lat:36.41947, lng:-94.22223, cost:17316, confirmed:false, weekly_imp:410174, img:'/shared/venue_photos/lamar_panels/device_4203.jpg' },
 ];
 
 const PACKAGES = [
@@ -707,6 +713,20 @@ function nearestZone(d) {
   WMT_ZONES.forEach(z => { const dd = haversineMiles(d.lat, d.lng, z.lat, z.lng); if (dd < bestD) { bestD = dd; best = z; } });
   return { zone: best, dist: bestD };
 }
+// Nearest landmarks for a device — same haversine ranking the production book/ map
+// uses, run against the shared NWA_POIS list (loaded via poi-data.js above).
+function nearestPois(d, n) {
+  if (typeof NWA_POIS === 'undefined' || !NWA_POIS.length) return [];
+  return NWA_POIS
+    .map(p => ({ ...p, dist: haversineMiles(d.lat, d.lng, p.lat, p.lng) }))
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, n);
+}
+function distLabelMi(mi) {
+  if (mi < 0.1) return '< 0.1 mi';
+  if (mi < 10)  return mi.toFixed(1) + ' mi';
+  return Math.round(mi) + ' mi';
+}
 function escapeXml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function makeAssetIcon(d) {
@@ -788,16 +808,48 @@ function renderMapLegend() {
 }
 
 function popupHtml(d) {
-  return '<div class="map-popup"><div class="pp-title">' + escapeXml(d.name) + '</div>'
+  const rateTag = d.confirmed
+    ? '<span class="rate-tag confirmed">Confirmed</span>'
+    : '<span class="rate-tag est">Est.</span>';
+
+  // Photo thumbnail (real device photo for billboards, Airport venue-type
+  // fallback for airport screens). Icon fallback shows on load error too.
+  const fbIcon = d.type === 'Airport screen' ? '✈️' : '🖥';
+  const photo = d.img
+    ? '<img src="' + d.img + '" alt="' + escapeXml(d.name) + '" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:block;margin-bottom:8px" '
+      + 'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+    : '';
+  const fallback = '<div style="' + (d.img ? 'display:none;' : 'display:flex;')
+    + 'width:100%;height:100px;border-radius:8px;margin-bottom:8px;background:#f0ece6;'
+    + 'align-items:center;justify-content:center;flex-direction:column;gap:3px;color:var(--muted)">'
+    + '<span style="font-size:24px">' + fbIcon + '</span>'
+    + '<span style="font-size:10px;font-weight:600">' + escapeXml(d.type) + '</span></div>';
+
+  // Nearest 1–2 landmarks, distance-ranked
+  const pois = nearestPois(d, 2);
+  const poiHtml = pois.length
+    ? '<div style="margin-top:7px;border-top:1px solid #ece7e0;padding-top:6px">'
+      + pois.map(p => '<div style="font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-top:2px">'
+          + '<span>' + (p.icon || '📍') + '</span> ' + distLabelMi(p.dist) + ' from ' + escapeXml(p.name) + '</div>').join('')
+      + '</div>'
+    : '';
+
+  return '<div class="map-popup">'
+    + photo + fallback
+    + '<div class="pp-title">' + escapeXml(d.name) + rateTag + '</div>'
     + '<div class="pp-sub">' + escapeXml(d.type) + '</div>'
-    + '<div class="pp-row"><span>Price</span><span>$' + sellOf(d.cost).toLocaleString() + '/mo</span></div></div>';
+    + '<div class="pp-row"><span>Price</span><span>$' + sellOf(d.cost).toLocaleString() + '/mo</span></div>'
+    + '<div class="pp-row" style="margin-top:3px"><span>Est. weekly impressions</span><span>' + formatReach(d.weekly_imp) + '</span></div>'
+    + poiHtml
+    + '</div>';
 }
 
 function renderAssetMarkers(devices) {
   markerCluster.clearLayers();
   devices.forEach(d => {
     const m = L.marker([d.lat, d.lng], { icon: makeAssetIcon(d) });
-    m.bindPopup(popupHtml(d));
+    // Cap width so the added photo/lines don't overflow small mobile viewports
+    m.bindPopup(popupHtml(d), { maxWidth: Math.min(window.innerWidth - 32, 300) });
     markerCluster.addLayer(m);
   });
 }
