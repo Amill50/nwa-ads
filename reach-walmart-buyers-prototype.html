@@ -298,7 +298,7 @@ function poiIcon(kind, zoneColor) {
 
 function initMap() {
   const map = L.map('map', { center:[36.353, -94.205], zoom:13, zoomControl:true });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2qvk_1_fa7d058683c306debff819cd', {
     attribution:'&copy; <a href="https://carto.com/">CARTO</a>',
     maxZoom:19
   }).addTo(map);

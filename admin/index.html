@@ -14232,7 +14232,7 @@ async function initBillboardScout() {
     zoomControl: true, scrollWheelZoom: true,
   });
   const _streetLayer = L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_2qvk_1_fa7d058683c306debff819cd',
     { attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>', maxZoom: 19 }
   ).addTo(SCOUT_MAP);
   const _satelliteLayer = L.tileLayer(

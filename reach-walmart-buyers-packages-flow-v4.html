@@ -632,7 +632,7 @@ let lastRenderedPkgId = null;
 function initLeafletMap() {
   if (leafletMap) { setTimeout(() => leafletMap.invalidateSize(), 50); return; }
   leafletMap = L.map('mapCanvas', { zoomControl: true, scrollWheelZoom: true });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2qvk_1_fa7d058683c306debff819cd', {
     attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
     maxZoom: 19,
   }).addTo(leafletMap);

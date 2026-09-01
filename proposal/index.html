@@ -665,7 +665,7 @@ function renderMap(c, screens, isWmt) {
   proposalMap = L.map('proposal-map', {
     center, zoom: 11, zoomControl: true, scrollWheelZoom: false,
   });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2qvk_1_fa7d058683c306debff819cd', {
     attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 19,
   }).addTo(proposalMap);
 
